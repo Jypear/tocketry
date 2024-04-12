@@ -1,5 +1,5 @@
+from tocketry.core import Task
 
-from rocketry.core import Task
 
 class CodeTask(Task):
     """Task to run a piece of Python code
@@ -16,6 +16,7 @@ class CodeTask(Task):
         are passed to the code as locals.
     **kwargs : dict
         See :class:`rocketry.core.Task`
+
 
     Warnings
     --------
@@ -45,7 +46,8 @@ class CodeTask(Task):
         return_value = baz
         ''', parameters={'foo': 'a value', 'bar': 'a value'})
     """
-    output_variable: str = 'return_value'
+
+    output_variable: str = "return_value"
     code: str
 
     def execute(self, **params):

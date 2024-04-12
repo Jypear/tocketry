@@ -1,23 +1,23 @@
-import sys
-import inspect
 import importlib
+import inspect
+import sys
+import warnings
 from pathlib import Path
 from typing import Callable, List, Optional
-import warnings
 
-from pydantic import Field, PrivateAttr, validator
-
-from rocketry.core.task import Task
-from rocketry.core.parameters import Parameters
-from rocketry.pybox.pkg import find_package_root
+from tocketry.core.parameters import Parameters
+from tocketry.core.task import Task
+from tocketry.pybox.pkg import find_package_root
 
 
 def get_module(path, pkg_path=None):
     if pkg_path:
-        name = '.'.join(
-            path
-            .with_suffix('') # path/to/file/myfile.py --> path.to.file.myfile
-            .parts[len(pkg_path.parts):] # root/myproject/pkg/myfile.py --> myproject.pkg.myfile
+        name = ".".join(
+            path.with_suffix(
+                ""
+            ).parts[  # path/to/file/myfile.py --> path.to.file.myfile
+                len(pkg_path.parts) :
+            ]  # root/myproject/pkg/myfile.py --> myproject.pkg.myfile
         )
     else:
         name = Path(path).name
@@ -31,10 +31,12 @@ def get_module(path, pkg_path=None):
         raise ImportError(f"Importing the file '{path}' failed.") from exc
     return task_module
 
+
 class TempSysPath:
     # TODO: To utils.
     sys_path = sys.path
-    def __init__(self, paths:list):
+
+    def __init__(self, paths: list):
         self.paths = paths
 
     def __enter__(self):
@@ -47,6 +49,7 @@ class TempSysPath:
                 self.sys_path.remove(path)
             except ValueError:
                 pass
+
 
 class FuncTask(Task):
     """Task that executes a function or callable.
@@ -128,31 +131,31 @@ class FuncTask(Task):
         def my_task_func():
             ...
     """
-    func: Optional[Callable] = Field(description="Executed function")
 
-    path: Optional[Path] = Field(description="Path to the script that is executed")
-    func_name: Optional[str] = Field(default="main", description="Name of the function in given path. Pass path as well")
+    func: Optional[Callable]
+
+    path: Optional[Path]
+    func_name: Optional[str]
     cache: bool = False
 
     sys_paths: List[Path] = []
 
-    _is_delayed: bool = PrivateAttr(default=False)
+    _is_delayed: bool
     _delayed_kwargs: dict = {}
-    _name_template: str = '{module_name}:{func_name}'
+    _name_template: str = "{module_name}:{func_name}"
+
     @property
     def delayed(self):
         return self._is_delayed
 
-    @validator('path')
     def validate_path(cls, value: Path, values):
-        name = values['name']
+        name = values["name"]
         if value is not None and not value.is_file():
             warnings.warn(f"Path {value} does not exists. Task '{name}' may fail.")
         return value
 
-    @validator("func")
     def validate_func(cls, value, values):
-        execution = values.get('execution')
+        execution = values.get("execution")
         func = value
 
         if execution == "process" and getattr(func, "__name__", None) == "<lambda>":
@@ -164,7 +167,7 @@ class FuncTask(Task):
 
     def __init__(self, func=None, **kwargs):
         only_func_set = func is not None and not kwargs
-        no_func_set = func is None and kwargs.get('path') is None
+        no_func_set = func is None and kwargs.get("path") is None
         if no_func_set:
             # FuncTask was probably called like:
             # @FuncTask(...)
@@ -202,12 +205,12 @@ class FuncTask(Task):
             # task might be missing. We set the name so
             # that condition API can identify the name.
             # If the task is renamed, the link is lost. (TODO)
-            func.__rocketry__ = {'name': self.name}
+            func.__tocketry__ = {"name": self.name}
 
             return func
         return super().__call__(*args, **kwargs)
 
-    def _set_descr(self, is_delayed:bool):
+    def _set_descr(self, is_delayed: bool):
         "Set description from func doc if desc missing"
         if self.description is None and hasattr(self.func, "__doc__"):
             self.description = self.func.__doc__
@@ -234,7 +237,11 @@ class FuncTask(Task):
         if self.func is None:
             # Add dir of self.path to sys.path so importing from that dir works
             pkg_path = find_package_root(self.path)
-            root = str(Path(self.path).parent.absolute()) if not pkg_path else str(pkg_path)
+            root = (
+                str(Path(self.path).parent.absolute())
+                if not pkg_path
+                else str(pkg_path)
+            )
 
             # _task_func is cached to faster performance
             with TempSysPath([root] + self.sys_paths):
@@ -246,10 +253,12 @@ class FuncTask(Task):
             return task_func
         return self.func
 
-    def get_default_name(self, func=None, path=None, func_name=None, _name_template=None, **kwargs):
+    def get_default_name(
+        self, func=None, path=None, func_name=None, _name_template=None, **kwargs
+    ):
         if func is None:
             file = Path(path)
-            module_name = '.'.join(file.parts).replace(".py", "")
+            module_name = ".".join(file.parts).replace(".py", "")
         else:
             module_name = func.__module__
             func_name = getattr(func, "__name__", type(func).__name__)
@@ -258,7 +267,7 @@ class FuncTask(Task):
                 return func_name
         if _name_template is not None:
             return _name_template.format(module_name=module_name, func_name=func_name)
-        return f'{module_name}:{func_name}'
+        return f"{module_name}:{func_name}"
 
     def process_finish(self, *args, **kwargs):
         if self._is_delayed:
@@ -277,7 +286,9 @@ class FuncTask(Task):
             # Get params from the typehints
             cache = self.path is None
             func = self.get_func(cache=cache)
-            func_params = Parameters._from_signature(func, task=self, session=self.session)
+            func_params = Parameters._from_signature(
+                func, task=self, session=self.session
+            )
             params = func_params | task_params
         else:
             params = task_params
@@ -290,19 +301,13 @@ class FuncTask(Task):
             # pickling. If lazy, we filter after
             # pickling to handle problems in
             # pickling functions.
-            return {
-                key: val for key, val in params.items()
-                if key in self.kw_args
-            }
+            return {key: val for key, val in params.items() if key in self.kw_args}
         return params
 
-    def postfilter_params(self, params:Parameters):
+    def postfilter_params(self, params: Parameters):
         if self._is_delayed:
             # Was not filtered in prefiltering.
-            return {
-                key: val for key, val in params.items()
-                if key in self.kw_args
-            }
+            return {key: val for key, val in params.items() if key in self.kw_args}
         return params
 
     @property
@@ -312,9 +317,10 @@ class FuncTask(Task):
         pos_args = [
             val.name
             for name, val in sig.parameters.items()
-            if val.kind in (
-                inspect.Parameter.POSITIONAL_ONLY, # NOTE: Python <= 3.8 do not have positional arguments, but maybe in the future?
-                inspect.Parameter.POSITIONAL_OR_KEYWORD # Keyword argument
+            if val.kind
+            in (
+                inspect.Parameter.POSITIONAL_ONLY,  # NOTE: Python <= 3.8 do not have positional arguments, but maybe in the future?
+                inspect.Parameter.POSITIONAL_OR_KEYWORD,  # Keyword argument
             )
         ]
         return pos_args
@@ -326,9 +332,10 @@ class FuncTask(Task):
         kw_args = [
             val.name
             for name, val in sig.parameters.items()
-            if val.kind in (
-                inspect.Parameter.POSITIONAL_OR_KEYWORD, # Normal argument
-                inspect.Parameter.KEYWORD_ONLY # Keyword argument
+            if val.kind
+            in (
+                inspect.Parameter.POSITIONAL_OR_KEYWORD,  # Normal argument
+                inspect.Parameter.KEYWORD_ONLY,  # Keyword argument
             )
         ]
         return kw_args

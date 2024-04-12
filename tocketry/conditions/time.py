@@ -1,8 +1,9 @@
 import datetime
 
-from rocketry.time import TimeDelta
-from rocketry.core.condition.base import BaseCondition
-from rocketry.args import Session
+from tocketry.args import Session
+from tocketry.core.condition.base import BaseCondition
+from tocketry.time import TimeDelta
+
 
 class IsPeriod(BaseCondition):
     """Condition for checking whether current time
@@ -28,6 +29,7 @@ class IsPeriod(BaseCondition):
     >>> from rocketry.time import TimeOfDay
     >>> is_morning = IsPeriod(period=TimeOfDay("06:00", "12:00")) # doctest: +SKIP
     """
+
     def __init__(self, period):
         if isinstance(period, TimeDelta):
             raise AttributeError("TimeDelta does not have __contains__.")
@@ -41,7 +43,7 @@ class IsPeriod(BaseCondition):
         if hasattr(self, "_str"):
             return self._str
         if hasattr(self, "period"):
-            return f'currently {str(self.period)}'
+            return f"currently {str(self.period)}"
         return type(self).__name__
 
     def __repr__(self):

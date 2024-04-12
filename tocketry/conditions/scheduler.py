@@ -1,6 +1,6 @@
-from rocketry.args.builtin import Session
-from rocketry.core.condition.base import BaseComparable, BaseCondition
-from rocketry.core.time.utils import get_period_span
+from tocketry.args.builtin import Session
+from tocketry.core.condition.base import BaseComparable, BaseCondition
+from tocketry.core.time.utils import get_period_span
 
 
 class SchedulerCycles(BaseComparable):
@@ -32,6 +32,7 @@ class SchedulerCycles(BaseComparable):
     def from_magic(cls, **kwargs):
         kwargs = {key: int(value) for key, value in kwargs.items()}
         return super(SchedulerCycles, cls).from_magic(**kwargs)
+
 
 class SchedulerStarted(BaseCondition):
     """Condition for whether the scheduler had started

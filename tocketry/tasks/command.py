@@ -1,16 +1,14 @@
-
 import subprocess
 from typing import List, Optional, Union
 
 try:
     from typing import Literal
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     from typing_extensions import Literal
 
-from pydantic import Field, validator
 
-from rocketry.core.parameters.parameters import Parameters
-from rocketry.core.task import Task
+from tocketry.core.parameters.parameters import Parameters
+from tocketry.core.task import Task
 
 
 class CommandTask(Task):
@@ -45,7 +43,7 @@ class CommandTask(Task):
     shell: bool = False
     cwd: Optional[str]
     kwds_popen: dict = {}
-    argform: Optional[Literal['-', '--', 'short', 'long']] = Field(description="Whether the arguments are turned as short or long form command line arguments")
+    argform: Optional[Literal["-", "--", "short", "long"]]
 
     def get_kwargs_popen(self) -> dict:
         kwargs = {
@@ -58,14 +56,13 @@ class CommandTask(Task):
         kwargs.update(self.kwds_popen)
         return kwargs
 
-    @validator('argform')
     def parse_argform(cls, value):
         return {
             "long": "--",
             "--": "--",
             "short": "-",
             "-": "-",
-            None: '--',
+            None: "--",
         }[value]
 
     def execute(self, **parameters):
@@ -77,7 +74,7 @@ class CommandTask(Task):
                 param = self.argform + param
 
             if isinstance(command, str):
-                command += f" {param} \"{val}\""
+                command += f' {param} "{val}"'
             else:
                 command += [param] + [val]
 
@@ -104,4 +101,4 @@ class CommandTask(Task):
         return params
 
     def get_default_name(self, command, **kwargs):
-        return command if isinstance(command, str) else ' '.join(command)
+        return command if isinstance(command, str) else " ".join(command)

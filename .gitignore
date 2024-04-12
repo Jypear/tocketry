@@ -55,3 +55,7 @@ docs/_build/
 
 # Coverage
 cov_data/
+
+
+# Test ignores
+test.py

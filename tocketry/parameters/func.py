@@ -1,5 +1,7 @@
 from typing import Callable
-from rocketry.args import FuncArg
+
+from tocketry.args import FuncArg
+
 
 class FuncParam:
     """A parameter from a function.
@@ -32,6 +34,7 @@ class FuncParam:
         ... # Send email list
 
     """
+
     def __init__(self, name=None, session=None):
         self.name = name
         self.session = session
@@ -40,7 +43,7 @@ class FuncParam:
         session = FuncArg.session if self.session is None else self.session
         name = self._get_name(func)
         session.parameters[name] = FuncArg(func)
-        func.__rocketry__ = {'param_name': name}
+        func.__tocketry__ = {"param_name": name}
         return func
 
     def _get_name(self, func):
