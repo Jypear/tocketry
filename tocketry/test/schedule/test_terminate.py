@@ -4,14 +4,14 @@ import time
 import os
 
 import pytest
-from rocketry.conditions.scheduler import SchedulerStarted
-from rocketry.conditions.task import TaskRunning
+from tocketry.conditions.scheduler import SchedulerStarted
+from tocketry.conditions.task import TaskRunning
 
-from rocketry.core.time.base import TimeDelta
-from rocketry.tasks import FuncTask
-from rocketry.exc import TaskTerminationException
-from rocketry.conditions import TaskFinished, TaskStarted, AlwaysTrue
-from rocketry.args import Session
+from tocketry.core.time.base import TimeDelta
+from tocketry.tasks import FuncTask
+from tocketry.exc import TaskTerminationException
+from tocketry.conditions import TaskFinished, TaskStarted, AlwaysTrue
+from tocketry.args import Session
 
 def run_slow():
     time.sleep(1)

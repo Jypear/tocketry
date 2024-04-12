@@ -1,6 +1,6 @@
 import datetime
 import pytest
-from rocketry.time import RelativeDay
+from tocketry.time import RelativeDay
 
 @pytest.mark.parametrize("day,left,right", [
     pytest.param('today', datetime.datetime(2022, 5, 15), datetime.datetime(2022, 5, 15, 23, 59, 59, 999999)),

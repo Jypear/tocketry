@@ -1,5 +1,5 @@
-from rocketry import Session
-from rocketry.tasks.run_id import uuid
+from tocketry import Session
+from tocketry.tasks.run_id import uuid
 
 def test_defaults():
     s = Session(config={'execution': 'async'})

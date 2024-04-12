@@ -1,8 +1,8 @@
 
 import pytest
 
-from rocketry.core import Parameters
-from rocketry.args import Private
+from tocketry.core import Parameters
+from tocketry.args import Private
 
 @pytest.mark.parametrize(
     "a,b,union",

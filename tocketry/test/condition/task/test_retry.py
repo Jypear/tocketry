@@ -1,6 +1,6 @@
 import pytest
 
-from rocketry.conditions import (
+from tocketry.conditions import (
     Retry
 )
 

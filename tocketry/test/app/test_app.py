@@ -5,14 +5,14 @@ import pytest
 from redbird.logging import RepoHandler
 from redbird.repos import MemoryRepo, CSVFileRepo
 
-from rocketry import Rocketry
-from rocketry.conditions.task.task import TaskStarted
-from rocketry.args import Return, Arg, FuncArg
-from rocketry import Session
-from rocketry.session import Config
-from rocketry.tasks import CommandTask
-from rocketry.tasks import FuncTask
-from rocketry.conds import false, true
+from tocketry import Rocketry
+from tocketry.conditions.task.task import TaskStarted
+from tocketry.args import Return, Arg, FuncArg
+from tocketry import Session
+from tocketry.session import Config
+from tocketry.tasks import CommandTask
+from tocketry.tasks import FuncTask
+from tocketry.conds import false, true
 
 def set_logging_defaults():
     task_logger = logging.getLogger("rocketry.task")

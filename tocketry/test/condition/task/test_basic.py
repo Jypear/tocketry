@@ -1,6 +1,6 @@
 import pytest
 
-from rocketry.conditions import (
+from tocketry.conditions import (
     TaskFinished,
     TaskFailed,
     TaskSucceeded,
@@ -11,7 +11,7 @@ from rocketry.conditions import (
     TaskStarted,
     TaskTerminated,
 )
-from rocketry.tasks import FuncTask
+from tocketry.tasks import FuncTask
 
 
 

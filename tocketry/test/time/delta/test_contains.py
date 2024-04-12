@@ -1,7 +1,7 @@
 
 from datetime import datetime, timedelta
 import pytest
-from rocketry.core.time import (
+from tocketry.core.time import (
     TimeDelta
 )
 

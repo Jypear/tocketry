@@ -1,8 +1,8 @@
 import logging
 
-from rocketry import Rocketry, Grouper
-from rocketry.conditions import TaskStarted
-from rocketry.conds import daily, time_of_day
+from tocketry import Rocketry, Grouper
+from tocketry.conditions import TaskStarted
+from tocketry.conds import daily, time_of_day
 
 def set_logging_defaults():
     task_logger = logging.getLogger("rocketry.task")

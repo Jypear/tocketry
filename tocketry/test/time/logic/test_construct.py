@@ -1,9 +1,9 @@
 import datetime
 
-from rocketry.core.time.base import (
+from tocketry.core.time.base import (
     All, Any
 )
-from rocketry.time import TimeOfDay, TimeOfMinute, always
+from tocketry.time import TimeOfDay, TimeOfMinute, always
 
 from_iso = datetime.datetime.fromisoformat
 

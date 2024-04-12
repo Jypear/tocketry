@@ -1,7 +1,7 @@
 
 from datetime import datetime, timedelta
 import pytest
-from rocketry.time import (
+from tocketry.time import (
     TimeSpanDelta
 )
 

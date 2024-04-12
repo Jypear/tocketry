@@ -2,10 +2,10 @@ import re
 
 import pytest
 
-from rocketry.conditions import TaskCond
-from rocketry.conditions import SchedulerCycles, SchedulerStarted, TaskStarted
-from rocketry import Session
-from rocketry.tasks import FuncTask
+from tocketry.conditions import TaskCond
+from tocketry.conditions import SchedulerCycles, SchedulerStarted, TaskStarted
+from tocketry import Session
+from tocketry.tasks import FuncTask
 
 N_PARSERS = len(Session._cls_cond_parsers)
 

@@ -1,8 +1,8 @@
 
 import pytest
-from rocketry.pybox.time.convert import to_datetime
+from tocketry.pybox.time.convert import to_datetime
 
-from rocketry.time.interval import (
+from tocketry.time.interval import (
     TimeOfWeek
 )
 

@@ -1,6 +1,6 @@
 import pytest
 
-from rocketry.conditions import (
+from tocketry.conditions import (
     TaskStarted,
 
     TaskFinished,
@@ -9,13 +9,13 @@ from rocketry.conditions import (
 
     TaskRunning
 )
-from rocketry.conditions.task import TaskInacted, TaskTerminated
-from rocketry.core.task import TaskRun
-from rocketry.pybox.time.convert import to_datetime, to_timestamp
-from rocketry.time import (
+from tocketry.conditions.task import TaskInacted, TaskTerminated
+from tocketry.core.task import TaskRun
+from tocketry.pybox.time.convert import to_datetime, to_timestamp
+from tocketry.time import (
     TimeOfDay
 )
-from rocketry.tasks import FuncTask
+from tocketry.tasks import FuncTask
 
 from .test_time import setup_task_state
 

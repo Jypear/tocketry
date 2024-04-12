@@ -1,4 +1,4 @@
-from rocketry.conds import cron
+from tocketry.conds import cron
 
 @app.task(cron('* * * * *'))
 def do_minutely():

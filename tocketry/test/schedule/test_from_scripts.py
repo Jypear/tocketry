@@ -3,12 +3,12 @@ import pytest
 
 from redbird.logging import RepoHandler
 from redbird.repos import MemoryRepo
-from rocketry.core.time.base import TimeDelta
+from tocketry.core.time.base import TimeDelta
 
-from rocketry.conditions.scheduler import SchedulerStarted
-from rocketry.conditions import TaskStarted, AlwaysTrue
-from rocketry.log.log_record import LogRecord
-from rocketry.tasks import FuncTask
+from tocketry.conditions.scheduler import SchedulerStarted
+from tocketry.conditions import TaskStarted, AlwaysTrue
+from tocketry.log.log_record import LogRecord
+from tocketry.tasks import FuncTask
 
 @pytest.mark.parametrize("execution", ["main", "thread", "process"])
 @pytest.mark.parametrize(

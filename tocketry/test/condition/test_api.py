@@ -1,8 +1,8 @@
 import pytest
-from rocketry.conditions.scheduler import SchedulerCycles, SchedulerStarted
-from rocketry.conditions.task.task import TaskFailed, TaskFinished, TaskRunning, TaskStarted, TaskSucceeded
+from tocketry.conditions.scheduler import SchedulerCycles, SchedulerStarted
+from tocketry.conditions.task.task import TaskFailed, TaskFinished, TaskRunning, TaskStarted, TaskSucceeded
 
-from rocketry.conds import (
+from tocketry.conds import (
     true, false,
     every,
     secondly, minutely, hourly, daily, weekly, monthly,
@@ -21,13 +21,13 @@ from rocketry.conds import (
     crontime,
 )
 
-from rocketry.conditions import TaskExecutable, IsPeriod, DependSuccess, DependFailure, DependFinish, TaskRunnable, Retry
-from rocketry.core.condition import AlwaysFalse, AlwaysTrue, Any, All
-from rocketry.time import TimeDelta
-from rocketry.time import Cron
-from rocketry.time.delta import TimeSpanDelta
-from rocketry.tasks import FuncTask
-from rocketry.time.interval import TimeOfDay, TimeOfHour, TimeOfMinute, TimeOfMonth, TimeOfSecond, TimeOfWeek
+from tocketry.conditions import TaskExecutable, IsPeriod, DependSuccess, DependFailure, DependFinish, TaskRunnable, Retry
+from tocketry.core.condition import AlwaysFalse, AlwaysTrue, Any, All
+from tocketry.time import TimeDelta
+from tocketry.time import Cron
+from tocketry.time.delta import TimeSpanDelta
+from tocketry.tasks import FuncTask
+from tocketry.time.interval import TimeOfDay, TimeOfHour, TimeOfMinute, TimeOfMonth, TimeOfSecond, TimeOfWeek
 
 params_basic = [
     pytest.param(true, AlwaysTrue(), id="true"),

@@ -1,7 +1,7 @@
-from rocketry.conditions.task import DependFailure, DependSuccess
-from rocketry.core.condition.base import All, Any
-from rocketry.tasks import FuncTask
-from rocketry.utils.dependencies import Dependencies, Link, get_dependencies
+from tocketry.conditions.task import DependFailure, DependSuccess
+from tocketry.core.condition.base import All, Any
+from tocketry.tasks import FuncTask
+from tocketry.utils.dependencies import Dependencies, Link, get_dependencies
 
 def test_dependency(session):
     ta = FuncTask(lambda: None, name="a", start_cond="daily", execution="main", session=session)

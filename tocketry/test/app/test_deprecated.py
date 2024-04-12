@@ -1,6 +1,6 @@
 import logging
 import pytest
-from rocketry import Rocketry
+from tocketry import Rocketry
 
 def test_set_logging():
     app = Rocketry(execution="async")

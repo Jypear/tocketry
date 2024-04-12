@@ -3,9 +3,9 @@ import re
 
 import pytest
 
-from rocketry.core import BaseCondition
-from rocketry.conditions import FuncCond
-from rocketry.parse.condition import parse_condition
+from tocketry.core import BaseCondition
+from tocketry.conditions import FuncCond
+from tocketry.parse.condition import parse_condition
 
 def test_func_cond():
 

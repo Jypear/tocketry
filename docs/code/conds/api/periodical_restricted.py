@@ -1,4 +1,4 @@
-from rocketry.conds import minutely, hourly, daily, weekly, monthly
+from tocketry.conds import minutely, hourly, daily, weekly, monthly
 
 @app.task(minutely.before("45"))
 def do_before():

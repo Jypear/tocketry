@@ -2,11 +2,11 @@ import datetime
 
 import pytest
 
-from rocketry.conditions import (
+from tocketry.conditions import (
     SchedulerStarted,
     SchedulerCycles
 )
-from rocketry.time import (
+from tocketry.time import (
     TimeDelta,
 )
 

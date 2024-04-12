@@ -6,14 +6,14 @@ import logging
 from redbird.repos import MemoryRepo
 from redbird.logging import RepoHandler
 
-from rocketry.args.builtin import TerminationFlag
-from rocketry.conditions.scheduler import SchedulerCycles
+from tocketry.args.builtin import TerminationFlag
+from tocketry.conditions.scheduler import SchedulerCycles
 
-from rocketry.log import LogRecord
-from rocketry.tasks import FuncTask
-from rocketry.time import TimeDelta
-from rocketry.conds import true
-from rocketry.conditions import SchedulerStarted, TaskStarted, AlwaysTrue
+from tocketry.log import LogRecord
+from tocketry.tasks import FuncTask
+from tocketry.time import TimeDelta
+from tocketry.conds import true
+from tocketry.conditions import SchedulerStarted, TaskStarted, AlwaysTrue
 
 def run_succeeding():
     pass

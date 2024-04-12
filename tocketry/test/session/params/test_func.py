@@ -3,10 +3,10 @@ import platform
 from textwrap import dedent
 import pytest
 
-from rocketry.core import Parameters
-from rocketry.tasks import FuncTask
-from rocketry.conditions import TaskStarted, AlwaysTrue
-from rocketry.args import FuncArg, Arg
+from tocketry.core import Parameters
+from tocketry.tasks import FuncTask
+from tocketry.conditions import TaskStarted, AlwaysTrue
+from tocketry.args import FuncArg, Arg
 
 
 def get_x():

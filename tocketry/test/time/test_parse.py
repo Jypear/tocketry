@@ -2,9 +2,9 @@ import datetime
 
 import pytest
 
-from rocketry.core.time.base import StaticInterval
-from rocketry.parse import parse_time, ParserError
-from rocketry.time import TimeOfDay, TimeOfHour, TimeOfMinute, TimeDelta, TimeOfWeek, TimeOfMonth, always, never
+from tocketry.core.time.base import StaticInterval
+from tocketry.parse import parse_time, ParserError
+from tocketry.time import TimeOfDay, TimeOfHour, TimeOfMinute, TimeDelta, TimeOfWeek, TimeOfMonth, always, never
 
 @pytest.mark.parametrize(
     "time_str,expected", [

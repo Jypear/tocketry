@@ -3,9 +3,9 @@ import types
 
 import pytest
 
-from rocketry.tasks import FuncTask
-from rocketry.conditions import AlwaysTrue
-from rocketry.parse.utils import ParserError
+from tocketry.tasks import FuncTask
+from tocketry.conditions import AlwaysTrue
+from tocketry.parse.utils import ParserError
 
 def myfunc():
     ...

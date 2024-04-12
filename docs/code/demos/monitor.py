@@ -1,5 +1,5 @@
 from redmail import EmailSender
-from rocketry import Rocketry
+from tocketry import Rocketry
 
 
 app = Rocketry()

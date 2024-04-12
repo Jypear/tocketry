@@ -1,9 +1,9 @@
 
 import pytest
-from rocketry.time import (
+from tocketry.time import (
     TimeSpanDelta
 )
-from rocketry.pybox.time.convert import to_datetime
+from tocketry.pybox.time.convert import to_datetime
 
 @pytest.mark.parametrize(
     "dt,near,far,roll_start,roll_end",

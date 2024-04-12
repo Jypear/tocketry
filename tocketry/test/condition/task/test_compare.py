@@ -1,12 +1,12 @@
 from time import time
 import pytest
-from rocketry.conditions import (
+from tocketry.conditions import (
     TaskFinished, TaskRunning
 )
-from rocketry.core.task import TaskRun
-from rocketry.core.time.base import TimeDelta
-from rocketry.tasks import FuncTask
-from rocketry.log import MinimalRunRecord
+from tocketry.core.task import TaskRun
+from tocketry.core.time.base import TimeDelta
+from tocketry.tasks import FuncTask
+from tocketry.log import MinimalRunRecord
 
 def run_task(fail=False):
     print("Running func")

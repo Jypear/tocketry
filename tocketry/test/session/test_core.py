@@ -2,10 +2,10 @@
 import logging
 
 import pytest
-from rocketry import Session
-from rocketry.core import Parameters
-from rocketry.core.log.adapter import TaskAdapter
-from rocketry.tasks import FuncTask
+from tocketry import Session
+from tocketry.core import Parameters
+from tocketry.core.log.adapter import TaskAdapter
+from tocketry.tasks import FuncTask
 
 
 def test_tasks_attr(session):

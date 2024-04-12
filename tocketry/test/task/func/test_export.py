@@ -1,4 +1,4 @@
-from rocketry.tasks import FuncTask
+from tocketry.tasks import FuncTask
 
 def test_to_dict(session):
     task1 = FuncTask(func=lambda: None, name="task 1", start_cond="every 10 seconds", session=session)

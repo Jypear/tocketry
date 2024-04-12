@@ -10,13 +10,13 @@ import pytest
 from redbird.oper import in_, between
 from redbird.logging import RepoHandler
 from redbird.repos import MemoryRepo
-from rocketry.conditions import TaskFinished
-from rocketry.conditions.scheduler import SchedulerCycles
+from tocketry.conditions import TaskFinished
+from tocketry.conditions.scheduler import SchedulerCycles
 
-from rocketry.log.log_record import MinimalRecord
-from rocketry.pybox.time.convert import to_datetime
-from rocketry.tasks import FuncTask
-from rocketry.exc import TaskLoggingError
+from tocketry.log.log_record import MinimalRecord
+from tocketry.pybox.time.convert import to_datetime
+from tocketry.tasks import FuncTask
+from tocketry.exc import TaskLoggingError
 
 def create_line_to_startup_file():
     with open("start.txt", "w", encoding="utf-8") as file:

@@ -1,5 +1,5 @@
-from rocketry.conds import daily, after_success
-from rocketry.args import Return
+from tocketry.conds import daily, after_success
+from tocketry.args import Return
 
 @app.task(daily)
 def do_first():

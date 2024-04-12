@@ -1,4 +1,4 @@
-from rocketry.conds import (
+from tocketry.conds import (
     every, hourly, daily,
     after_success,
     true, false

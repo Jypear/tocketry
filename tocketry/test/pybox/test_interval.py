@@ -1,6 +1,6 @@
 from datetime import datetime
 import pytest
-from rocketry.pybox.time import Interval, to_datetime
+from tocketry.pybox.time import Interval, to_datetime
 
 @pytest.mark.parametrize("l,r",
     [

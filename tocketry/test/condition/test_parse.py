@@ -2,13 +2,13 @@
 import itertools
 
 import pytest
-from rocketry.conditions.task.task import TaskRunnable
+from tocketry.conditions.task.task import TaskRunnable
 
-from rocketry.parse.utils import ParserError
-from rocketry.conditions.scheduler import SchedulerCycles, SchedulerStarted
-from rocketry.parse.condition import parse_condition
-from rocketry.conditions import ParamExists
-from rocketry.conditions import (
+from tocketry.parse.utils import ParserError
+from tocketry.conditions.scheduler import SchedulerCycles, SchedulerStarted
+from tocketry.parse.condition import parse_condition
+from tocketry.conditions import ParamExists
+from tocketry.conditions import (
     AlwaysTrue, AlwaysFalse,
     All, Any, Not,
 
@@ -23,7 +23,7 @@ from rocketry.conditions import (
     IsEnv,
 )
 
-from rocketry.time import (
+from tocketry.time import (
     TimeDelta,
 
     TimeOfMinute,
@@ -33,11 +33,11 @@ from rocketry.time import (
     TimeOfMonth
 )
 
-from rocketry.conds import (
+from tocketry.conds import (
     secondly, minutely, hourly, daily, weekly, monthly
 )
-from rocketry.time.cron import Cron
-from rocketry.time.interval import TimeOfSecond
+from tocketry.time.cron import Cron
+from tocketry.time.interval import TimeOfSecond
 
 cases_time = [
     pytest.param("secondly", secondly, id="secondly"),

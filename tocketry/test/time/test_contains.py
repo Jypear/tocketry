@@ -6,16 +6,16 @@ wrapper for periods.
 """
 
 import pytest
-from rocketry.pybox.time.convert import to_datetime
+from tocketry.pybox.time.convert import to_datetime
 
-from rocketry.time.interval import (
+from tocketry.time.interval import (
     TimeOfHour,
     TimeOfDay,
     TimeOfWeek,
     TimeOfMonth,
     TimeOfYear,
 )
-from rocketry.conditions import IsPeriod
+from tocketry.conditions import IsPeriod
 
 
 true_cases = [

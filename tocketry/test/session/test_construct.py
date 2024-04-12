@@ -5,10 +5,10 @@ import warnings
 
 import pytest
 
-from rocketry import Session
-from rocketry.session import Config
-from rocketry.core import Task, Scheduler, BaseCondition, BaseArgument, Parameters
-from rocketry.conds import true
+from tocketry import Session
+from tocketry.session import Config
+from tocketry.core import Task, Scheduler, BaseCondition, BaseArgument, Parameters
+from tocketry.conds import true
 
 def assert_default(session:Session):
     for cls in (Task, Scheduler, BaseCondition, BaseArgument, Parameters):

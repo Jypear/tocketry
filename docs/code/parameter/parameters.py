@@ -1,5 +1,5 @@
-from rocketry import Rocketry
-from rocketry.args import Arg, Return, FuncArg
+from tocketry import Rocketry
+from tocketry.args import Arg, Return, FuncArg
 
 app = Rocketry()
 app.params(my_arg='hello')

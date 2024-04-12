@@ -7,10 +7,10 @@ import pytest
 
 from redbird.logging import RepoHandler
 
-from rocketry.log.log_record import  MinimalRecord
-from rocketry.tasks import FuncTask
-from rocketry.testing.log import create_task_record
-from rocketry.conds import true
+from tocketry.log.log_record import  MinimalRecord
+from tocketry.tasks import FuncTask
+from tocketry.testing.log import create_task_record
+from tocketry.conds import true
 
 def run_success():
     pass
@@ -292,7 +292,7 @@ def test_process_no_double_logging(session):
     # while this is not occuring on Windows. This tests the bug.
     #!NOTE: This test requires there are two handlers in
     # rocketry.task logger (Memory and Stream in this order)
-    from rocketry.core.task import TaskRun
+    from tocketry.core.task import TaskRun
     task_logger = logging.getLogger("rocketry.task")
     task_logger.addHandler(logging.StreamHandler())
 

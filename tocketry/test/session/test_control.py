@@ -3,15 +3,15 @@ import asyncio
 import time
 import pytest
 
-from rocketry.args import Session
-import rocketry
-from rocketry.args.builtin import TerminationFlag
-from rocketry.conditions.scheduler import SchedulerStarted
-from rocketry.conditions import TaskStarted
-from rocketry.core.time.base import TimeDelta
-from rocketry.tasks import FuncTask
-from rocketry.conds import true
-from rocketry.exc import TaskTerminationException
+from tocketry.args import Session
+import tocketry
+from tocketry.args.builtin import TerminationFlag
+from tocketry.conditions.scheduler import SchedulerStarted
+from tocketry.conditions import TaskStarted
+from tocketry.core.time.base import TimeDelta
+from tocketry.tasks import FuncTask
+from tocketry.conds import true
+from tocketry.exc import TaskTerminationException
 
 
 @pytest.mark.parametrize("execution", ["main", "thread"])
@@ -21,7 +21,7 @@ def test_shutdown(execution, session):
     def on_startup():
         timeline.append("startup")
 
-    def call_shutdown(session:rocketry.Session=Session()):
+    def call_shutdown(session:tocketry.Session=Session()):
         session.shut_down()
         timeline.append("shutdown-called")
 
@@ -56,7 +56,7 @@ def test_shutdown_force(execution, session, doublecall):
         if flag.is_set():
             raise TaskTerminationException()
 
-    def call_shutdown(session:rocketry.Session=Session()):
+    def call_shutdown(session:tocketry.Session=Session()):
         if doublecall:
             session.shut_down()
             session.shut_down()
@@ -86,7 +86,7 @@ def test_restart(execution, session):
     def on_startup():
         timeline.append("startup")
 
-    def call_restart(session:rocketry.Session=Session()):
+    def call_restart(session:tocketry.Session=Session()):
         session.restart()
         timeline.append("restart-called")
 

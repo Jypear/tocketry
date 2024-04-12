@@ -1,5 +1,5 @@
-from rocketry.args import Task
-from rocketry.tasks import FuncTask
+from tocketry.args import Task
+from tocketry.tasks import FuncTask
 
 def test_run(tmpdir, session):
     task1 = FuncTask(

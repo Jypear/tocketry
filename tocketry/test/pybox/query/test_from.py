@@ -1,6 +1,6 @@
 
 import pytest
-from rocketry.pybox import query
+from tocketry.pybox import query
 
 @pytest.mark.parametrize('qry_dict,data,expected',
     [

@@ -3,14 +3,14 @@ import logging
 import pickle
 from textwrap import dedent
 import pytest
-from rocketry.args.builtin import Return
-from rocketry.core import Task as BaseTask
-from rocketry.core.condition.base import AlwaysFalse
-from rocketry.args import Arg, Session, Task
-from rocketry.exc import TaskLoggingError
-from rocketry.log import MinimalRecord
-from rocketry import Session as SessionClass
-from rocketry.testing.log import create_task_record
+from tocketry.args.builtin import Return
+from tocketry.core import Task as BaseTask
+from tocketry.core.condition.base import AlwaysFalse
+from tocketry.args import Arg, Session, Task
+from tocketry.exc import TaskLoggingError
+from tocketry.log import MinimalRecord
+from tocketry import Session as SessionClass
+from tocketry.testing.log import create_task_record
 
 class DummyTask(BaseTask):
 

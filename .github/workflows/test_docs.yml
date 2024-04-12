@@ -22,7 +22,7 @@ jobs:
         python-version: [3.11.x]
 
     steps:
-      - name: Checkout master
+      - name: Checkout main
         uses: actions/checkout@v2
 
       - name: Setup Python

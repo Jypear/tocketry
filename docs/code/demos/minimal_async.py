@@ -1,5 +1,5 @@
 import asyncio
-from rocketry import Rocketry
+from tocketry import Rocketry
 
 app = Rocketry(execution="async")
 

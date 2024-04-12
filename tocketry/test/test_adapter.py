@@ -2,7 +2,7 @@ import logging
 import pytest
 from redbird.logging import RepoHandler
 from redbird.repos import MemoryRepo
-from rocketry.core.log import TaskAdapter
+from tocketry.core.log import TaskAdapter
 
 def test_equal():
     logger = logging.getLogger("rocketry.task")

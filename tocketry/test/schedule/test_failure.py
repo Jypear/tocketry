@@ -6,14 +6,14 @@ import pytest
 from redbird.repos import MemoryRepo
 from redbird.logging import RepoHandler
 
-from rocketry.args import TerminationFlag, Session as SessionArg
-from rocketry.core import BaseCondition
-from rocketry.tasks import FuncTask
-from rocketry.time import TimeDelta
-from rocketry.exc import TaskTerminationException
-from rocketry.conditions import SchedulerCycles, SchedulerStarted, TaskStarted, AlwaysTrue
-from rocketry.core import BaseArgument
-from rocketry.exc import TaskSetupError
+from tocketry.args import TerminationFlag, Session as SessionArg
+from tocketry.core import BaseCondition
+from tocketry.tasks import FuncTask
+from tocketry.time import TimeDelta
+from tocketry.exc import TaskTerminationException
+from tocketry.conditions import SchedulerCycles, SchedulerStarted, TaskStarted, AlwaysTrue
+from tocketry.core import BaseArgument
+from tocketry.exc import TaskSetupError
 
 class FailingArgument(BaseArgument):
 

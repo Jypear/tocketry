@@ -2,16 +2,16 @@
 import threading
 from time import sleep
 import pytest
-import rocketry
-from rocketry.conditions import DependSuccess
-from rocketry.exc import TaskTerminationException
+import tocketry
+from tocketry.conditions import DependSuccess
+from tocketry.exc import TaskTerminationException
 
 
-from rocketry.tasks import FuncTask
-from rocketry.time import TimeDelta
-from rocketry.conditions import SchedulerCycles, SchedulerStarted, TaskStarted, AlwaysTrue
+from tocketry.tasks import FuncTask
+from tocketry.time import TimeDelta
+from tocketry.conditions import SchedulerCycles, SchedulerStarted, TaskStarted, AlwaysTrue
 
-from rocketry.args import Arg, Return, Session, Task, FuncArg, TerminationFlag #, Param, Session
+from tocketry.args import Arg, Return, Session, Task, FuncArg, TerminationFlag #, Param, Session
 
 # Example functions
 # -----------------
@@ -40,13 +40,13 @@ def run_with_return(arg=Return('task_with_output')):
 
 def run_with_task(arg = Task(), arg2 = Task('another_task')):
     # arg should be the task itself, arg2 another task
-    assert isinstance(arg, rocketry.core.Task)
-    assert isinstance(arg2, rocketry.core.Task)
+    assert isinstance(arg, tocketry.core.Task)
+    assert isinstance(arg2, tocketry.core.Task)
     assert arg.name == 'my_task'
     assert arg2.name == 'another_task'
 
 def run_with_session(arg=Session()):
-    assert isinstance(arg, rocketry.Session)
+    assert isinstance(arg, tocketry.Session)
     assert arg.parameters['my_arg'] == 'some session value'
 
 def run_with_termination_flag(flag=TerminationFlag(), task=Task()):

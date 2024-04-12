@@ -1,4 +1,4 @@
-from rocketry.conds import running
+from tocketry.conds import running
 
 @app.task(end_cond=running.more_than("2 mins"))
 def do_things():

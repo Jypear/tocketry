@@ -4,8 +4,8 @@ import pytest
 import redbird
 from redbird.logging import RepoHandler
 from redbird.repos import CSVFileRepo, SQLRepo
-from rocketry import Rocketry
-from rocketry.log import MinimalRecord, MinimalRunRecord, TaskLogRecord, TaskRunRecord
+from tocketry import Rocketry
+from tocketry.log import MinimalRecord, MinimalRunRecord, TaskLogRecord, TaskRunRecord
 
 def get_csv(model, tmpdir):
     file = tmpdir.join("logs.csv")

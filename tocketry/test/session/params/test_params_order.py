@@ -2,10 +2,10 @@
 from pathlib import Path
 from textwrap import dedent
 import pytest
-from rocketry.args.builtin import SimpleArg
-from rocketry.core.condition.base import AlwaysTrue
-from rocketry.tasks import FuncTask
-from rocketry.conditions import SchedulerCycles
+from tocketry.args.builtin import SimpleArg
+from tocketry.core.condition.base import AlwaysTrue
+from tocketry.tasks import FuncTask
+from tocketry.conditions import SchedulerCycles
 
 def run_parametrized(arg):
     assert arg == "correct"

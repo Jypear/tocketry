@@ -1,5 +1,5 @@
-from rocketry import Rocketry
-from rocketry.conds import daily
+from tocketry import Rocketry
+from tocketry.conds import daily
 
 app = Rocketry()
 

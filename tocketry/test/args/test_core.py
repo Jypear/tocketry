@@ -1,5 +1,5 @@
 import pytest
-from rocketry.args import SimpleArg, Arg, EnvArg, CliArg
+from tocketry.args import SimpleArg, Arg, EnvArg, CliArg
 
 def test_equal():
     assert SimpleArg("A") != SimpleArg("B")

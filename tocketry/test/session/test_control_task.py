@@ -1,9 +1,9 @@
 import pytest
-from rocketry.args.builtin import SimpleArg
-from rocketry.conditions.task.task import TaskStarted
-from rocketry.core.parameters.parameters import Parameters
-from rocketry.tasks import FuncTask
-from rocketry.conditions import SchedulerCycles, AlwaysFalse
+from tocketry.args.builtin import SimpleArg
+from tocketry.conditions.task.task import TaskStarted
+from tocketry.core.parameters.parameters import Parameters
+from tocketry.tasks import FuncTask
+from tocketry.conditions import SchedulerCycles, AlwaysFalse
 
 def run_succeeding():
     pass

@@ -2,7 +2,7 @@ from typing import List, Tuple
 
 import pytest
 
-from rocketry.conditions import (
+from tocketry.conditions import (
     TaskStarted,
 
     TaskFinished,
@@ -11,11 +11,11 @@ from rocketry.conditions import (
 
     TaskRunning
 )
-from rocketry.testing.log import create_task_record
-from rocketry.time import (
+from tocketry.testing.log import create_task_record
+from tocketry.time import (
     TimeOfDay, TimeSpanDelta
 )
-from rocketry.tasks import FuncTask
+from tocketry.tasks import FuncTask
 
 
 def setup_task_state(mock_datetime_now, logs:List[Tuple[str, str]], time_after=None, task=None, session=None):

@@ -3,11 +3,11 @@ import logging
 import time
 
 import pytest
-from rocketry.conditions.scheduler import SchedulerStarted
-from rocketry.core.time.base import TimeDelta
+from tocketry.conditions.scheduler import SchedulerStarted
+from tocketry.core.time.base import TimeDelta
 
-from rocketry.tasks import FuncTask
-from rocketry.conditions import TaskStarted, DependSuccess
+from tocketry.tasks import FuncTask
+from tocketry.conditions import TaskStarted, DependSuccess
 
 def run_failing():
     raise RuntimeError("Task failed")

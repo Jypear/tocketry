@@ -2,10 +2,10 @@ import os
 import sys
 import logging
 import pytest
-from rocketry.args import Private, SimpleArg, FuncArg, Arg, EnvArg, CliArg, Return, TerminationFlag, Task, Session, TaskLogger, SchedulerLogger, Config
-from rocketry.core.log.adapter import TaskAdapter
-from rocketry.core.parameters.parameters import Parameters
-from rocketry.tasks import FuncTask
+from tocketry.args import Private, SimpleArg, FuncArg, Arg, EnvArg, CliArg, Return, TerminationFlag, Task, Session, TaskLogger, SchedulerLogger, Config
+from tocketry.core.log.adapter import TaskAdapter
+from tocketry.core.parameters.parameters import Parameters
+from tocketry.tasks import FuncTask
 
 def test_simple():
     arg = SimpleArg("a value")

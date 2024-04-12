@@ -1,7 +1,7 @@
 import pytest
 
-from rocketry.parse import parse_condition
-from rocketry.conditions import (
+from tocketry.parse import parse_condition
+from tocketry.conditions import (
     AlwaysTrue, AlwaysFalse,
     Not,
 )

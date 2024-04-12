@@ -10,8 +10,8 @@ from task_helpers import wait_till_task_finish
 from redbird.logging import RepoHandler
 from redbird.repos import MemoryRepo
 
-from rocketry.log.log_record import LogRecord
-from rocketry.tasks import CommandTask
+from tocketry.log.log_record import LogRecord
+from tocketry.tasks import CommandTask
 
 
 

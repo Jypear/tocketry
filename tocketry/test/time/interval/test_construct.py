@@ -1,7 +1,7 @@
 
 import datetime
 import pytest
-from rocketry.time.interval import (
+from tocketry.time.interval import (
     TimeOfMinute,
     TimeOfDay,
     TimeOfHour,

@@ -2,8 +2,8 @@ import datetime
 from time import time
 
 import pytest
-from rocketry.conditions.task.task import TaskStarted
-from rocketry.conds import (
+from tocketry.conditions.task.task import TaskStarted
+from tocketry.conds import (
     true, false,
     every,
     daily, weekly, monthly,
@@ -21,7 +21,7 @@ from rocketry.conds import (
     retry,
     crontime,
 )
-from rocketry.tasks import FuncTask
+from tocketry.tasks import FuncTask
 
 def do_success(): ...
 def do_failure(): raise RuntimeError("Oops")

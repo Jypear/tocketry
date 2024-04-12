@@ -3,15 +3,15 @@ from textwrap import dedent
 import sys
 
 import pytest
-from rocketry.conditions.task.task import DependSuccess, TaskStarted
-from rocketry.core import Task, Scheduler
-from rocketry.session import Session
+from tocketry.conditions.task.task import DependSuccess, TaskStarted
+from tocketry.core import Task, Scheduler
+from tocketry.session import Session
 
-from rocketry.tasks import FuncTask
-from rocketry.conditions import SchedulerCycles
-from rocketry.conds import true
+from tocketry.tasks import FuncTask
+from tocketry.conditions import SchedulerCycles
+from tocketry.conds import true
 
-from rocketry.args import Task as TaskArg, Session as SessionArg
+from tocketry.args import Task as TaskArg, Session as SessionArg
 
 def do_success(**kwargs):
     ...

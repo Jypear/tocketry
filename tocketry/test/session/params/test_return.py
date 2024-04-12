@@ -1,10 +1,10 @@
 import pytest
 
-from rocketry.args import Return
-from rocketry.conditions.scheduler import SchedulerCycles
-from rocketry.core import Parameters
-from rocketry.tasks import FuncTask
-from rocketry.conditions import TaskStarted
+from tocketry.args import Return
+from tocketry.conditions.scheduler import SchedulerCycles
+from tocketry.core import Parameters
+from tocketry.tasks import FuncTask
+from tocketry.conditions import TaskStarted
 
 
 def func_with_arg(value):

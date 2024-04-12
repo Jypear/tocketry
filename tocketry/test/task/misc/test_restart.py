@@ -1,9 +1,9 @@
 import pytest
 
-from rocketry.tasks.maintain import Restart
-from rocketry.tasks import FuncTask
-from rocketry.exc import SchedulerRestart
-from rocketry.conditions import TaskStarted
+from tocketry.tasks.maintain import Restart
+from tocketry.tasks import FuncTask
+from tocketry.exc import SchedulerRestart
+from tocketry.conditions import TaskStarted
 
 
 

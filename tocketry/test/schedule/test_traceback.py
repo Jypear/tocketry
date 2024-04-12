@@ -4,11 +4,11 @@ import pytest
 from redbird.logging import RepoHandler
 from redbird.repos import MemoryRepo
 
-from rocketry.conditions.scheduler import SchedulerStarted
-from rocketry.core.time.base import TimeDelta
-from rocketry.log.log_record import LogRecord
-from rocketry.tasks import FuncTask
-from rocketry.conditions import TaskStarted, AlwaysTrue
+from tocketry.conditions.scheduler import SchedulerStarted
+from tocketry.core.time.base import TimeDelta
+from tocketry.log.log_record import LogRecord
+from tocketry.tasks import FuncTask
+from tocketry.conditions import TaskStarted, AlwaysTrue
 
 def run_failing():
     raise RuntimeError("Task failed")

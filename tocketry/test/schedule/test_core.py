@@ -11,18 +11,18 @@ import pytest
 from redbird.logging import RepoHandler
 from redbird.repos import MemoryRepo
 
-from rocketry.log.log_record import TaskLogRecord
-import rocketry
-from rocketry import Session
-from rocketry.core import Parameters
-from rocketry.log.log_record import MinimalRecord
-from rocketry.tasks import FuncTask
-from rocketry.time import TimeDelta
-from rocketry.exc import TaskInactionException, TaskTerminationException
-from rocketry.conditions import SchedulerCycles, SchedulerStarted, TaskStarted, AlwaysFalse, AlwaysTrue
-from rocketry.args import Private, TerminationFlag
+from tocketry.log.log_record import TaskLogRecord
+import tocketry
+from tocketry import Session
+from tocketry.core import Parameters
+from tocketry.log.log_record import MinimalRecord
+from tocketry.tasks import FuncTask
+from tocketry.time import TimeDelta
+from tocketry.exc import TaskInactionException, TaskTerminationException
+from tocketry.conditions import SchedulerCycles, SchedulerStarted, TaskStarted, AlwaysFalse, AlwaysTrue
+from tocketry.args import Private, TerminationFlag
 
-from rocketry.conds import true, false
+from tocketry.conds import true, false
 
 def run_failing():
     raise RuntimeError("Task failed")
@@ -132,7 +132,7 @@ def test_task_log(tmpdir, execution, task_func, run_count, fail_count, success_c
 
     # Set session (and logging)
     session = Session(config={"debug": True, "silence_task_logging": False, "execution": "process"})
-    rocketry.session = session
+    tocketry.session = session
     session.set_as_default()
 
     task_logger = logging.getLogger(session.config.task_logger_basename)

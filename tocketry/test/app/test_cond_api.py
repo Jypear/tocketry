@@ -1,10 +1,10 @@
 import logging
 
-from rocketry import Rocketry
-from rocketry.args.builtin import Return, Task
-from rocketry.conditions import TaskStarted
+from tocketry import Rocketry
+from tocketry.args.builtin import Return, Task
+from tocketry.conditions import TaskStarted
 
-from rocketry.conds import (
+from tocketry.conds import (
     false, true,
     daily, time_of_hour,
     after_fail, after_success

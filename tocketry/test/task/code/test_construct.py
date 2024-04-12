@@ -5,9 +5,9 @@ import pytest
 from redbird.logging import RepoHandler
 from redbird.repos import MemoryRepo
 
-from rocketry.log.log_record import LogRecord
-from rocketry.tasks import CodeTask
-from rocketry.conditions import TaskStarted
+from tocketry.log.log_record import LogRecord
+from tocketry.tasks import CodeTask
+from tocketry.conditions import TaskStarted
 
 def test_construct(session):
     task = CodeTask(code=dedent("""

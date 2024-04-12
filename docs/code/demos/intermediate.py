@@ -1,6 +1,6 @@
-from rocketry import Rocketry
-from rocketry.args import Return, Session, Arg, FuncArg
-from rocketry.conds import daily, time_of_week, after_success
+from tocketry import Rocketry
+from tocketry.args import Return, Session, Arg, FuncArg
+from tocketry.conds import daily, time_of_week, after_success
 
 app = Rocketry()
 

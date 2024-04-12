@@ -4,15 +4,15 @@ import json
 import time
 
 import pytest
-from rocketry.args import FuncArg
-from rocketry.conds import scheduler_cycles, false, true
+from tocketry.args import FuncArg
+from tocketry.conds import scheduler_cycles, false, true
 
-from rocketry.tasks import FuncTask
-from rocketry.exc import TaskTerminationException
-from rocketry.conditions import SchedulerCycles, TaskStarted
-from rocketry.args import TerminationFlag
-from rocketry.log import RunRecord
-from rocketry.tasks.run_id import increment, uuid
+from tocketry.tasks import FuncTask
+from tocketry.exc import TaskTerminationException
+from tocketry.conditions import SchedulerCycles, TaskStarted
+from tocketry.args import TerminationFlag
+from tocketry.log import RunRecord
+from tocketry.tasks.run_id import increment, uuid
 
 
 def run_success_instant():

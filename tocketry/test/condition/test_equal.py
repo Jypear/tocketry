@@ -1,7 +1,7 @@
 
 import pytest
 
-from rocketry.conditions import (
+from tocketry.conditions import (
     AlwaysTrue, AlwaysFalse,
     All, Any, Not,
     TaskFinished, TaskRunning,

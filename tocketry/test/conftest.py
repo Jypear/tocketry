@@ -11,10 +11,10 @@ from dateutil.parser import parse as parse_datetime
 from redbird.logging import RepoHandler
 from redbird.repos import MemoryRepo
 
-import rocketry
-from rocketry import Session
-from rocketry.core.hook import clear_hooks
-from rocketry.log.log_record import MinimalRecord
+import tocketry
+from tocketry import Session
+from tocketry.core.hook import clear_hooks
+from tocketry.log.log_record import MinimalRecord
 
 # add helpers to path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'helpers'))
@@ -46,7 +46,7 @@ def pytest_sessionstart(session):
     Called after the Session object has been created and
     before performing collection and entering the run test loop.
     """
-    rocketry.session.config.debug = True
+    tocketry.session.config.debug = True
 
 
 def copy_file_to_tmpdir(tmpdir, source_file, target_path):
@@ -88,7 +88,7 @@ def session():
         "cycle_sleep": 0.001,
         "execution": "process",
     }, delete_existing_loggers=True)
-    rocketry.session = session
+    tocketry.session = session
     session.set_as_default()
 
     task_logger = logging.getLogger(session.config.task_logger_basename)
@@ -115,7 +115,7 @@ def set_loggers():
     formatter = logging.Formatter('%(asctime)s - %(action)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
 
-    task_logger = logging.getLogger(rocketry.session.config.task_logger_basename)
+    task_logger = logging.getLogger(tocketry.session.config.task_logger_basename)
     task_logger.addHandler(handler)
 
     yield session

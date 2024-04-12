@@ -1,7 +1,7 @@
-from rocketry.args import Private
-from rocketry.tasks import FuncTask
-from rocketry.conditions import TaskStarted
-from rocketry.args import FuncArg
+from tocketry.args import Private
+from tocketry.tasks import FuncTask
+from tocketry.conditions import TaskStarted
+from tocketry.args import FuncArg
 
 def run_task(secret, public, secret_list, task_secret, task_public):
     assert public == "hello"

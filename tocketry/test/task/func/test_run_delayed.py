@@ -3,7 +3,7 @@ import pytest
 
 from task_helpers import wait_till_task_finish
 
-from rocketry.tasks.func import FuncTask
+from tocketry.tasks.func import FuncTask
 
 @pytest.mark.parametrize("execution", ["main", "thread", "process"])
 @pytest.mark.parametrize(

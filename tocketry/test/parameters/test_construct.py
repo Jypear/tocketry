@@ -1,11 +1,11 @@
 
 import pytest
-import rocketry
-from rocketry.args import FuncArg
+import tocketry
+from tocketry.args import FuncArg
 
-from rocketry.core import Parameters
-from rocketry.args import Private
-from rocketry.parameters import FuncParam
+from tocketry.core import Parameters
+from tocketry.args import Private
+from tocketry.parameters import FuncParam
 
 @pytest.mark.parametrize(
     "get_param,mater,repr",
@@ -55,7 +55,7 @@ def test_from_func(session):
     assert "a_param" in session.parameters
     assert session.parameters.materialize() == {"a_param": 5}
 
-def test_func_param(session:rocketry.Session):
+def test_func_param(session:tocketry.Session):
     @FuncParam()
     def my_param():
         return 5
@@ -66,7 +66,7 @@ def test_func_param(session:rocketry.Session):
     assert session.parameters['my_param'] == 5
     assert session.parameters._params['my_param'].func is my_param
 
-def test_func_param_named(session:rocketry.Session):
+def test_func_param_named(session:tocketry.Session):
     @FuncParam(name="a_param")
     def my_param():
         return 5

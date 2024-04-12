@@ -1,10 +1,10 @@
 import pytest
 
-from rocketry.time.interval import (
+from tocketry.time.interval import (
     TimeOfHour,
     TimeOfDay,
 )
-from rocketry.time import All, Any, always
+from tocketry.time import All, Any, always
 
 def test_equal():
     assert TimeOfHour("10:00") != TimeOfHour("11:00")

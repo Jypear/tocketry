@@ -1,7 +1,7 @@
 import datetime
 import pytest
-from rocketry.time import Cron
-from rocketry.time.interval import TimeOfDay, TimeOfHour, TimeOfMinute, TimeOfMonth, TimeOfWeek, TimeOfYear
+from tocketry.time import Cron
+from tocketry.time.interval import TimeOfDay, TimeOfHour, TimeOfMinute, TimeOfMonth, TimeOfWeek, TimeOfYear
 
 every_minute = TimeOfMinute()
 

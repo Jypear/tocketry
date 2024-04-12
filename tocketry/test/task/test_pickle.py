@@ -3,9 +3,9 @@ from inspect import isfunction
 
 import pytest
 
-from rocketry.tasks import FuncTask
-from rocketry.conditions import TaskFailed
-from rocketry.core import Parameters
+from tocketry.tasks import FuncTask
+from tocketry.conditions import TaskFailed
+from tocketry.core import Parameters
 
 def func_on_main_level():
     pass

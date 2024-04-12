@@ -1,6 +1,6 @@
 from datetime import timedelta, datetime
 import pytest
-from rocketry.pybox.time import to_timedelta, to_datetime, timedelta_to_str
+from tocketry.pybox.time import to_timedelta, to_datetime, timedelta_to_str
 
 @pytest.mark.parametrize("s,expected",
     [

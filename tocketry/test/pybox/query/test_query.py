@@ -1,7 +1,7 @@
 
 import datetime
 import pytest
-from rocketry.pybox import query
+from tocketry.pybox import query
 
 @pytest.mark.parametrize('qry,data,expected',
     [

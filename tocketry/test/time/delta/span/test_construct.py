@@ -1,7 +1,7 @@
 
 import datetime
 
-from rocketry.time import (
+from tocketry.time import (
     TimeSpanDelta
 )
 

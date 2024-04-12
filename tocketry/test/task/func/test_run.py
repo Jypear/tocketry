@@ -3,10 +3,10 @@ import pytest
 
 from task_helpers import wait_till_task_finish
 
-from rocketry.tasks import FuncTask
-from rocketry.core.task import Task
-from rocketry.exc import TaskInactionException, TaskLoggingError
-from rocketry.conditions import AlwaysFalse, AlwaysTrue
+from tocketry.tasks import FuncTask
+from tocketry.core.task import Task
+from tocketry.exc import TaskInactionException, TaskLoggingError
+from tocketry.conditions import AlwaysFalse, AlwaysTrue
 
 Task.use_instance_naming = True
 

@@ -1,10 +1,10 @@
 
 import pytest
 
-from rocketry.conditions import (
+from tocketry.conditions import (
     All, Any, Not
 )
-from rocketry.conds import true, false
+from tocketry.conds import true, false
 
 @pytest.mark.parametrize("actual,expected",
     [

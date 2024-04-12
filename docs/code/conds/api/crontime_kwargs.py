@@ -1,4 +1,4 @@
-from rocketry.conds import crontime
+from tocketry.conds import crontime
 
 @app.task(crontime(minute="*/5"))
 def do_simple():
