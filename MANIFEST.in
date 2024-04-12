@@ -1,8 +1,8 @@
-include rocketry/test/test_files/*.ipynb
-include rocketry/test/test_files/*.py
-include rocketry/config/defaults/*.json
-include rocketry/_session.py
-include rocketry/_setup.py
-include rocketry/_pkg.py
-include rocketry/_version.py
-recursive-include rocketry/templates *
+include tocketry/test/test_files/*.ipynb
+include tocketry/test/test_files/*.py
+include tocketry/config/defaults/*.json
+include tocketry/_session.py
+include tocketry/_setup.py
+include tocketry/_pkg.py
+include tocketry/_version.py
+recursive-include tocketry/templates *

@@ -75,7 +75,7 @@ assumptions of your project structure.
 
 ## Installation
 
-Install Rocketry from _Work in Progress_
+Install Tocketry from _Work in Progress_
 
 ```shell
 pip install tocketry

@@ -8,6 +8,6 @@ Please use `python -m pip install .` instead.
 from setuptools import setup
 
 setup(
-    name="rocketry",
+    name="tocketry",
     install_requires=["python-dateutil"],
 )
