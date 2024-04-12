@@ -2,7 +2,7 @@
 pytest
 pytest-cov
 pytest-asyncio
+ruff
 
 # Package requirements
 python-dateutil
-redbird>=0.5.0

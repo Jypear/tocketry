@@ -1,3 +1,4 @@
 # Testing
 pytest
 pytest-asyncio
+ruff
