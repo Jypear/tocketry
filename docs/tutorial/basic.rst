@@ -136,7 +136,7 @@ pass that as the ``logger_repo`` to the application.
 .. code-block:: python
 
     from tocketry import Tocketry
-    from redbird.repos import MemoryRepo
+    from tocketry.redbird.repos import MemoryRepo
 
     app = Tocketry(
         logger_repo=MemoryRepo()
@@ -147,7 +147,7 @@ pass that as the ``logger_repo`` to the application.
 .. code-block:: python
 
     from tocketry import Tocketry
-    from redbird.repos import CSVFileRepo
+    from tocketry.redbird.repos import CSVFileRepo
 
     app = Tocketry(
         logger_repo=CSVFileRepo(

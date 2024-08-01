@@ -5,7 +5,7 @@ import multiprocessing
 
 import pytest
 
-from redbird.logging import RepoHandler
+from tocketry.redbird.logging import RepoHandler
 
 from tocketry.log.log_record import MinimalRecord
 from tocketry.tasks import FuncTask

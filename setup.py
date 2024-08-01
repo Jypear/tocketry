@@ -9,5 +9,5 @@ from setuptools import setup
 
 setup(
     name="tocketry",
-    install_requires=["python-dateutil", "redbird>=0.5.0", "pydantic"],
+    install_requires=["python-dateutil", "pydantic"],
 )

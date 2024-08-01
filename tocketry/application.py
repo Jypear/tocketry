@@ -2,9 +2,9 @@ import logging
 from typing import List, Optional, Pattern, Union
 import warnings
 
-from redbird import BaseRepo
-from redbird.logging import RepoHandler
-from redbird.repos import MemoryRepo
+from tocketry.redbird import BaseRepo
+from tocketry.redbird.logging import RepoHandler
+from tocketry.redbird.repos import MemoryRepo
 from tocketry.log.log_record import LogRecord
 
 from tocketry.conditions import FuncCond

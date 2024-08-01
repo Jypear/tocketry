@@ -38,7 +38,7 @@ are in production or test:
 
 .. code-block:: python
 
-    from redbird.repos import SQLRepo
+    from tocketry.redbird.repos import SQLRepo
     from sqlalchemy import create_engine
 
     from tocketry import Tocketry

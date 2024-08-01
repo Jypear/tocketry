@@ -3,8 +3,8 @@ import time
 
 import pytest
 
-from redbird.repos import MemoryRepo
-from redbird.logging import RepoHandler
+from tocketry.redbird.repos import MemoryRepo
+from tocketry.redbird.logging import RepoHandler
 
 from tocketry.args import TerminationFlag, Session as SessionArg
 from tocketry.core import BaseCondition

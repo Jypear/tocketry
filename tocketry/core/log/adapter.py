@@ -2,8 +2,8 @@ import logging
 import warnings
 from typing import TYPE_CHECKING, Iterable, Dict, Union
 
-from redbird import BaseRepo
-from redbird.logging import RepoHandler
+from tocketry.redbird import BaseRepo
+from tocketry.redbird.logging import RepoHandler
 
 from tocketry.core.utils import is_main_subprocess
 

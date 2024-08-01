@@ -1,8 +1,8 @@
 import logging
 import pytest
 
-from redbird.logging import RepoHandler
-from redbird.repos import MemoryRepo
+from tocketry.redbird.logging import RepoHandler
+from tocketry.redbird.repos import MemoryRepo
 
 from tocketry.conditions.scheduler import SchedulerStarted
 from tocketry.core.time.base import TimeDelta

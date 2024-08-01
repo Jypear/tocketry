@@ -8,8 +8,8 @@ from pathlib import Path
 import pytest
 from dateutil.parser import parse as parse_datetime
 
-from redbird.logging import RepoHandler
-from redbird.repos import MemoryRepo
+from tocketry.redbird.logging import RepoHandler
+from tocketry.redbird.repos import MemoryRepo
 
 import tocketry
 from tocketry import Session

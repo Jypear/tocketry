@@ -336,7 +336,7 @@ pass the new repo as ``logger_repo``:
 
     from tocketry import Tocketry
     from tocketry.log import MinimalRecord
-    from redbird.repos import CSVFileRepo
+    from tocketry.redbird.repos import CSVFileRepo
 
     repo = CSVFileRepo(filename="tasks.csv", model=MinimalRecord)
     app = Tocketry(logger_repo=repo)

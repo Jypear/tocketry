@@ -67,7 +67,7 @@ for simple projects:
 
 .. code-block:: python
 
-    from redbird.repos import SQLRepo
+    from tocketry.redbird.repos import SQLRepo
     from tocketry.log import RunRecord
 
     repo = CSVFileRepo(model=RunRecord, filename="tasks.csv")
@@ -83,7 +83,7 @@ option for larger projects that:
 
 .. code-block:: python
 
-    from redbird.repos import SQLRepo
+    from tocketry.redbird.repos import SQLRepo
     from tocketry.log import RunRecord
     from sqlalchemy import create_engine
 

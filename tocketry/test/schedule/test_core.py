@@ -8,8 +8,8 @@ import multiprocessing
 
 import pytest
 
-from redbird.logging import RepoHandler
-from redbird.repos import MemoryRepo
+from tocketry.redbird.logging import RepoHandler
+from tocketry.redbird.repos import MemoryRepo
 
 from tocketry.log.log_record import TaskLogRecord
 import tocketry

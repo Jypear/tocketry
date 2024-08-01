@@ -99,8 +99,8 @@ Here is an example to log to a CSV file:
 
     from tocketry.log import MinimalRecord
 
-    from redbird.repos import CSVFileRepo
-    from redbird.logging import RepoHandler
+    from tocketry.redbird.repos import CSVFileRepo
+    from tocketry.redbird.logging import RepoHandler
 
     # Creating the repo
     repo = CSVFileRepo(filename="path/to/repo.csv", model=MinimalRecord)
@@ -116,7 +116,7 @@ SQL database. This can be done with SQLAlchemy:
 
 .. code-block:: python
 
-    from redbird.repos import SQLRepo
+    from tocketry.redbird.repos import SQLRepo
     from sqlalchemy import create_engine
 
     engine = create_engine("sqlite:///app.db")

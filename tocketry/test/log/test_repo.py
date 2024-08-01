@@ -1,9 +1,9 @@
 import logging
 
 import pytest
-import redbird
-from redbird.logging import RepoHandler
-from redbird.repos import CSVFileRepo, SQLRepo
+from tocketry import redbird
+from tocketry.redbird.logging import RepoHandler
+from tocketry.redbird.repos import CSVFileRepo, SQLRepo
 from tocketry import Tocketry
 from tocketry.log import MinimalRecord, MinimalRunRecord, TaskLogRecord, TaskRunRecord
 
