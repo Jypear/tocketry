@@ -4,7 +4,7 @@
 Execution
 =========
 
-There are four methods to execute Rocketry tasks:
+There are four methods to execute Tocketry tasks:
 
 - ``main``: Run on synchronously in main thread and process
 - ``async``: Run asynchronously
@@ -47,7 +47,7 @@ it:
 
 .. code-block:: python
 
-    app = Rocketry(execution="async")
+    app = Tocketry(execution="async")
 
     @app.task()
     def do_main():
@@ -164,8 +164,8 @@ In order to make ``thread`` task to be terminated, the task should listen the te
 
 .. code-block:: python
 
-    from rocketry.args import TerminationFlag
-    from rocketry.exc import TaskTerminationException
+    from tocketry.args import TerminationFlag
+    from tocketry.exc import TaskTerminationException
 
     @app.task(execution="thread")
     def do_thread(flag=TerminationFlag()):
@@ -241,7 +241,7 @@ configuration or to an individual task:
 
 .. code-block:: python
 
-    app = Rocketry(config={'multilaunch': True})
+    app = Tocketry(config={'multilaunch': True})
 
     @app.task(multilaunch=True)
     def do_things():
@@ -263,9 +263,9 @@ use to identify individual runs and track their finish.
 
 .. code-block:: python
 
-    from rocketry.log import MinimalRunRecord
+    from tocketry.log import MinimalRunRecord
 
-    app = Rocketry(config={'multilaunch': True})
+    app = Tocketry(config={'multilaunch': True})
 
     # Setting the log record model
     repo = app.session.get_repo()
@@ -304,7 +304,7 @@ You can also set the generator function as the session default:
 
 .. code-block:: python
 
-    app = Rocketry(config={'multilaunch': True, 'func_run_id': generate_run_id})
+    app = Tocketry(config={'multilaunch': True, 'func_run_id': generate_run_id})
 
 When the task is run (with a date parameter), the logs could look like:
 

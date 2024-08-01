@@ -1,10 +1,9 @@
 import pytest
 
-from rocketry.conditions import (
-    Retry
-)
+from tocketry.conditions import Retry
 
 from .test_time import setup_task_state
+
 
 def test_construct():
     assert Retry().n == 1
@@ -25,7 +24,8 @@ def test_construct():
                 ("2020-01-01 07:15", "fail"),
             ],
             "2020-01-01 07:30",
-            id="Retry once (failed once)"),
+            id="Retry once (failed once)",
+        ),
         pytest.param(
             Retry(n=1),
             [
@@ -37,7 +37,8 @@ def test_construct():
                 ("2020-01-01 07:15", "fail"),
             ],
             "2020-01-01 07:30",
-            id="Retry once (success and failed once)"),
+            id="Retry once (success and failed once)",
+        ),
         pytest.param(
             Retry(n=1),
             [
@@ -49,7 +50,8 @@ def test_construct():
                 ("2020-01-01 07:15", "fail"),
             ],
             "2020-01-01 07:30",
-            id="Retry once (terminated and failed once)"),
+            id="Retry once (terminated and failed once)",
+        ),
         pytest.param(
             Retry(n=1),
             [
@@ -61,7 +63,8 @@ def test_construct():
                 ("2020-01-01 07:15", "fail"),
             ],
             "2020-01-01 07:30",
-            id="Retry once (crashed and failed once)"),
+            id="Retry once (crashed and failed once)",
+        ),
         pytest.param(
             Retry(n=1),
             [
@@ -73,7 +76,8 @@ def test_construct():
                 ("2020-01-01 07:15", "fail"),
             ],
             "2020-01-01 07:30",
-            id="Retry once (inacted and failed once)"),
+            id="Retry once (inacted and failed once)",
+        ),
         pytest.param(
             Retry(n=2),
             [
@@ -85,7 +89,8 @@ def test_construct():
                 ("2020-01-01 07:25", "fail"),
             ],
             "2020-01-01 07:30",
-            id="Retry twice (failed twice)"),
+            id="Retry twice (failed twice)",
+        ),
         pytest.param(
             Retry(n=None),
             [
@@ -101,7 +106,8 @@ def test_construct():
                 ("2020-01-01 07:25", "fail"),
             ],
             "2020-01-01 07:30",
-            id="Retry infinite"),
+            id="Retry infinite",
+        ),
     ],
 )
 def test_retry(mock_datetime_now, logs, time_after, cond, session):
@@ -110,23 +116,21 @@ def test_retry(mock_datetime_now, logs, time_after, cond, session):
     task.start_cond = cond
     assert cond.observe(task=task)
 
+
 @pytest.mark.parametrize(
     "cond,logs,time_after",
     [
-        pytest.param(
-            Retry(n=1),
-            [],
-            "2020-01-01 07:30",
-            id="No logs"),
+        pytest.param(Retry(n=1), [], "2020-01-01 07:30", id="No logs"),
         pytest.param(
             Retry(n=1),
             [
                 ("2020-01-01 07:10", "run"),
                 ("2020-01-01 07:15", "fail"),
-                ("2020-01-01 07:20", "run")
+                ("2020-01-01 07:20", "run"),
             ],
             "2020-01-01 07:30",
-            id="Running"),
+            id="Running",
+        ),
         pytest.param(
             Retry(n=1),
             [
@@ -136,7 +140,8 @@ def test_retry(mock_datetime_now, logs, time_after, cond, session):
                 ("2020-01-01 07:25", "success"),
             ],
             "2020-01-01 07:30",
-            id="Succeeded"),
+            id="Succeeded",
+        ),
         pytest.param(
             Retry(n=1),
             [
@@ -146,7 +151,8 @@ def test_retry(mock_datetime_now, logs, time_after, cond, session):
                 ("2020-01-01 07:25", "terminate"),
             ],
             "2020-01-01 07:30",
-            id="Terminated"),
+            id="Terminated",
+        ),
         pytest.param(
             Retry(n=1),
             [
@@ -156,7 +162,8 @@ def test_retry(mock_datetime_now, logs, time_after, cond, session):
                 ("2020-01-01 07:25", "crash"),
             ],
             "2020-01-01 07:30",
-            id="Crashed"),
+            id="Crashed",
+        ),
         pytest.param(
             Retry(n=1),
             [
@@ -166,7 +173,8 @@ def test_retry(mock_datetime_now, logs, time_after, cond, session):
                 ("2020-01-01 07:25", "inaction"),
             ],
             "2020-01-01 07:30",
-            id="Inacted"),
+            id="Inacted",
+        ),
         pytest.param(
             Retry(n=1),
             [
@@ -176,7 +184,8 @@ def test_retry(mock_datetime_now, logs, time_after, cond, session):
                 ("2020-01-01 07:25", "fail"),
             ],
             "2020-01-01 07:30",
-            id="Retry once (failed twice)"),
+            id="Retry once (failed twice)",
+        ),
         pytest.param(
             Retry(n=2),
             [
@@ -188,7 +197,8 @@ def test_retry(mock_datetime_now, logs, time_after, cond, session):
                 ("2020-01-01 07:25", "fail"),
             ],
             "2020-01-01 07:30",
-            id="Retry twice (failed three times)"),
+            id="Retry twice (failed three times)",
+        ),
     ],
 )
 def test_not_retry(mock_datetime_now, logs, time_after, cond, session):
@@ -197,10 +207,17 @@ def test_not_retry(mock_datetime_now, logs, time_after, cond, session):
     task.start_cond = cond
     assert not cond.observe(task=task)
 
-@pytest.mark.parametrize("status", ['success', 'fail', None, 'crash', 'terminate'])
+
+@pytest.mark.parametrize("status", ["success", "fail", None, "crash", "terminate"])
 def test_retry_never(mock_datetime_now, status, session):
     session.config.force_status_from_logs = True
-    logs = [('2020-01-01 07:00', 'run'), ('2020-01-01 07:10', status)] if status is not None else []
+    logs = (
+        [("2020-01-01 07:00", "run"), ("2020-01-01 07:10", status)]
+        if status is not None
+        else []
+    )
 
-    task = setup_task_state(mock_datetime_now, logs, '2020-01-01 07:20', session=session)
+    task = setup_task_state(
+        mock_datetime_now, logs, "2020-01-01 07:20", session=session
+    )
     assert not Retry(0).observe(task=task)

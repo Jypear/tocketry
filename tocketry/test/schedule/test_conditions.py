@@ -1,17 +1,18 @@
 import pytest
-from rocketry.conditions.task.task import TaskStarted
-from rocketry.core.condition.base import BaseCondition
-from rocketry.tasks import FuncTask
+from tocketry.conditions.task.task import TaskStarted
+from tocketry.core.condition.base import BaseCondition
+from tocketry.tasks import FuncTask
 
-from rocketry.conditions import FuncCond
-from rocketry.conds import true
+from tocketry.conditions import FuncCond
+from tocketry.conds import true
+
 
 def run_succeeding():
     pass
 
+
 @pytest.mark.parametrize("execution", ["main", "thread", "process"])
 def test_func_cond_decorator(session, execution):
-
     @FuncCond(decor_return_func=False)
     def is_true():
         return True
@@ -23,7 +24,7 @@ def test_func_cond_decorator(session, execution):
         start_cond=true & is_true,
         name="task success",
         execution=execution,
-        session=session
+        session=session,
     )
 
     session.config.shut_cond = TaskStarted(task=task_success) >= 1

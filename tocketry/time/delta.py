@@ -3,21 +3,22 @@ import datetime
 from dataclasses import dataclass, field
 from typing import Callable, Union
 
-from rocketry.core.time import TimeDelta
-from rocketry.pybox.time import to_timedelta, Interval
+from tocketry.core.time import TimeDelta
+from tocketry.pybox.time import to_timedelta, Interval
+
 
 @dataclass(frozen=True, init=False)
 class TimeSpanDelta(TimeDelta):
-
     near: int
     far: int
     reference: Union[datetime.datetime, Callable] = field(default=None)
 
     def __init__(self, near=None, far=None, reference=None, **kwargs):
-
         near = 0 if near is None else near
         object.__setattr__(self, "near", abs(to_timedelta(near, **kwargs)))
-        object.__setattr__(self, "far", abs(to_timedelta(far, **kwargs)) if far is not None else None)
+        object.__setattr__(
+            self, "far", abs(to_timedelta(far, **kwargs)) if far is not None else None
+        )
         object.__setattr__(self, "reference", reference)
 
     def use_reference(self, ref):

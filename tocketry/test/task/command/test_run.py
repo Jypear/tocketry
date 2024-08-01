@@ -10,24 +10,73 @@ from task_helpers import wait_till_task_finish
 from redbird.logging import RepoHandler
 from redbird.repos import MemoryRepo
 
-from rocketry.log.log_record import LogRecord
-from rocketry.tasks import CommandTask
-
+from tocketry.log.log_record import LogRecord
+from tocketry.tasks import CommandTask
 
 
 @pytest.mark.parametrize("execution", ["main", "thread", "process"])
-@pytest.mark.parametrize("cmd,params,systems,shell", [
-    pytest.param(["python", "-c", "open('test.txt', 'w');"], None, ["win32"], False, id="list (win32)"),
-    pytest.param("python -c \"open('test.txt', 'w');\"", None, ["win32"], False, id="string (win32)"),
-    pytest.param(["python"], {"c": "open('test.txt', 'w')"}, ["win32"], False, id="list with params (win32)"),
-    pytest.param("python", {"c": "open('test.txt', 'w')"}, ["win32"], False, id="string with params (win32)"),
-
-    pytest.param(["python3", "-c", "open('test.txt', 'w');"], None, ["linux", "linux2"], False, id="list (linux)"),
-    pytest.param("python3 -c \"open('test.txt', 'w');\"", None, ["linux", "linux2"], True, id="string (linux)"),
-    pytest.param(["python3"], {"c": "open('test.txt', 'w')"}, ["linux", "linux2"], False, id="list with params (linux)"),
-    pytest.param("python3", {"c": "open('test.txt', 'w')"}, ["linux", "linux2"], True, id="string with params (linux)"),
-])
-def test_success_command(tmpdir, session, cmd, params, systems,shell, execution):
+@pytest.mark.parametrize(
+    "cmd,params,systems,shell",
+    [
+        pytest.param(
+            ["python", "-c", "open('test.txt', 'w');"],
+            None,
+            ["win32"],
+            False,
+            id="list (win32)",
+        ),
+        pytest.param(
+            "python -c \"open('test.txt', 'w');\"",
+            None,
+            ["win32"],
+            False,
+            id="string (win32)",
+        ),
+        pytest.param(
+            ["python"],
+            {"c": "open('test.txt', 'w')"},
+            ["win32"],
+            False,
+            id="list with params (win32)",
+        ),
+        pytest.param(
+            "python",
+            {"c": "open('test.txt', 'w')"},
+            ["win32"],
+            False,
+            id="string with params (win32)",
+        ),
+        pytest.param(
+            ["python3", "-c", "open('test.txt', 'w');"],
+            None,
+            ["linux", "linux2"],
+            False,
+            id="list (linux)",
+        ),
+        pytest.param(
+            "python3 -c \"open('test.txt', 'w');\"",
+            None,
+            ["linux", "linux2"],
+            True,
+            id="string (linux)",
+        ),
+        pytest.param(
+            ["python3"],
+            {"c": "open('test.txt', 'w')"},
+            ["linux", "linux2"],
+            False,
+            id="list with params (linux)",
+        ),
+        pytest.param(
+            "python3",
+            {"c": "open('test.txt', 'w')"},
+            ["linux", "linux2"],
+            True,
+            id="string with params (linux)",
+        ),
+    ],
+)
+def test_success_command(tmpdir, session, cmd, params, systems, shell, execution):
     if systems is not None and sys.platform not in systems:
         pytest.skip("Command not supported by OS")
     with tmpdir.as_cwd():
@@ -40,7 +89,7 @@ def test_success_command(tmpdir, session, cmd, params, systems,shell, execution)
             execution="main",
             parameters=params,
             argform="short",
-            session=session
+            session=session,
         )
         assert task.status is None
 
@@ -50,21 +99,19 @@ def test_success_command(tmpdir, session, cmd, params, systems,shell, execution)
         assert Path("test.txt").is_file()
         assert "success" == task.status
 
+
 @pytest.mark.parametrize("execution", ["main", "thread", "process"])
 def test_fail_command(tmpdir, execution, session):
     with tmpdir.as_cwd():
-
         task_logger = logging.getLogger(session.config.task_logger_basename)
-        task_logger.handlers = [
-            RepoHandler(repo=MemoryRepo(model=LogRecord))
-        ]
+        task_logger.handlers = [RepoHandler(repo=MemoryRepo(model=LogRecord))]
 
         task = CommandTask(
             command=["python", "--not_an_arg"],
             name="a task",
             shell=False,
             execution=execution,
-            session=session
+            session=session,
         )
         assert task.status is None
 
@@ -72,18 +119,26 @@ def test_fail_command(tmpdir, execution, session):
 
         wait_till_task_finish(task)
 
-        records = list(map(lambda e: e.model_dump(exclude={'created'}), session.get_task_log()))
+        records = list(
+            map(lambda e: e.model_dump(exclude={"created"}), session.get_task_log())
+        )
         assert "fail" == task.status
 
-        err = records[1]["exc_text"].strip().replace('\r', '')
+        err = records[1]["exc_text"].strip().replace("\r", "")
         if sys.version_info >= (3, 8):
             # Somethings the file path in before 'python' changing endswith to two in statements instead
-            assert "OSError: Failed running command (2): \nunknown option --not_an_arg\nusage:" in err and "python [option] ... [-c cmd | -m mod | file | -] [arg] ...\nTry `python -h' for more information." in err
+            assert (
+                "OSError: Failed running command (2): \nunknown option --not_an_arg\nusage:"
+                in err
+                and "python [option] ... [-c cmd | -m mod | file | -] [arg] ...\nTry `python -h' for more information."
+                in err
+            )
             # expected = "OSError: Failed running command (2): \nunknown option --not_an_arg\nusage: python [option] ... [-c cmd | -m mod | file | -] [arg] ...\nTry `python -h' for more information."
             # assert err.endswith(expected)
         else:
             assert err.endswith("Try `python -h' for more information.")
             assert "OSError: Failed running command (2)" in err
+
 
 @pytest.mark.parametrize("execution", ["main", "thread", "process"])
 def test_success_bat_file(tmpdir, execution, session):
@@ -101,7 +156,7 @@ def test_success_bat_file(tmpdir, execution, session):
             name="a task",
             shell=False,
             execution="main",
-            session=session
+            session=session,
         )
         assert task.status is None
 
@@ -127,7 +182,7 @@ def test_success_bash_file(tmpdir, session):
             name="a task",
             shell=False,
             execution="main",
-            session=session
+            session=session,
         )
         assert task.status is None
 
@@ -136,4 +191,3 @@ def test_success_bash_file(tmpdir, session):
 
         assert Path("test.txt").is_file()
         assert "success" == task.status
-    

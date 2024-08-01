@@ -1,14 +1,14 @@
 from typing import Iterable, Iterator
 import datetime
 
-from rocketry.pybox.time.convert import to_datetime
+from tocketry.pybox.time.convert import to_datetime
+
 
 class QueryBase:
-
-    def _get_value(self, item:dict, oper):
+    def _get_value(self, item: dict, oper):
         return item[oper.name] if isinstance(oper, Key) else oper
 
-    def filter(self, data:Iterable[dict]) -> Iterator[dict]:
+    def filter(self, data: Iterable[dict]) -> Iterator[dict]:
         "Filter iterable of dicts"
         for dict in data:
             if self.match(dict):
@@ -27,6 +27,7 @@ class QueryBase:
             if is_right_key:
                 return right.name, left
             raise ValueError("Neither are keys")
+
         py_query = {}
         qry = self
         if self == true:
@@ -55,6 +56,7 @@ class QueryBase:
 
 class Key(QueryBase):
     """Key of a data dictionary"""
+
     def __init__(self, name):
         self.name = name
 
@@ -77,16 +79,18 @@ class Key(QueryBase):
         return LessEqual(self, other)
 
     def __repr__(self):
-        return f'Key({repr(self.name)})'
+        return f"Key({repr(self.name)})"
 
     def __str__(self):
-        return f'<{self.name}>'
+        return f"<{self.name}>"
 
-    def get_value(self, d:dict):
+    def get_value(self, d: dict):
         return d[self.name]
+
 
 class Expression(QueryBase):
     """Base class for query expressions"""
+
     def __and__(self, other):
         if not isinstance(self, All):
             self = (self,)
@@ -111,57 +115,56 @@ class Expression(QueryBase):
             return to_datetime(left), to_datetime(right)
         return left, right
 
-class All(Expression):
 
+class All(Expression):
     def __init__(self, *args):
         self.args = args
 
-    def match(self, item:dict):
+    def match(self, item: dict):
         return all(arg.match(item) for arg in self.args)
 
     def __iter__(self):
         return iter(self.args)
 
     def __repr__(self):
-        str_args = ', '.join(repr(arg) for arg in self.args)
-        return f'{type(self).__name__}({str_args})'
+        str_args = ", ".join(repr(arg) for arg in self.args)
+        return f"{type(self).__name__}({str_args})"
 
     def __str__(self):
-        return '(' + ' & '.join(str(arg) for arg in self.args) + ')'
+        return "(" + " & ".join(str(arg) for arg in self.args) + ")"
+
 
 class Any(Expression):
-
     def __init__(self, *args):
         self.args = args
 
-    def match(self, item:dict):
+    def match(self, item: dict):
         return any(arg.match(item) for arg in self.args)
 
     def __iter__(self):
         return iter(self.args)
 
     def __str__(self):
-        return '(' + ' | '.join(str(arg) for arg in self.args) + ')'
+        return "(" + " | ".join(str(arg) for arg in self.args) + ")"
+
 
 class Not(Expression):
-
     def __init__(self, right):
         self.right = right
 
-    def match(self, item:dict):
+    def match(self, item: dict):
         return not self.right.match(item)
 
     def __str__(self):
-        return f'~{self.right}'
+        return f"~{self.right}"
 
 
 class Equal(Expression):
-
     def __init__(self, left, right):
         self.left = left
         self.right = right
 
-    def match(self, item:dict):
+    def match(self, item: dict):
         left_value = self._get_value(item, oper=self.left)
         right_value = self._get_value(item, oper=self.right)
         left_value, right_value = self._to_comparable(left_value, right_value)
@@ -171,15 +174,15 @@ class Equal(Expression):
         left, right = self.left, self.right
         left = repr(left) if isinstance(left, str) else str(left)
         right = repr(right) if isinstance(right, str) else str(right)
-        return '(' + f"{str(left)} == {str(right)}" + ')'
+        return "(" + f"{str(left)} == {str(right)}" + ")"
+
 
 class NotEqual(Expression):
-
     def __init__(self, left, right):
         self.left = left
         self.right = right
 
-    def match(self, item:dict):
+    def match(self, item: dict):
         left_value = self._get_value(item, oper=self.left)
         right_value = self._get_value(item, oper=self.right)
         left_value, right_value = self._to_comparable(left_value, right_value)
@@ -189,15 +192,15 @@ class NotEqual(Expression):
         left, right = self.left, self.right
         left = repr(left) if isinstance(left, str) else str(left)
         right = repr(right) if isinstance(right, str) else str(right)
-        return '(' + f"{str(left)} != {str(right)}" + ')'
+        return "(" + f"{str(left)} != {str(right)}" + ")"
+
 
 class Greater(Expression):
-
     def __init__(self, left, right):
         self.left = left
         self.right = right
 
-    def match(self, item:dict):
+    def match(self, item: dict):
         left_value = self._get_value(item, oper=self.left)
         right_value = self._get_value(item, oper=self.right)
         left_value, right_value = self._to_comparable(left_value, right_value)
@@ -207,15 +210,15 @@ class Greater(Expression):
         left, right = self.left, self.right
         left = repr(left) if isinstance(left, str) else str(left)
         right = repr(right) if isinstance(right, str) else str(right)
-        return '(' + f"{str(left)} > {str(right)}" + ')'
+        return "(" + f"{str(left)} > {str(right)}" + ")"
+
 
 class GreaterEqual(Expression):
-
     def __init__(self, left, right):
         self.left = left
         self.right = right
 
-    def match(self, item:dict):
+    def match(self, item: dict):
         left_value = self._get_value(item, oper=self.left)
         right_value = self._get_value(item, oper=self.right)
         left_value, right_value = self._to_comparable(left_value, right_value)
@@ -225,15 +228,15 @@ class GreaterEqual(Expression):
         left, right = self.left, self.right
         left = repr(left) if isinstance(left, str) else str(left)
         right = repr(right) if isinstance(right, str) else str(right)
-        return '(' + f"{str(left)} >= {str(right)}" + ')'
+        return "(" + f"{str(left)} >= {str(right)}" + ")"
+
 
 class Less(Expression):
-
     def __init__(self, left, right):
         self.left = left
         self.right = right
 
-    def match(self, item:dict):
+    def match(self, item: dict):
         left_value = self._get_value(item, oper=self.left)
         right_value = self._get_value(item, oper=self.right)
         left_value, right_value = self._to_comparable(left_value, right_value)
@@ -243,15 +246,15 @@ class Less(Expression):
         left, right = self.left, self.right
         left = repr(left) if isinstance(left, str) else str(left)
         right = repr(right) if isinstance(right, str) else str(right)
-        return '(' + f"{str(left)} < {str(right)}" + ')'
+        return "(" + f"{str(left)} < {str(right)}" + ")"
+
 
 class LessEqual(Expression):
-
     def __init__(self, left, right):
         self.left = left
         self.right = right
 
-    def match(self, item:dict):
+    def match(self, item: dict):
         left_value = self._get_value(item, oper=self.left)
         right_value = self._get_value(item, oper=self.right)
         left_value, right_value = self._to_comparable(left_value, right_value)
@@ -261,16 +264,16 @@ class LessEqual(Expression):
         left, right = self.left, self.right
         left = repr(left) if isinstance(left, str) else str(left)
         right = repr(right) if isinstance(right, str) else str(right)
-        return '(' + f"{str(left)} <= {str(right)}" + ')'
+        return "(" + f"{str(left)} <= {str(right)}" + ")"
 
 
 class Boolean(Expression):
-
     def __init__(self, value):
         self.value = value
 
-    def match(self, item:dict):
+    def match(self, item: dict):
         return bool(self.value)
+
 
 true = Boolean(True)
 false = Boolean(False)

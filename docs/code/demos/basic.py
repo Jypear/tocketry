@@ -1,14 +1,15 @@
-from rocketry import Rocketry
+from tocketry import Tocketry
 
-app = Rocketry()
+app = Tocketry()
 
-@app.task('daily')
-def do_things():
-    ...
+
+@app.task("daily")
+def do_things(): ...
+
 
 @app.task("after task 'do_things'")
-def do_after_things():
-    ...
+def do_after_things(): ...
+
 
 if __name__ == "__main__":
     app.run()

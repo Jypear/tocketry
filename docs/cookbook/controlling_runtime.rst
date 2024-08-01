@@ -10,11 +10,11 @@ to control the runtime scheduling session:
 
 The interaction with the scheduling session is 
 meant to be done via the ``session`` instance. This 
-can be accessed using argument ``rocketry.args.Session``:
+can be accessed using argument ``tocketry.args.Session``:
 
 .. code-block:: python
 
-    from rocketry.args import Session
+    from tocketry.args import Session
 
     @app.task()
     def do_things(session=Session()):
@@ -30,7 +30,7 @@ To restart the scheduler in a task:
 
 .. code-block:: python
 
-    from rocketry.args import Session
+    from tocketry.args import Session
 
     @app.task()
     def restart(session=Session()):
@@ -40,7 +40,7 @@ To shut down the scheduler in a task:
 
 .. code-block:: python
 
-    from rocketry.args import Session
+    from tocketry.args import Session
 
     @app.task()
     def shut_down(session=Session()):
@@ -53,7 +53,7 @@ To remove a task from the scheduler:
 
 .. code-block:: python
 
-    from rocketry.args import Session
+    from tocketry.args import Session
 
     @app.task()
     def do_things():
@@ -67,8 +67,8 @@ To create a task:
 
 .. code-block:: python
 
-    from rocketry.conds import daily
-    from rocketry.args import Session
+    from tocketry.conds import daily
+    from tocketry.args import Session
 
     def do_things():
         ...
@@ -89,7 +89,7 @@ You can use the ``Task`` argument:
 
 .. code-block:: python
 
-    from rocketry.args import Task
+    from tocketry.args import Task
 
     @app.task()
     def do_on_self(this_task=Task()):
@@ -103,7 +103,7 @@ Or you can use the session:
 
 .. code-block:: python
 
-    from rocketry.args import Session
+    from tocketry.args import Session
 
     @app.task()
     def do_things(session=Session()):
@@ -114,14 +114,14 @@ Task Queue
 ----------
 
 Task queue is a list of tasks that are run one after another.
-Rocketry also supports run specific parameters thus you can
+Tocketry also supports run specific parameters thus you can
 also create a parametrized task queue.
 
 Here is an example:
 
 .. code-block:: python
 
-    from rocketry.args import Session
+    from tocketry.args import Session
     import asyncio
 
     def next_task():

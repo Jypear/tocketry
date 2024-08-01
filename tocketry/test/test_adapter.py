@@ -2,21 +2,25 @@ import logging
 import pytest
 from redbird.logging import RepoHandler
 from redbird.repos import MemoryRepo
-from rocketry.core.log import TaskAdapter
+from tocketry.core.log import TaskAdapter
+
 
 def test_equal():
-    logger = logging.getLogger("rocketry.task")
+    logger = logging.getLogger("tocketry.task")
     try:
         logger.handlers = [RepoHandler(MemoryRepo())]
         assert TaskAdapter(logger, task="mytask") == TaskAdapter(logger, task="mytask")
         assert TaskAdapter(logger, task="mytask") != TaskAdapter(logger, task="another")
         with pytest.warns(UserWarning):
-            assert TaskAdapter(logging.getLogger("rocketry._temp_test"), task="mytask") != TaskAdapter(logger, task="mytask")
+            assert TaskAdapter(
+                logging.getLogger("tocketry._temp_test"), task="mytask"
+            ) != TaskAdapter(logger, task="mytask")
     finally:
         logger.handlers = []
 
+
 def test_add_handler():
-    logger = logging.getLogger("rocketry._temp_test")
+    logger = logging.getLogger("tocketry._temp_test")
     try:
         hdlr = logging.StreamHandler()
         with pytest.warns(UserWarning):

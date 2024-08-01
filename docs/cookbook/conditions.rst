@@ -13,7 +13,7 @@ Run at specific time
 
 .. code-block:: python
 
-    from rocketry.conds import minutely, hourly, daily, weekly, monthly
+    from tocketry.conds import minutely, hourly, daily, weekly, monthly
 
     @app.task(minutely.at("45"))
     def do_minutely():
@@ -45,7 +45,7 @@ useful to come up with the correct statement.
 
 .. code-block:: python
 
-    from rocketry.conds import cron
+    from tocketry.conds import cron
 
     @app.task(cron("* 2 * * *"))
     def do_things():
@@ -61,7 +61,7 @@ This example runs in two instances:
 
 .. code-block:: python
 
-    from rocketry.conds import daily, time_of_week, time_of_day
+    from tocketry.conds import daily, time_of_week, time_of_day
 
     @app.task(
         daily 
@@ -84,7 +84,7 @@ Run daily on work days
 .. code-block:: python
 
     from datetime import date
-    from rocketry.conds import daily
+    from tocketry.conds import daily
 
     HOLIDAYS = [
         date(2023, 1, 1), # New Year's Day
@@ -117,7 +117,7 @@ File Exists
 
 .. code-block:: python
 
-    from rocketry.conds import daily
+    from tocketry.conds import daily
 
     @app.cond()
     def file_exists(file):

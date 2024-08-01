@@ -3,7 +3,7 @@
 Handbooks
 =========
 
-Welcome to Rocketry's handbooks. This section
+Welcome to Tocketry's handbooks. This section
 consists of manuals that explain how the framework
 operates.
 

@@ -1,25 +1,24 @@
-
 import datetime
 import pytest
-from rocketry.time.interval import (
+from tocketry.time.interval import (
     TimeOfMinute,
     TimeOfDay,
     TimeOfHour,
     TimeOfMonth,
     TimeOfSecond,
     TimeOfWeek,
-    TimeOfYear
+    TimeOfYear,
 )
 
 MS_IN_MILLISECOND = 1000
-MS_IN_SECOND = int(1e+6)
-MS_IN_MINUTE = int(1e+6 * 60)
-MS_IN_HOUR   = int(1e+6 * 60 * 60)
-MS_IN_DAY    = int(1e+6 * 60 * 60 * 24)
+MS_IN_SECOND = int(1e6)
+MS_IN_MINUTE = int(1e6 * 60)
+MS_IN_HOUR = int(1e6 * 60 * 60)
+MS_IN_DAY = int(1e6 * 60 * 60 * 24)
+
 
 def pytest_generate_tests(metafunc):
     if metafunc.cls is not None:
-
         method_name = metafunc.function.__name__
         cls = metafunc.cls
         params = []
@@ -40,18 +39,24 @@ def pytest_generate_tests(metafunc):
         else:
             return
 
-        argnames = [arg for arg in metafunc.fixturenames if arg in ('start', 'end', "expected_start", "expected_end", "time_point")]
+        argnames = [
+            arg
+            for arg in metafunc.fixturenames
+            if arg in ("start", "end", "expected_start", "expected_end", "time_point")
+        ]
 
         idlist = []
         argvalues = []
         argvalues = []
         for scen in params:
-            idlist.append(scen.pop("id", f'{repr(scen.get("start"))}, {repr(scen.get("end"))}'))
+            idlist.append(
+                scen.pop("id", f'{repr(scen.get("start"))}, {repr(scen.get("end"))}')
+            )
             argvalues.append(tuple(scen[name] for name in argnames))
         metafunc.parametrize(argnames, argvalues, ids=idlist, scope="class")
 
-class ConstructTester:
 
+class ConstructTester:
     def test_closed(self, start, end, expected_start, expected_end):
         time = self.cls(start, end)
         assert not time.is_full()
@@ -102,8 +107,8 @@ class ConstructTester:
         with pytest.raises(ValueError):
             time = self.cls(start, end)
 
-class TestTimeOfSecond(ConstructTester):
 
+class TestTimeOfSecond(ConstructTester):
     cls = TimeOfSecond
 
     max_ms = MS_IN_SECOND
@@ -115,13 +120,13 @@ class TestTimeOfSecond(ConstructTester):
             "expected_start": 15 * MS_IN_MILLISECOND + 5,
             "expected_end": 45 * MS_IN_MILLISECOND + 5,
         },
-       {
+        {
             "start": 15,
             "end": 45,
             "expected_start": 15 * MS_IN_MILLISECOND,
             "expected_end": 46 * MS_IN_MILLISECOND,
         },
-       {
+        {
             "start": 15.005,
             "end": 45.005,
             "expected_start": 15 * MS_IN_MILLISECOND + 5,
@@ -129,18 +134,8 @@ class TestTimeOfSecond(ConstructTester):
         },
     ]
 
-    scen_open_left = [
-        {
-            "end": 45,
-            "expected_end": 46 * MS_IN_MILLISECOND
-        }
-    ]
-    scen_open_right = [
-        {
-            "start": 45,
-            "expected_start": 45 * MS_IN_MILLISECOND
-        }
-    ]
+    scen_open_left = [{"end": 45, "expected_end": 46 * MS_IN_MILLISECOND}]
+    scen_open_right = [{"start": 45, "expected_start": 45 * MS_IN_MILLISECOND}]
     scen_time_point = [
         {
             "start": 500,
@@ -155,26 +150,14 @@ class TestTimeOfSecond(ConstructTester):
         }
     ]
     scen_value_error = [
-        {
-            "start": 1001,
-            "end": None
-        },
-        {
-            "start": 1000.001,
-            "end": None
-        },
-        {
-            "start": "1001",
-            "end": None
-        },
-        {
-            "start": "asd",
-            "end": None
-        },
+        {"start": 1001, "end": None},
+        {"start": 1000.001, "end": None},
+        {"start": "1001", "end": None},
+        {"start": "asd", "end": None},
     ]
 
-class TestTimeOfMinute(ConstructTester):
 
+class TestTimeOfMinute(ConstructTester):
     cls = TimeOfMinute
 
     max_ms = MS_IN_MINUTE
@@ -224,18 +207,8 @@ class TestTimeOfMinute(ConstructTester):
         },
     ]
 
-    scen_open_left = [
-        {
-            "end": "45.00",
-            "expected_end": 45 * MS_IN_SECOND
-        }
-    ]
-    scen_open_right = [
-        {
-            "start": "45",
-            "expected_start": 45 * MS_IN_SECOND
-        }
-    ]
+    scen_open_left = [{"end": "45.00", "expected_end": 45 * MS_IN_SECOND}]
+    scen_open_right = [{"start": "45", "expected_start": 45 * MS_IN_SECOND}]
     scen_time_point = [
         {
             "start": "12:00",
@@ -249,15 +222,10 @@ class TestTimeOfMinute(ConstructTester):
             "expected_start": 12 * MS_IN_SECOND,
         }
     ]
-    scen_value_error = [
-        {
-            "start": 60,
-            "end": None
-        }
-    ]
+    scen_value_error = [{"start": 60, "end": None}]
+
 
 class TestTimeOfHour(ConstructTester):
-
     cls = TimeOfHour
 
     max_ms = MS_IN_HOUR
@@ -278,23 +246,17 @@ class TestTimeOfHour(ConstructTester):
         {
             "start": "15:05.5",
             "end": "45:10.005",
-            "expected_start": 15 * MS_IN_MINUTE + 5 * MS_IN_SECOND + MS_IN_MILLISECOND * 500,
-            "expected_end": 45 * MS_IN_MINUTE + 10 * MS_IN_SECOND + MS_IN_MILLISECOND * 5,
+            "expected_start": 15 * MS_IN_MINUTE
+            + 5 * MS_IN_SECOND
+            + MS_IN_MILLISECOND * 500,
+            "expected_end": 45 * MS_IN_MINUTE
+            + 10 * MS_IN_SECOND
+            + MS_IN_MILLISECOND * 5,
         },
     ]
 
-    scen_open_left = [
-        {
-            "end": "45:00",
-            "expected_end": 45 * MS_IN_MINUTE
-        }
-    ]
-    scen_open_right = [
-        {
-            "start": "45:00",
-            "expected_start": 45 * MS_IN_MINUTE
-        }
-    ]
+    scen_open_left = [{"end": "45:00", "expected_end": 45 * MS_IN_MINUTE}]
+    scen_open_right = [{"start": "45:00", "expected_start": 45 * MS_IN_MINUTE}]
     scen_time_point = [
         {
             "start": "12:00",
@@ -310,27 +272,18 @@ class TestTimeOfHour(ConstructTester):
     ]
 
     scen_value_error = [
-        {
-            "start": 60,
-            "end": None
-        },
-        {
-            "start": None,
-            "end": "60:01"
-        },
+        {"start": 60, "end": None},
+        {"start": None, "end": "60:01"},
         {
             # Float makes not much sense
             "start": 2.5,
-            "end": None
+            "end": None,
         },
-        {
-            "start": "invalid",
-            "end": None
-        },
+        {"start": "invalid", "end": None},
     ]
 
-class TestTimeOfDay(ConstructTester):
 
+class TestTimeOfDay(ConstructTester):
     cls = TimeOfDay
 
     max_ms = 24 * MS_IN_HOUR
@@ -356,18 +309,8 @@ class TestTimeOfDay(ConstructTester):
         },
     ]
 
-    scen_open_left = [
-        {
-            "end": "12:00",
-            "expected_end": 12 * MS_IN_HOUR
-        }
-    ]
-    scen_open_right = [
-        {
-            "start": "12:00",
-            "expected_start": 12 * MS_IN_HOUR
-        }
-    ]
+    scen_open_left = [{"end": "12:00", "expected_end": 12 * MS_IN_HOUR}]
+    scen_open_right = [{"start": "12:00", "expected_start": 12 * MS_IN_HOUR}]
     scen_time_point = [
         {
             "start": "12:00",
@@ -411,13 +354,12 @@ class TestTimeOfDay(ConstructTester):
         {
             # Float makes not much sense
             "start": 2.5,
-            "end": None
+            "end": None,
         },
     ]
 
 
 class TestTimeOfWeek(ConstructTester):
-
     cls = TimeOfWeek
 
     max_ms = 7 * MS_IN_DAY
@@ -449,13 +391,13 @@ class TestTimeOfWeek(ConstructTester):
     scen_open_left = [
         {
             "end": "Tue",
-            "expected_end": 2 * MS_IN_DAY # Tuesday 23:59:59 ...
+            "expected_end": 2 * MS_IN_DAY,  # Tuesday 23:59:59 ...
         }
     ]
     scen_open_right = [
         {
             "start": "Tue",
-            "expected_start": 1 * MS_IN_DAY # Tuesday 00:00:00
+            "expected_start": 1 * MS_IN_DAY,  # Tuesday 00:00:00
         }
     ]
     scen_time_point = [
@@ -472,24 +414,17 @@ class TestTimeOfWeek(ConstructTester):
         }
     ]
     scen_value_error = [
-        {
-            "start": 0,
-            "end": None
-        },
-        {
-            "start": "Asd",
-            "end": None
-        },
+        {"start": 0, "end": None},
+        {"start": "Asd", "end": None},
         {
             # Float makes not much sense
             "start": 2.5,
-            "end": None
+            "end": None,
         },
     ]
 
 
 class TestTimeOfMonth(ConstructTester):
-
     cls = TimeOfMonth
 
     max_ms = 31 * MS_IN_DAY
@@ -515,18 +450,8 @@ class TestTimeOfMonth(ConstructTester):
         },
     ]
 
-    scen_open_left = [
-        {
-            "end": "3.",
-            "expected_end": 3 * MS_IN_DAY
-        }
-    ]
-    scen_open_right = [
-        {
-            "start": "2.",
-            "expected_start": 1 * MS_IN_DAY
-        }
-    ]
+    scen_open_left = [{"end": "3.", "expected_end": 3 * MS_IN_DAY}]
+    scen_open_right = [{"start": "2.", "expected_start": 1 * MS_IN_DAY}]
     scen_time_point = [
         {
             "start": "2.",
@@ -549,22 +474,19 @@ class TestTimeOfMonth(ConstructTester):
             "start": None,
             "end": 32,
         },
-        {
-            "start": "33.",
-            "end": None
-        },
+        {"start": "33.", "end": None},
         {
             # Float makes not much sense
             "start": 2.5,
-            "end": None
+            "end": None,
         },
     ]
 
-class TestTimeOfYear(ConstructTester):
 
+class TestTimeOfYear(ConstructTester):
     cls = TimeOfYear
 
-    max_ms = 366 * MS_IN_DAY # Leap year has 366 days
+    max_ms = 366 * MS_IN_DAY  # Leap year has 366 days
 
     scen_closed = [
         {
@@ -588,24 +510,12 @@ class TestTimeOfYear(ConstructTester):
     ]
 
     scen_open_left = [
-        {
-            "end": "Apr",
-            "expected_end": (31 + 29 + 31 + 30) * MS_IN_DAY - 1
-        },
-        {
-            "end": "Jan",
-            "expected_end": 31 * MS_IN_DAY - 1
-        },
+        {"end": "Apr", "expected_end": (31 + 29 + 31 + 30) * MS_IN_DAY - 1},
+        {"end": "Jan", "expected_end": 31 * MS_IN_DAY - 1},
     ]
     scen_open_right = [
-        {
-            "start": "Apr",
-            "expected_start": (31 + 29 + 31) * MS_IN_DAY
-        },
-        {
-            "start": "Dec",
-            "expected_start": (366 - 31) * MS_IN_DAY
-        },
+        {"start": "Apr", "expected_start": (31 + 29 + 31) * MS_IN_DAY},
+        {"start": "Dec", "expected_start": (366 - 31) * MS_IN_DAY},
     ]
     scen_time_point = [
         {
@@ -642,9 +552,10 @@ class TestTimeOfYear(ConstructTester):
         {
             # Float makes not much sense
             "start": 2.5,
-            "end": None
+            "end": None,
         },
     ]
+
 
 @pytest.mark.parametrize("cls", [TimeOfSecond, TimeOfMinute, TimeOfHour, TimeOfDay])
 def test_type_error(cls):

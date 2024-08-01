@@ -2,12 +2,13 @@ import re
 
 import pytest
 
-from rocketry.conditions import TaskCond
-from rocketry.conditions import SchedulerCycles, SchedulerStarted, TaskStarted
-from rocketry import Session
-from rocketry.tasks import FuncTask
+from tocketry.conditions import TaskCond
+from tocketry.conditions import SchedulerCycles, SchedulerStarted, TaskStarted
+from tocketry import Session
+from tocketry.tasks import FuncTask
 
 N_PARSERS = len(Session._cls_cond_parsers)
+
 
 def is_foo(status):
     print(f"evaluating: {status}")
@@ -20,23 +21,35 @@ def is_foo(status):
 def test_taskcond_true(session, execution):
     assert session._cond_cache == {}
 
-    cond = TaskCond(syntax=re.compile(r"is foo (?P<status>.+)"), start_cond="every 1 min", active_time="past 10 seconds", execution=execution, session=session)
+    cond = TaskCond(
+        syntax=re.compile(r"is foo (?P<status>.+)"),
+        start_cond="every 1 min",
+        active_time="past 10 seconds",
+        execution=execution,
+        session=session,
+    )
     cond(is_foo)
 
-    task = FuncTask(lambda: None, start_cond="is foo true", name="a task", execution="main", session=session)
+    task = FuncTask(
+        lambda: None,
+        start_cond="is foo true",
+        name="a task",
+        execution="main",
+        session=session,
+    )
 
     # Test that there is only one more cond parser
     assert len(session._cond_parsers) == N_PARSERS + 1
 
-    session.config.shut_cond = (TaskStarted(task="a task") >= 2) | ~SchedulerStarted(period="past 5 seconds")
+    session.config.shut_cond = (TaskStarted(task="a task") >= 2) | ~SchedulerStarted(
+        period="past 5 seconds"
+    )
     session.start()
 
-    records = list(map(lambda e: e.model_dump(exclude={'created'}), session.get_task_log()))
-    history_task = [
-        rec
-        for rec in records
-        if rec['task_name'] == "a task"
-    ]
+    records = list(
+        map(lambda e: e.model_dump(exclude={"created"}), session.get_task_log())
+    )
+    history_task = [rec for rec in records if rec["task_name"] == "a task"]
     assert history_task == [
         {"task_name": "a task", "action": "run"},
         {"task_name": "a task", "action": "success"},
@@ -49,37 +62,44 @@ def test_taskcond_true(session, execution):
     assert len(cond_tasks) == 1
 
     cond_task = cond_tasks[0]
-    history_check = [
-        rec
-        for rec in records
-        if rec['task_name'] == cond_task.name
-    ]
+    history_check = [rec for rec in records if rec["task_name"] == cond_task.name]
     assert history_check == [
         {"task_name": cond_task.name, "action": "run"},
         {"task_name": cond_task.name, "action": "success"},
     ]
 
+
 @pytest.mark.parametrize("execution", ["main", "thread", "process"])
 def test_taskcond_false(session, execution):
     assert session._cond_cache == {}
 
-    cond = TaskCond(syntax=re.compile(r"is foo (?P<status>.+)"), start_cond="every 1 min", active_time="past 10 seconds", execution=execution, session=session)
+    cond = TaskCond(
+        syntax=re.compile(r"is foo (?P<status>.+)"),
+        start_cond="every 1 min",
+        active_time="past 10 seconds",
+        execution=execution,
+        session=session,
+    )
     cond(is_foo)
 
     # Test that there is only one more cond parser
     assert len(session._cond_parsers) == N_PARSERS + 1
 
-    task = FuncTask(lambda: None, start_cond="is foo false", name="a task", execution="main", session=session)
+    task = FuncTask(
+        lambda: None,
+        start_cond="is foo false",
+        name="a task",
+        execution="main",
+        session=session,
+    )
 
     session.config.shut_cond = SchedulerCycles() >= 3
     session.start()
 
-    records = list(map(lambda e: e.model_dump(exclude={'created'}), session.get_task_log()))
-    history_task = [
-        rec
-        for rec in records
-        if rec["task_name"] == "a task"
-    ]
+    records = list(
+        map(lambda e: e.model_dump(exclude={"created"}), session.get_task_log())
+    )
+    history_task = [rec for rec in records if rec["task_name"] == "a task"]
     assert history_task == []
 
     # Check cond task
@@ -87,11 +107,7 @@ def test_taskcond_false(session, execution):
     assert len(cond_tasks) == 1
 
     cond_task = cond_tasks[0]
-    history_check = [
-        rec
-        for rec in records
-        if rec["task_name"] == cond_task.name
-    ]
+    history_check = [rec for rec in records if rec["task_name"] == cond_task.name]
     assert history_check == [
         {"task_name": cond_task.name, "action": "run"},
         {"task_name": cond_task.name, "action": "success"},

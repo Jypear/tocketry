@@ -10,7 +10,7 @@ The configurations can be set by:
 
 .. code-block:: python
 
-    app = Rocketry(config={
+    app = Tocketry(config={
         'task_execution': 'process',
         'task_pre_exist': 'raise',
         'force_status_from_logs': True,
@@ -81,7 +81,7 @@ Options
     - ``False``: The scheduler crashes. Useful for debug but not for production. (default)
 
     A failure in task logging commonly occurs if there are connection problems with the 
-    logging repository. Failure in logging might be severe as it leads to that Rocketry
+    logging repository. Failure in logging might be severe as it leads to that Tocketry
     is unable to maintain the history of what tasks ran and when causing some conditions
     to be inaccurate.
 
@@ -152,7 +152,7 @@ Options
 **time_func**: Function for time measurement.
 
     Function that returns current time in seconds since epoch similar to
-    ``time.time()``. Used throughout Rocketry including in condition 
+    ``time.time()``. Used throughout Tocketry including in condition 
     evaluation and logging. Useful only for testing purposes.
     
     By default, use ``time.time``.

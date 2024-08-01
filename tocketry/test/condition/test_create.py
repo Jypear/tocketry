@@ -1,14 +1,13 @@
-
 import re
 
 import pytest
 
-from rocketry.core import BaseCondition
-from rocketry.conditions import FuncCond
-from rocketry.parse.condition import parse_condition
+from tocketry.core import BaseCondition
+from tocketry.conditions import FuncCond
+from tocketry.parse.condition import parse_condition
+
 
 def test_func_cond():
-
     @FuncCond(syntax="is foo")
     def is_foo():
         return True
@@ -17,8 +16,8 @@ def test_func_cond():
     assert isinstance(cond, BaseCondition)
     assert bool(cond)
 
-def test_func_cond_with_kwargs():
 
+def test_func_cond_with_kwargs():
     @FuncCond(syntax=re.compile("is foo (?P<myval>true|false)"))
     def is_foo(myval):
         return True if myval == "true" else False if myval == "false" else None
@@ -33,8 +32,8 @@ def test_func_cond_with_kwargs():
 
     assert cond_true is not cond_false
 
-def test_func_cond_pass():
 
+def test_func_cond_pass():
     @FuncCond()
     def is_foo(myval):
         return True if myval == "true" else False if myval == "false" else None
@@ -50,6 +49,7 @@ def test_func_cond_pass():
     assert is_foo("true").observe()
     assert not is_foo(myval="false").observe()
     assert not is_foo("false").observe()
+
 
 def test_func_cond_fail():
     cond = FuncCond()

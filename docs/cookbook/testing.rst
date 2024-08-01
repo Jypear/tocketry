@@ -2,7 +2,7 @@ Testing
 =======
 
 This section covers how to test some parts of 
-Rocketry's system including the conditions and
+Tocketry's system including the conditions and
 the scheduler.
 
 Conditions
@@ -16,7 +16,7 @@ Here is a simple example:
 
 .. code-block:: python
 
-    from rocketry.conds import true, false
+    from tocketry.conds import true, false
 
     cond = true | false
     
@@ -28,7 +28,7 @@ that don't require them still accepts them.
 
 .. code-block:: python
 
-    from rocketry.conds import daily
+    from tocketry.conds import daily
 
     @app.task()
     def do_things():
@@ -44,9 +44,9 @@ be done with ``session.run``:
 
 .. code-block:: python
 
-    from rocketry import Rocketry
+    from tocketry import Tocketry
 
-    app = Rocketry()
+    app = Tocketry()
 
     @app.task()
     def do_things():
@@ -67,10 +67,10 @@ This scheduler runs 5 minutes before automatically ending itself:
 
 .. code-block:: python
 
-    from rocketry import Rocketry
-    from rocketry.conds import scheduler_running
+    from tocketry import Tocketry
+    from tocketry.conds import scheduler_running
 
-    app = Rocketry(shut_cond=scheduler_running(more_than="5 minutes"))
+    app = Tocketry(shut_cond=scheduler_running(more_than="5 minutes"))
 
     @app.task()
     def do_things():
@@ -85,7 +85,7 @@ Setting Custom Time
 -------------------
 
 You can also test scheduling and task triggering by forcing 
-Rocketry to use custom time.
+Tocketry to use custom time.
 
 For example, if you wish to fix scheduling to start at 
 12:00 on 12th of May 2014:
@@ -95,8 +95,8 @@ For example, if you wish to fix scheduling to start at
     import datetime
     import time
 
-    from rocketry import Rocketry
-    from rocketry.conds import daily
+    from tocketry import Tocketry
+    from tocketry.conds import daily
 
     def fix_time(dt):
         "Get new time measurement function"
@@ -106,7 +106,7 @@ For example, if you wish to fix scheduling to start at
             return dt.timestamp() + sec_since_start
         return get_time
 
-    app = Rocketry(config={"time_func": fix_time(datetime.datetime(2014, 5, 31, 12, 00))})
+    app = Tocketry(config={"time_func": fix_time(datetime.datetime(2014, 5, 31, 12, 00))})
 
     @app.task(daily)
     def do_things():
@@ -128,4 +128,4 @@ For example, if you wish to fix scheduling to start at
             sec_since_start = time.time() - START_TIME
             return DATETIME.timestamp() + sec_since_start
 
-        app = Rocketry(time_func=get_time)
+        app = Tocketry(time_func=get_time)

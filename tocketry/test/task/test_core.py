@@ -5,22 +5,23 @@ from textwrap import dedent
 from typing import ClassVar, Generic, Any
 from pydantic import Field, BaseModel
 import pytest
-from rocketry.args.builtin import Return
-from rocketry.core import Task as BaseTask
-from rocketry.tasks import _DummyTask
-from rocketry.core.condition.base import AlwaysFalse
-from rocketry.args import Arg, Session, Task
-from rocketry.exc import TaskLoggingError
-from rocketry.log import MinimalRecord
-from rocketry import Session as SessionClass
-from rocketry.testing.log import create_task_record
+from tocketry.args.builtin import Return
+from tocketry.core import Task as BaseTask
+from tocketry.tasks import _DummyTask
+from tocketry.core.condition.base import AlwaysFalse
+from tocketry.args import Arg, Session, Task
+from tocketry.exc import TaskLoggingError
+from tocketry.log import MinimalRecord
+from tocketry import Session as SessionClass
+from tocketry.testing.log import create_task_record
+
 
 def test_defaults(session):
-
     task = _DummyTask(name="mytest", session=session)
     assert task.name == "mytest"
     assert isinstance(task.start_cond, AlwaysFalse)
     assert isinstance(task.end_cond, AlwaysFalse)
+
 
 def test_defaults_no_session(session):
     with pytest.warns(UserWarning):
@@ -29,15 +30,19 @@ def test_defaults_no_session(session):
     assert isinstance(task.session, SessionClass)
     assert task.session.tasks == {task}
 
+
 def test_set_timeout(session):
     task = _DummyTask(session=session, timeout="1 hour 20 min", name="1")
     assert task.timeout == datetime.timedelta(hours=1, minutes=20)
 
-    task = _DummyTask(timeout=datetime.timedelta(hours=1, minutes=20), session=session, name="2")
+    task = _DummyTask(
+        timeout=datetime.timedelta(hours=1, minutes=20), session=session, name="2"
+    )
     assert task.timeout == datetime.timedelta(hours=1, minutes=20)
 
     task = _DummyTask(timeout=20, session=session, name="3")
     assert task.timeout == datetime.timedelta(seconds=20)
+
 
 def test_delete(session):
     task = _DummyTask(name="mytest", session=session)
@@ -45,33 +50,42 @@ def test_delete(session):
     task.delete()
     assert session.tasks == set()
 
+
 def test_set_invalid_status(session):
     task = _DummyTask(name="mytest", session=session)
     with pytest.raises(ValueError):
         task.status = "not valid"
 
-def test_failed_logging(session):
 
+def test_failed_logging(session):
     class MyHandler(logging.Handler):
         def emit(self, record):
             raise RuntimeError("Oops")
 
-    logging.getLogger("rocketry.task").handlers.insert(0, MyHandler())
+    logging.getLogger("tocketry.task").handlers.insert(0, MyHandler())
     task = _DummyTask(name="mytest", session=session)
-    for func in (task.log_crash, task.log_failure, task.log_success, task.log_inaction, task.log_termination):
+    for func in (
+        task.log_crash,
+        task.log_failure,
+        task.log_success,
+        task.log_inaction,
+        task.log_termination,
+    ):
         with pytest.raises(TaskLoggingError):
             func()
 
     record = create_task_record(created=1, task_name="mytest", action="run")
 
     with pytest.raises(TaskLoggingError):
-        task.log_record(record) # Used by process logging
+        task.log_record(record)  # Used by process logging
+
 
 def test_pickle(session):
     task_1 = _DummyTask(name="mytest", session=session)
     pkl_obj = pickle.dumps(task_1)
     task_2 = pickle.loads(pkl_obj)
     assert task_1.name == task_2.name
+
 
 def test_crash(session):
     task = _DummyTask(name="mytest", session=session)
@@ -89,23 +103,28 @@ def test_crash(session):
 
     logs = task.logger.filter_by().all()
     assert [
-        {'action': 'run', 'task_name': 'mytest'},
-        {'action': 'crash', 'task_name': 'mytest'}
-    ] == [log.model_dump(exclude={'created'}) for log in logs]
+        {"action": "run", "task_name": "mytest"},
+        {"action": "crash", "task_name": "mytest"},
+    ] == [log.model_dump(exclude={"created"}) for log in logs]
+
 
 def test_json(session):
-    session.parameters['x'] = 5
+    session.parameters["x"] = 5
     repo = session.get_repo()
     repo.add(MinimalRecord(task_name="mytest", action="run", created=1640988000))
     repo.add(MinimalRecord(task_name="mytest", action="success", created=1640988060))
 
-    task = _DummyTask(name="mytest", parameters={
-        "arg_2": Arg("x"),
-        "arg_2": Return("another"),
-        "session": Session(),
-        "task": Task(),
-        "another_task": Task('another')
-    }, session=session)
+    task = _DummyTask(
+        name="mytest",
+        parameters={
+            "arg_2": Arg("x"),
+            "arg_2": Return("another"),
+            "session": Session(),
+            "task": Task(),
+            "another_task": Task("another"),
+        },
+        session=session,
+    )
     task.set_cached()
     # Deleting session from this test. Session is a random ID each time
     # With pydantic changes it includes it in serialization
@@ -115,7 +134,10 @@ def test_json(session):
     dt_run = datetime.datetime.fromtimestamp(1640988000)
     dt_success = datetime.datetime.fromtimestamp(1640988060)
 
-    assert j == dedent("""
+    assert (
+        j
+        == dedent(
+            """
     {
         "permanent": false,
         "fmt_log_message": "Task '{task}' status: '{action}'",
@@ -123,7 +145,7 @@ def test_json(session):
         "batches": [],
         "name": "mytest",
         "description": null,
-        "logger_name": "rocketry.task",
+        "logger_name": "tocketry.task",
         "execution": null,
         "priority": 0,
         "disabled": false,
@@ -144,7 +166,8 @@ def test_json(session):
         "on_shutdown": false,
         "func_run_id": null
     }
-    """
-    .replace("<RUN>", dt_run.strftime("%Y-%m-%dT%H:%M:%S"))
-    .replace("<SUCCESS>", dt_success.strftime("%Y-%m-%dT%H:%M:%S"))
-    )[1:-1]
+    """.replace("<RUN>", dt_run.strftime("%Y-%m-%dT%H:%M:%S")).replace(
+                "<SUCCESS>", dt_success.strftime("%Y-%m-%dT%H:%M:%S")
+            )
+        )[1:-1]
+    )

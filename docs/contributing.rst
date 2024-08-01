@@ -4,50 +4,37 @@ Contributing
 
 All help is welcome. There are several ways to contribute:
 
-- `Sponsoring <https://github.com/sponsors/Miksus>`_
-- `Report an issue (bug, feature request etc.) <https://github.com/Miksus/rocketry/issues>`_
-- `Do code a change <https://github.com/Miksus/rocketry/pulls>`_
-- `Join the discussion <https://github.com/Miksus/rocketry/discussions>`_
+- `Report an issue (bug, feature request etc.) <https://github.com/Jypear/tocketry/issues>`_
+- `Do code a change <https://github.com/Jypear/tocketry/pulls>`_
+- `Join the discussion <https://github.com/Jypear/tocketry/discussions>`_
 
-Sponsoring
-----------
-
-If you represent a company and your project has benefited from Rocketry, consider sponsoring the free
-open-source project to ensure further development and maintenance:
-
-.. raw:: html
-
-    <iframe src="https://github.com/sponsors/Miksus/button" title="Sponsor Miksus" height="35" width="116" style="border: 0;"></iframe>
-
-The project is developed with passion but creating high-quality code is hard and time consuming.
-All support is welcome.
 
 Have an Idea?
 -------------
 
-If you have a concrete idea of a feature you wish Rocketry had, 
-feel free to open `a feature request <https://github.com/Miksus/rocketry/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=ENH>`_.
+If you have a concrete idea of a feature you wish Tocketry had, 
+feel free to open `a feature request <https://github.com/Jypear/tocketry/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=ENH>`_.
 
 If you have ideas about broader or more abstract features or would like to discuss about the future directions of the framework, 
-feel free to open a discussion about it to `Rocketry's discussion board <https://github.com/Miksus/rocketry/discussions>`_.
+feel free to open a discussion about it to `Tocketry's discussion board <https://github.com/Jypear/tocketry/discussions>`_.
 
 Found a bug?
 ------------
 
 If you found a bug,
-`please report it as a bug <https://github.com/Miksus/rocketry/issues/new?assignees=&labels=bug&template=bug_report.md&title=BUG>`_.
+`please report it as a bug <https://github.com/Jypear/Tocketry/issues/new?assignees=&labels=bug&template=bug_report.md&title=BUG>`_.
 
 Unclear documentation?
 ----------------------
 
 If you found an issue with the documentation,
-`please report it <https://github.com/Miksus/rocketry/issues/new?assignees=&labels=documentation&template=documentation_improvement.md&title=DOCS>`_.
+`please report it <https://github.com/Jypear/tocketry/issues/new?assignees=&labels=documentation&template=documentation_improvement.md&title=DOCS>`_.
 
 Want to do a code contribution?
 ------------------------------- 
 
 Good place to start is to look for open issues 
-`from issue tracker <https://github.com/Miksus/rocketry/issues>`_. 
+`from issue tracker <https://github.com/Jypear/tocketry/issues>`_. 
 
 If you found a problem and the fix is simple, you don't have to create an issue 
 for it. Complex changes require an issue.
@@ -107,5 +94,5 @@ To ensure your pull request gets approved:
 - Ensure the code follows best practices and fits to the project
 
 Don't feel overwhelmed with these, there are automatic pipelines to ensure code quality
-and your code can be updated after the pull request. Rocketry's maintainers understand 
+and your code can be updated after the pull request. Tocketry's maintainers understand 
 that you are using your free time to contribute on free open-source software.

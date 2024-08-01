@@ -1,14 +1,15 @@
-from rocketry import Rocketry
+from tocketry import Tocketry
 
-app = Rocketry(execution="async")
+app = Tocketry(execution="async")
 
-@app.task('every 20 seconds')
-async def do_things():
-    ...
 
-@app.task('every 5 seconds')
-async def do_stuff():
-    ...
+@app.task("every 20 seconds")
+async def do_things(): ...
+
+
+@app.task("every 5 seconds")
+async def do_stuff(): ...
+
 
 if __name__ == "__main__":
     app.run()

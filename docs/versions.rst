@@ -14,7 +14,7 @@ Version history
         Run stacks were implemented to track the execution of each run. These
         runs can be tracked in the logs using the field ``run_id``.
 
-    - Update: ``rocketry.conds.running`` refactored to support multi-launch.
+    - Update: ``tocketry.conds.running`` refactored to support multi-launch.
     - Update: Task cache is no longer set at initiation but at session start
     - Add: New config option ``timezone``
     - Add: New config option ``time_func`` for testing scheduling
@@ -77,8 +77,8 @@ Version history
 
 - ``2.1.0``
 
-    - Add: Condition API (``rocketry.conds``) for easy alternative for the string syntax
-    - Add: Now ``rocketry.args.Return`` accepts passing the task function
+    - Add: Condition API (``tocketry.conds``) for easy alternative for the string syntax
+    - Add: Now ``tocketry.args.Return`` accepts passing the task function
     - Add: Now ``app.cond(..)`` decorator returns the condition (instead of the function)
     - Add: Now conditions accept verbose arguments similarly as tasks do
     - Fix: typing import error for Python 3.7
@@ -89,8 +89,8 @@ Version history
 
 - ``2.0.1``
 
-    - Fix: ``Rocketry(logger_repo=...)`` now does not remove previous handlers
-    - Deprecate: Deprecated ``Rocketry(...).set_logger`` method
+    - Fix: ``Tocketry(logger_repo=...)`` now does not remove previous handlers
+    - Deprecate: Deprecated ``Tocketry(...).set_logger`` method
     - Docs: Fixed typos in documentation and added docstrings
 
 - ``2.0.0``

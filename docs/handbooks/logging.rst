@@ -4,16 +4,16 @@
 Task Logging
 ============
 
-Rocketry's logging system is based on 
+Tocketry's logging system is based on 
 `logging library (standard library) <https://docs.python.org/3/library/logging.html>`_
 and on `Red Bird <https://red-bird.readthedocs.io/>`_.
-Rocketry uses Logging's logging mechanisms and extend
+Tocketry uses Logging's logging mechanisms and extend
 them with Red Bird in order to read from the logs.
 
 Mechanism
 ---------
 
-There is a logger called ``rocketry.task`` which is 
+There is a logger called ``tocketry.task`` which is 
 used to log the tasks' actions. This logger should 
 have one repo handler (``redbird.logging.RepoHandler``)
 which logs the task actions to a repository that 
@@ -65,21 +65,21 @@ format in which our logs are. We take a look into this in a bit.
 
 Here are some premade log record models you may use:
 
-- ``rocketry.log.MinimalRecord``: Bare minimum for the logging to work.
-- ``rocketry.log.LogRecord``: Has the typical elements of `logging.LogRecord <https://docs.python.org/3/library/logging.html#logging.LogRecord>`_ and extras required by rocketry.
-- ``rocketry.log.TaskLogRecord``: Has the same as ``LogRecord`` but also includes start, end and runtimes.
+- ``tocketry.log.MinimalRecord``: Bare minimum for the logging to work.
+- ``tocketry.log.LogRecord``: Has the typical elements of `logging.LogRecord <https://docs.python.org/3/library/logging.html#logging.LogRecord>`_ and extras required by tocketry.
+- ``tocketry.log.TaskLogRecord``: Has the same as ``LogRecord`` but also includes start, end and runtimes.
 
 
 There are also variants that include field ``run_id``:
 
-- ``rocketry.log.MinimalRunRecord``
-- ``rocketry.log.RunRecord``
-- ``rocketry.log.TaskRunRecord``
+- ``tocketry.log.MinimalRunRecord``
+- ``tocketry.log.RunRecord``
+- ``tocketry.log.TaskRunRecord``
 
 Setting Up Repo to a Logger
 ---------------------------
 
-By default, Rocketry creates a repo handler with ``MemoryRepo``
+By default, Tocketry creates a repo handler with ``MemoryRepo``
 in it. This handler logs the records only to an in-memory Python
 list that is not maintained when the interpreter is closed.
 
@@ -91,13 +91,13 @@ First, we fetch the task logger:
 .. code-block:: python
 
     import logging
-    logger = logging.getLogger('rocketry.task')
+    logger = logging.getLogger('tocketry.task')
 
 Here is an example to log to a CSV file:
 
 .. code-block:: python
 
-    from rocketry.log import MinimalRecord
+    from tocketry.log import MinimalRecord
 
     from redbird.repos import CSVFileRepo
     from redbird.logging import RepoHandler
@@ -106,7 +106,7 @@ Here is an example to log to a CSV file:
     repo = CSVFileRepo(filename="path/to/repo.csv", model=MinimalRecord)
 
     # Adding the repo to the logger
-    logger = logging.getLogger('rocketry.task')
+    logger = logging.getLogger('tocketry.task')
     handler = RepoHandler(repo=repo)
     logger.addHandler(handler)
 
@@ -136,7 +136,7 @@ Here is an illustration of getting the repository:
 .. code-block:: python
 
     import logging
-    logger = logging.getLogger('rocketry.task')
+    logger = logging.getLogger('tocketry.task')
     for handler in logger.handlers:
         if hasattr(handler, "repo"):
             break

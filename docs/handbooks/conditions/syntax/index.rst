@@ -4,7 +4,7 @@ Condition Syntax
 ================
 
 Condition syntax is the highest level in terms of creating 
-conditions. It is a string syntax which is parsed by Rocketry's
+conditions. It is a string syntax which is parsed by Tocketry's
 condition parser. It is fast to type and simple. It is very 
 suitable for quick scheduling or in simple applications
 but the downside is that static code analyzers 

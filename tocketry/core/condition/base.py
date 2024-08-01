@@ -2,10 +2,10 @@ from copy import copy
 from abc import abstractmethod
 from typing import Callable, Dict, Pattern, Union
 
-from rocketry._base import RedBase
-from rocketry.core.parameters.parameters import Parameters
+from tocketry._base import RedBase
+from tocketry.core.parameters.parameters import Parameters
 
-PARSERS: Dict[Union[str, Pattern], Union[Callable, 'BaseCondition']] = {}
+PARSERS: Dict[Union[str, Pattern], Union[Callable, "BaseCondition"]] = {}
 
 
 class BaseCondition(RedBase):
@@ -31,7 +31,7 @@ class BaseCondition(RedBase):
 
     Minimum example:
 
-    >>> from rocketry.core import BaseCondition
+    >>> from tocketry.core import BaseCondition
     >>> class MyCondition(BaseCondition):
     ...     def __bool__(self):
     ...         ... # Code that defines state either
@@ -54,7 +54,7 @@ class BaseCondition(RedBase):
     ...     def __repr__(self):
     ...         return f"IsFooBar('{self.outcome}')"
     ...
-    >>> from rocketry.parse import parse_condition
+    >>> from tocketry.parse import parse_condition
     >>> parse_condition("is foo 'bar'")
     IsFooBar('bar')
 
@@ -103,12 +103,10 @@ class BaseCondition(RedBase):
             # those that are only for display purposes
             repr_attrs = ("_str",)
             self_dict = {
-                key: val for key, val in self.__dict__.items()
-                if key not in repr_attrs
+                key: val for key, val in self.__dict__.items() if key not in repr_attrs
             }
             other_dict = {
-                key: val for key, val in other.__dict__.items()
-                if key not in repr_attrs
+                key: val for key, val in other.__dict__.items() if key not in repr_attrs
             }
             return self_dict == other_dict
         return False
@@ -136,11 +134,11 @@ class _ConditionContainer:
         return False
 
     def __repr__(self):
-        string = ', '.join(map(str, self.subconditions))
-        return f'{type(self).__name__}({string})'
+        string = ", ".join(map(str, self.subconditions))
+        return f"{type(self).__name__}({string})"
+
 
 class Any(_ConditionContainer, BaseCondition):
-
     def __init__(self, *conditions):
         self.subconditions = []
 
@@ -160,12 +158,11 @@ class Any(_ConditionContainer, BaseCondition):
         try:
             return super().__str__()
         except AttributeError:
-            string = ' | '.join(map(str, self.subconditions))
-            return f'({string})'
+            string = " | ".join(map(str, self.subconditions))
+            return f"({string})"
 
 
 class All(_ConditionContainer, BaseCondition):
-
     def __init__(self, *conditions):
         self.subconditions = []
 
@@ -185,12 +182,11 @@ class All(_ConditionContainer, BaseCondition):
         try:
             return super().__str__()
         except AttributeError:
-            string = ' & '.join(map(str, self.subconditions))
-            return f'({string})'
+            string = " & ".join(map(str, self.subconditions))
+            return f"({string})"
 
 
 class Not(_ConditionContainer, BaseCondition):
-
     def __init__(self, condition):
         # TODO: rename condition as child
         self.condition = condition
@@ -200,14 +196,14 @@ class Not(_ConditionContainer, BaseCondition):
 
     def __repr__(self):
         string = repr(self.condition)
-        return f'Not({string})'
+        return f"Not({string})"
 
     def __str__(self):
         try:
             return super().__str__()
         except AttributeError:
             string = str(self.condition)
-            return f'~{string}'
+            return f"~{string}"
 
     @property
     def subconditions(self):
@@ -232,14 +228,16 @@ class Not(_ConditionContainer, BaseCondition):
 
 class AlwaysTrue(BaseCondition):
     "Condition that is always true"
+
     def observe(self, **kwargs):
         return True
 
     def __repr__(self):
-        return 'true'
+        return "true"
 
     def __str__(self):
-        return 'true'
+        return "true"
+
 
 class AlwaysFalse(BaseCondition):
     "Condition that is always false"
@@ -248,14 +246,13 @@ class AlwaysFalse(BaseCondition):
         return False
 
     def __repr__(self):
-        return 'false'
+        return "false"
 
     def __str__(self):
-        return 'false'
+        return "false"
 
 
 class BaseComparable(BaseCondition):
-
     _comp_attrs = ("__eq__", "__ne__", "__lt__", "__gt__", "__le__", "__ge__")
 
     def __init__(self):
@@ -275,7 +272,7 @@ class BaseComparable(BaseCondition):
     def get_measurement(self):
         "Get measurement (something that can be compared)"
 
-    def get_state(self, res:int):
+    def get_state(self, res: int):
         compares = self._comps
 
         res = len(res) if hasattr(res, "__len__") else res
@@ -283,26 +280,22 @@ class BaseComparable(BaseCondition):
         if not compares:
             return res > 0
         return all(
-            getattr(res, comp)(val) # Comparison is magic method (==, !=, etc.)
+            getattr(res, comp)(val)  # Comparison is magic method (==, !=, etc.)
             for comp, val in compares.items()
         )
 
     def _is_any_over_zero(self):
         # Useful for optimization: just find any observation and the statement is true
         comps = {
-            comp: self._comps[comp]
-            for comp in self._comp_attrs
-            if comp in self._comps
+            comp: self._comps[comp] for comp in self._comp_attrs if comp in self._comps
         }
-        if comps in ({'__gt__': 0}, {'__ge__': 1}, {'__gt__': 0, '__ge__': 1}):
+        if comps in ({"__gt__": 0}, {"__ge__": 1}, {"__gt__": 0, "__ge__": 1}):
             return True
         return not comps
 
     def _is_equal_zero(self):
         comps = {
-            comp: self._comps[comp]
-            for comp in self._comp_attrs
-            if comp in self._comps
+            comp: self._comps[comp] for comp in self._comp_attrs if comp in self._comps
         }
         return comps == {"__eq__": 0}
 

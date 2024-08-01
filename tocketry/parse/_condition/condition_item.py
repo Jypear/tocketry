@@ -1,13 +1,15 @@
 from typing import Callable, Dict, Pattern, Union
-from rocketry.core.condition.base import BaseCondition
-from rocketry.session import Session
+from tocketry.core.condition.base import BaseCondition
+from tocketry.session import Session
 from ..utils import ParserError, CondParser
-
 
 
 CONDITION_PARSERS = []
 
-def add_condition_parser(d: Dict[Union[str, Pattern], Union[Callable, 'BaseCondition']]):
+
+def add_condition_parser(
+    d: Dict[Union[str, Pattern], Union[Callable, "BaseCondition"]],
+):
     """Add a parsing instruction to be used for parsing a
     string to condition.
 
@@ -16,10 +18,11 @@ def add_condition_parser(d: Dict[Union[str, Pattern], Union[Callable, 'BaseCondi
     d : dict
         TODO
     """
-    parsers = Session._cls_cond_parsers #! TODO
+    parsers = Session._cls_cond_parsers  #! TODO
     parsers.update(d)
 
-def parse_condition_item(s:str, session=None) -> BaseCondition:
+
+def parse_condition_item(s: str, session=None) -> BaseCondition:
     "Parse one condition"
 
     # TODO: Don't use global

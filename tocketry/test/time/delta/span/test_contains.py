@@ -1,9 +1,7 @@
-
 from datetime import datetime, timedelta
 import pytest
-from rocketry.time import (
-    TimeSpanDelta
-)
+from tocketry.time import TimeSpanDelta
+
 
 @pytest.mark.parametrize(
     "dt,dt_ref,near,far",
@@ -12,40 +10,52 @@ from rocketry.time import (
         pytest.param(
             datetime(2020, 1, 1, 10, 00),
             datetime(2020, 1, 1, 12, 00),
-            "1:00:00", "2:00:00",
-            id="On interval (left edge)"),
-      pytest.param(
+            "1:00:00",
+            "2:00:00",
+            id="On interval (left edge)",
+        ),
+        pytest.param(
             datetime(2020, 1, 1, 11, 00),
             datetime(2020, 1, 1, 12, 00),
-            "1:00:00", "2:00:00",
-            id="On interval (right edge)"),
-      pytest.param(
+            "1:00:00",
+            "2:00:00",
+            id="On interval (right edge)",
+        ),
+        pytest.param(
             datetime(2020, 1, 1, 10, 30),
             datetime(2020, 1, 1, 12, 00),
-            "1:00:00", "2:00:00",
-            id="On interval"),
-
+            "1:00:00",
+            "2:00:00",
+            id="On interval",
+        ),
         pytest.param(
             datetime(2020, 1, 1, 13, 00),
             datetime(2020, 1, 1, 12, 00),
-            "1:00:00", "2:00:00",
-            id="On interval (future, left edge)"),
-      pytest.param(
+            "1:00:00",
+            "2:00:00",
+            id="On interval (future, left edge)",
+        ),
+        pytest.param(
             datetime(2020, 1, 1, 14, 00),
             datetime(2020, 1, 1, 12, 00),
-            "1:00:00", "2:00:00",
-            id="On interval (future, right edge)"),
-      pytest.param(
+            "1:00:00",
+            "2:00:00",
+            id="On interval (future, right edge)",
+        ),
+        pytest.param(
             datetime(2020, 1, 1, 13, 30),
             datetime(2020, 1, 1, 12, 00),
-            "1:00:00", "2:00:00",
-            id="On interval (future)"),
+            "1:00:00",
+            "2:00:00",
+            id="On interval (future)",
+        ),
     ],
 )
 def test_in_offset(dt, dt_ref, near, far):
     time = TimeSpanDelta(near, far, reference=dt_ref)
     assert time.reference is dt_ref
     assert dt in time
+
 
 @pytest.mark.parametrize(
     "dt,dt_ref,near,far",
@@ -54,28 +64,36 @@ def test_in_offset(dt, dt_ref, near, far):
         pytest.param(
             datetime(2020, 1, 1, 9, 59, 59, 999999),
             datetime(2020, 1, 1, 12, 00),
-            "1:00:00", "2:00:00",
-            id="Left from interval"),
+            "1:00:00",
+            "2:00:00",
+            id="Left from interval",
+        ),
         pytest.param(
             datetime(2020, 1, 1, 11, 00, 00, 1),
             datetime(2020, 1, 1, 12, 00),
-            "1:00:00", "2:00:00",
-            id="Right from interval"),
+            "1:00:00",
+            "2:00:00",
+            id="Right from interval",
+        ),
         pytest.param(
             datetime(2020, 1, 1, 12, 59, 59, 999999),
             datetime(2020, 1, 1, 12, 00),
-            "1:00:00", "2:00:00",
-            id="Left from interval (future)"),
+            "1:00:00",
+            "2:00:00",
+            id="Left from interval (future)",
+        ),
         pytest.param(
             datetime(2020, 1, 1, 14, 00, 00, 1),
             datetime(2020, 1, 1, 12, 00),
-            "1:00:00", "2:00:00",
-            id="Right from interval (future)"),
+            "1:00:00",
+            "2:00:00",
+            id="Right from interval (future)",
+        ),
     ],
 )
 def test_not_in_offset(dt, dt_ref, near, far):
     time = TimeSpanDelta(near, far, reference=dt_ref)
-    #time.reference = dt_ref
+    # time.reference = dt_ref
     assert time.reference is dt_ref
     assert dt not in time
 

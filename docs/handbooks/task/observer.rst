@@ -32,8 +32,8 @@ as ``True``:
 
     .. code-block:: python
 
-        from rocketry.args import TerminationFlag
-        from rocketry.exc import TaskTerminationException
+        from tocketry.args import TerminationFlag
+        from tocketry.exc import TaskTerminationException
 
         @app.task(permanent=True)
         def monitor(flag=TerminationFlag()):

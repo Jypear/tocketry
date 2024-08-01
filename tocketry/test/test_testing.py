@@ -1,7 +1,8 @@
 import datetime
 
 import pytest
-from rocketry.testing.log import create_task_record
+from tocketry.testing.log import create_task_record
+
 
 def test_create_record(session):
     ts = int(datetime.datetime(2022, 1, 1).timestamp())
@@ -12,7 +13,9 @@ def test_create_record(session):
     assert rec.levelname == "INFO"
     assert rec.name == session.config.task_logger_basename
 
-    rec = create_task_record(task_name="mytask", action="success", created=datetime.datetime(2022, 1, 1))
+    rec = create_task_record(
+        task_name="mytask", action="success", created=datetime.datetime(2022, 1, 1)
+    )
     assert rec.task_name == "mytask"
     assert rec.action == "success"
     assert rec.created == ts

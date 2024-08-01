@@ -2,19 +2,21 @@ from typing import List, Optional, Union
 
 from pydantic import ConfigDict, BaseModel
 
-from rocketry.conditions import Any, All, DependFinish, DependSuccess
-from rocketry.conditions.task import DependFailure
-from rocketry.core import Task
+from tocketry.conditions import Any, All, DependFinish, DependSuccess
+from tocketry.conditions.task import DependFailure
+from tocketry.core import Task
 
-from rocketry import Session
+from tocketry import Session
+
 
 class Link:
-
-    def __init__(self,
-                 parent: Task,
-                 child: Task,
-                 relation: Optional[Union[DependSuccess, DependFailure, DependFinish]]=None,
-                 type: Optional[Union[Any, All]]=None):
+    def __init__(
+        self,
+        parent: Task,
+        child: Task,
+        relation: Optional[Union[DependSuccess, DependFailure, DependFinish]] = None,
+        type: Optional[Union[Any, All]] = None,
+    ):
         self.parent = parent
         self.child = child
         self.relation = relation
@@ -34,13 +36,14 @@ class Link:
         return False
 
     def __str__(self):
-        s = f'{self.parent.name!r} -> {self.child.name!r}'
+        s = f"{self.parent.name!r} -> {self.child.name!r}"
         if self.type is All:
-            s += ' (multi)'
+            s += " (multi)"
         return s
 
     def __repr__(self):
         return f'Link({self.parent.name!r}, {self.child.name!r}, relation={getattr(self.relation, "__name__", None)}, type={getattr(self.type, "__name__", None)})'
+
 
 class Dependencies(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -54,14 +57,19 @@ class Dependencies(BaseModel):
         for task in self.session.tasks:
             yield from self._get_links(task)
 
-    def _get_links(self, task:Task) -> Union[Any, All]:
+    def _get_links(self, task: Task) -> Union[Any, All]:
         cond = task.start_cond
         if isinstance(cond, (Any, All)):
             for subcond in cond:
                 if isinstance(subcond, (DependFinish, DependSuccess, DependFailure)):
                     req_task = subcond.depend_task
                     req_task = self.session[req_task]
-                    yield Link(parent=req_task, child=task, relation=type(subcond), type=type(cond))
+                    yield Link(
+                        parent=req_task,
+                        child=task,
+                        relation=type(subcond),
+                        type=type(cond),
+                    )
         elif isinstance(cond, (DependFinish, DependSuccess, DependFailure)):
             req_task = cond.depend_task
             req_task = self.session[req_task]

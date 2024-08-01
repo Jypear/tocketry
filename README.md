@@ -1,4 +1,4 @@
-<h1 align="center"><a href="https://rocketry.readthedocs.io">Tocketry</a></h1>
+<h1 align="center"><a href="https://tocketry.readthedocs.io">Tocketry</a></h1>
 <h2 align="center">This code is currently a work in progress and not stable</h2>
 <p align="center">
     <em>The fork of the engine to power your Python apps</em>
@@ -8,13 +8,13 @@
 
 ## What is it?
 
-Tocketry is a fork of the project Rocketry created by [Miksus](https://github.com/Miksus)
+Tocketry is a fork of the project Tocketry created by [Miksus](https://github.com/Miksus)
 
 Tocketry is a modern statement-based scheduling framework
 for Python. It is simple, clean and extensive.
 It is suitable for small and big projects.
 
-Tocketry aims to be a lighter version of Rocketry without the need for pydantic as a dependency
+Tocketry aims to be a lighter version of Tocketry without the need for pydantic as a dependency
 
 This is how it looks like:
 

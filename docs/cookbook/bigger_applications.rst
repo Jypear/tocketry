@@ -45,10 +45,10 @@ you could put in each:
 
         .. code-block::
 
-            from rocketry import Rocketry
+            from tocketry import Tocketry
             from app.tasks import morning, evening
 
-            app = Rocketry()
+            app = Tocketry()
 
             # Set Task Groups
             # ---------------
@@ -88,7 +88,7 @@ you could put in each:
 
         .. code-block::
 
-            from rocketry.conds import condition
+            from tocketry.conds import condition
 
             @condition()
             def my_cond():
@@ -100,7 +100,7 @@ you could put in each:
 
         .. code-block::
 
-            from rocketry.args import argument
+            from tocketry.args import argument
 
             @argument()
             def my_value():
@@ -120,7 +120,7 @@ you could put in each:
 
         .. code-block::
 
-            from rocketry import Grouper
+            from tocketry import Grouper
 
             from app.conditions import my_cond
             from app.parameters import my_value

@@ -37,7 +37,7 @@ agreed fixed time span. Such time spans are:
 - month: starts at 1st at 00:00 and ends 28rd-31st at 24:00
 
 Running a task every hour is different than running a task
-hourly in Rocketry. The difference is that the former runs
+hourly in Tocketry. The difference is that the former runs
 every time after 60 minutes has passed but the latter every
 full hour. If time is now 07:15, the former will run at 
 08:15 but the latter will run at 08:00.

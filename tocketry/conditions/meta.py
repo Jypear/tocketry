@@ -1,17 +1,15 @@
-
 import copy
 from typing import Callable, ClassVar, Optional, Pattern, Union
 
 from pydantic import Field
-from rocketry.args import Session
-from rocketry import Session as _Session
+from tocketry.args import Session
+from tocketry import Session as _Session
 
-from rocketry.core.condition import BaseCondition #, Task
-from rocketry.tasks.func import FuncTask
+from tocketry.core.condition import BaseCondition  # , Task
+from tocketry.tasks.func import FuncTask
 
 
 class _FuncTaskCondWrapper(FuncTask):
-
     # For some reason, the order of cls attrs broke here so we need to reorder then:
     session: _Session
     name: Optional[str] = Field(description="Name of the task. Must be unique")
@@ -19,6 +17,7 @@ class _FuncTaskCondWrapper(FuncTask):
     def _handle_return(self, value):
         # Handle the return value of the function
         self.session._cond_states[self.name] = value
+
 
 class TaskCond(BaseCondition):
     """Condition which state is defined by a task
@@ -59,7 +58,7 @@ class TaskCond(BaseCondition):
     --------
     .. code-block:: python
 
-        from rocketry.conditions import TaskCond
+        from tocketry.conditions import TaskCond
 
         @TaskCond(syntax=re.compile("is foo at (?P<place>.+)"), start_cond="every 10 minutes")
         def is_foo(place):
@@ -70,7 +69,7 @@ class TaskCond(BaseCondition):
 
     .. code-block:: python
 
-        from rocketry.tasks import FuncTask
+        from tocketry.tasks import FuncTask
 
         @FuncTask(start_cond="is foo at home")
         def mytask():
@@ -78,13 +77,15 @@ class TaskCond(BaseCondition):
 
     """
 
-    def __init__(self,
-                 session,
-                 func: Callable[..., bool]=None,
-                 active_time:str ="always",
-                 syntax:Union[str, Pattern]=None,
-                 **kwargs):
-        from rocketry.parse import parse_time
+    def __init__(
+        self,
+        session,
+        func: Callable[..., bool] = None,
+        active_time: str = "always",
+        syntax: Union[str, Pattern] = None,
+        **kwargs,
+    ):
+        from tocketry.parse import parse_time
 
         self.func = func
         self.syntax = syntax
@@ -97,17 +98,17 @@ class TaskCond(BaseCondition):
 
         self.session = session
 
-    def _set_task(self, *args, **kwargs) -> 'TaskCond':
+    def _set_task(self, *args, **kwargs) -> "TaskCond":
         "Recreate the condition using args and kwargs"
         new_self = copy.copy(self)
 
         new_self.task = _FuncTaskCondWrapper(
             func=self.func,
-            #on_exists="rename",
+            # on_exists="rename",
             name=f"_condition-{self._get_func_name(self.func)}",
             parameters=kwargs,
             session=self.session,
-            **self.kwds_task
+            **self.kwds_task,
         )
 
         return new_self
@@ -131,8 +132,11 @@ class TaskCond(BaseCondition):
         return self.state
 
     def _set_parsing(self):
-        from rocketry.parse import CondParser
-        self.session._cond_parsers[self.syntax] = CondParser(func=self._set_task, session=self.session, cached=True)
+        from tocketry.parse import CondParser
+
+        self.session._cond_parsers[self.syntax] = CondParser(
+            func=self._set_task, session=self.session, cached=True
+        )
 
     def _get_func_name(self, func):
         func_module = func.__module__

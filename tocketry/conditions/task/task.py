@@ -3,20 +3,25 @@ import datetime
 
 from redbird.oper import in_, greater_equal, between
 
-from rocketry.core.condition import BaseCondition, BaseComparable
-from rocketry.log.utils import get_field_value
-from rocketry.pybox.time import to_timestamp
-from rocketry.time.construct import get_before, get_between, get_full_cycle, get_after, get_on
-from rocketry.args import Task, Session
-from rocketry.core.time.utils import get_period_span
-from rocketry.core.time import TimeDelta
+from tocketry.core.condition import BaseCondition, BaseComparable
+from tocketry.log.utils import get_field_value
+from tocketry.pybox.time import to_timestamp
+from tocketry.time.construct import (
+    get_before,
+    get_between,
+    get_full_cycle,
+    get_after,
+    get_on,
+)
+from tocketry.args import Task, Session
+from tocketry.core.time.utils import get_period_span
+from tocketry.core.time import TimeDelta
 from .utils import DependMixin, TaskStatusMixin
 
 from ..time import IsPeriod
 
 
 class TaskStarted(TaskStatusMixin):
-
     """Condition for whether a task has started
     (for given period).
 
@@ -25,19 +30,20 @@ class TaskStarted(TaskStatusMixin):
 
     **Parsing example:**
 
-    >>> from rocketry.parse import parse_condition
+    >>> from tocketry.parse import parse_condition
     >>> parse_condition("task 'mytask' has started today")
     TaskStarted(task='mytask', period=TimeOfDay(None, None))
     """
-    _action = 'run'
+
+    _action = "run"
 
     def __str__(self):
         if hasattr(self, "_str"):
             return self._str
         period = self.period
         task = self.task
-        task_name = getattr(task, 'name', str(task))
-        period = '' if period is None else f' {period}'
+        task_name = getattr(task, "name", str(task))
+        period = "" if period is None else f" {period}"
         return f"task '{task_name}' started{period}"
 
 
@@ -51,19 +57,20 @@ class TaskFailed(TaskStatusMixin):
 
     **Parsing example:**
 
-    >>> from rocketry.parse import parse_condition
+    >>> from tocketry.parse import parse_condition
     >>> parse_condition("task 'mytask' has failed today between 10:00 and 14:00")
     TaskFailed(task='mytask', period=TimeOfDay('10:00', '14:00'))
     """
-    _action = 'fail'
+
+    _action = "fail"
 
     def __str__(self):
         if hasattr(self, "_str"):
             return self._str
         period = self.period
         task = self.task
-        task_name = getattr(task, 'name', str(task))
-        period = '' if period is None else f' {period}'
+        task_name = getattr(task, "name", str(task))
+        period = "" if period is None else f" {period}"
         return f"task '{task_name}' failed{period}"
 
 
@@ -77,18 +84,20 @@ class TaskTerminated(TaskStatusMixin):
 
     **Parsing example:**
 
-    >>> from rocketry.parse import parse_condition
+    >>> from tocketry.parse import parse_condition
     >>> parse_condition("task 'mytask' has terminated this week after Monday")
     TaskTerminated(task='mytask', period=TimeOfWeek('Monday', None))
     """
-    _action = 'terminate'
+
+    _action = "terminate"
+
     def __str__(self):
         if hasattr(self, "_str"):
             return self._str
         period = self.period
         task = self.task
-        task_name = getattr(task, 'name', str(task))
-        period = '' if period is None else f' {period}'
+        task_name = getattr(task, "name", str(task))
+        period = "" if period is None else f" {period}"
         return f"task '{task_name}' terminated{period}"
 
 
@@ -102,19 +111,20 @@ class TaskSucceeded(TaskStatusMixin):
 
     **Parsing example:**
 
-    >>> from rocketry.parse import parse_condition
+    >>> from tocketry.parse import parse_condition
     >>> parse_condition("task 'mytask' has succeeded this month")
     TaskSucceeded(task='mytask', period=TimeOfMonth(None, None))
     """
-    _action = 'success'
+
+    _action = "success"
 
     def __str__(self):
         if hasattr(self, "_str"):
             return self._str
         period = self.period
         task = self.task
-        task_name = getattr(task, 'name', str(task))
-        period = '' if period is None else f' {period}'
+        task_name = getattr(task, "name", str(task))
+        period = "" if period is None else f" {period}"
         return f"task '{task_name}' succeeded{period}"
 
 
@@ -128,10 +138,11 @@ class TaskFinished(TaskStatusMixin):
 
     **Parsing example:**
 
-    >>> from rocketry.parse import parse_condition
+    >>> from tocketry.parse import parse_condition
     >>> parse_condition("task 'mytask' has finished today")
     TaskFinished(task='mytask', period=TimeOfDay(None, None))
     """
+
     _action = ["success", "fail", "terminate"]
 
     def __str__(self):
@@ -139,13 +150,12 @@ class TaskFinished(TaskStatusMixin):
             return self._str
         period = self.period
         task = self.task
-        task_name = getattr(task, 'name', str(task))
-        period = '' if period is None else f' {period}'
+        task_name = getattr(task, "name", str(task))
+        period = "" if period is None else f" {period}"
         return f"task '{task_name}' finished" + period
 
 
 class TaskRunning(BaseComparable):
-
     """Condition for whether a task is currently
     running.
 
@@ -154,12 +164,12 @@ class TaskRunning(BaseComparable):
 
     **Parsing example:**
 
-    >>> from rocketry.parse import parse_condition
+    >>> from tocketry.parse import parse_condition
     >>> parse_condition("task 'mytask' is running")
     TaskRunning(task='mytask')
     """
 
-    def __init__(self, task=None, period:TimeDelta=None):
+    def __init__(self, task=None, period: TimeDelta = None):
         self.task = task
         self.period = period
         super().__init__()
@@ -174,7 +184,8 @@ class TaskRunning(BaseComparable):
             runs = [
                 run.start
                 for run in task._run_stack
-                if run.is_alive() and start <= session._format_timestamp(run.start) <= end
+                if run.is_alive()
+                and start <= session._format_timestamp(run.start) <= end
             ]
             return runs
 
@@ -188,7 +199,8 @@ class TaskRunning(BaseComparable):
             finishes = [
                 get_field_value(record, "run_id")
                 for record in records
-                if get_field_value(record, "run_id") and get_field_value(record, "action") != "run"
+                if get_field_value(record, "run_id")
+                and get_field_value(record, "action") != "run"
             ]
         except (KeyError, AttributeError):
             # Logs have no run_id
@@ -225,7 +237,7 @@ class TaskRunning(BaseComparable):
         if hasattr(self, "_str"):
             return self._str
         task = self.task
-        task_name = getattr(task, 'name', str(task))
+        task_name = getattr(task, "name", str(task))
         return f"task '{task_name}' is running"
 
 
@@ -238,17 +250,18 @@ class TaskInacted(TaskStatusMixin):
 
     **Parsing example:**
 
-    >>> from rocketry.parse import parse_condition
+    >>> from tocketry.parse import parse_condition
     >>> parse_condition("task 'mytask' has inacted")
     TaskInacted(task='mytask')
     """
-    _action = 'inaction'
+
+    _action = "inaction"
 
     def __str__(self):
         if hasattr(self, "_str"):
             return self._str
         task = self.task
-        task_name = getattr(task, 'name', str(task))
+        task_name = getattr(task, "name", str(task))
         return f"task '{task_name}' inacted"
 
 
@@ -263,7 +276,7 @@ class TaskExecutable(BaseCondition):
 
     **Parsing example:**
 
-    >>> from rocketry.parse import parse_condition
+    >>> from tocketry.parse import parse_condition
     >>> parse_condition("daily between 10:00 and 15:00")
     TaskExecutable(task=None, period=TimeOfDay('10:00', '15:00'))
 
@@ -355,10 +368,7 @@ class TaskRunnable(BaseCondition):
             else IsPeriod(period=period).observe(session=session)
         )
 
-        return (
-            isin_period
-            and has_not_run.observe(task=task, session=session)
-        )
+        return isin_period and has_not_run.observe(task=task, session=session)
 
     def __str__(self):
         if hasattr(self, "_str"):
@@ -381,20 +391,20 @@ class DependFinish(DependMixin):
 
     **Parsing example:**
 
-    >>> from rocketry.parse import parse_condition
+    >>> from tocketry.parse import parse_condition
     >>> parse_condition("after task 'other' finished")
     DependFinish(task=None, depend_task='other')
     """
 
-    _dep_actions = ['success', 'fail']
+    _dep_actions = ["success", "fail"]
 
     def __str__(self):
         if hasattr(self, "_str"):
             return self._str
         task = self.task
         depend_task = self.depend_task
-        task_name = getattr(task, 'name', str(task))
-        depend_task_name = getattr(depend_task, 'name', str(depend_task))
+        task_name = getattr(task, "name", str(task))
+        depend_task_name = getattr(depend_task, "name", str(depend_task))
         return f"task '{depend_task_name}' finished before '{task_name}' started"
 
 
@@ -409,21 +419,21 @@ class DependSuccess(DependMixin):
 
     **Parsing example:**
 
-    >>> from rocketry.parse import parse_condition
+    >>> from tocketry.parse import parse_condition
     >>> parse_condition("after task 'other' succeeded")
     DependSuccess(task=None, depend_task='other')
 
     """
 
-    _dep_actions = ['success']
+    _dep_actions = ["success"]
 
     def __str__(self):
         if hasattr(self, "_str"):
             return self._str
         task = self.task
         depend_task = self.depend_task
-        task_name = getattr(task, 'name', str(task))
-        depend_task_name = getattr(depend_task, 'name', str(depend_task))
+        task_name = getattr(task, "name", str(task))
+        depend_task_name = getattr(depend_task, "name", str(depend_task))
         return f"task '{depend_task_name}' succeeded before '{task_name}' started"
 
 
@@ -438,24 +448,26 @@ class DependFailure(DependMixin):
 
     **Parsing example:**
 
-    >>> from rocketry.parse import parse_condition
+    >>> from tocketry.parse import parse_condition
     >>> parse_condition("after task 'other' failed")
     DependFailure(task=None, depend_task='other')
     """
 
-    _dep_actions = ['fail']
+    _dep_actions = ["fail"]
 
     def __str__(self):
         if hasattr(self, "_str"):
             return self._str
         task = self.task
         depend_task = self.depend_task
-        task_name = getattr(task, 'name', str(task))
-        depend_task_name = getattr(depend_task, 'name', str(depend_task))
+        task_name = getattr(task, "name", str(task))
+        depend_task_name = getattr(depend_task, "name", str(depend_task))
         return f"task '{depend_task_name}' failed before '{task_name}' started"
+
 
 class Retry(BaseCondition):
     """Condition for retrying failed attempts"""
+
     def __init__(self, n: Optional[int] = 1):
         self.n = int(n) if n is not None else -1
         super().__init__()
@@ -471,13 +483,12 @@ class Retry(BaseCondition):
             return True
 
         last_non_fail = task.logger.filter_by(
-            action=in_(['success', 'crash', 'inaction', 'terminate'])
+            action=in_(["success", "crash", "inaction", "terminate"])
         ).last()
 
         last_non_fail_created = 0 if last_non_fail is None else last_non_fail.created
 
         n_failed_in_row = task.logger.filter_by(
-            created=greater_equal(last_non_fail_created),
-            action='fail'
+            created=greater_equal(last_non_fail_created), action="fail"
         ).count()
         return self.n >= n_failed_in_row

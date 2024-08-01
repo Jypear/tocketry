@@ -61,7 +61,7 @@ Here is an example:
     
     .. code-block:: python
 
-        from rocketry.conds import minutely
+        from tocketry.conds import minutely
 
         @app.task()
         def do_things(arg):
@@ -110,7 +110,7 @@ To set function parameters:
 
 .. code-block:: python
 
-    from rocketry.args import SimpleArg
+    from tocketry.args import SimpleArg
 
     @app.task()
     def do_things(arg=SimpleArg('a value')):
@@ -133,7 +133,7 @@ To set session parameters:
 
 .. code-block:: python
 
-    from rocketry.args import SimpleArg
+    from tocketry.args import SimpleArg
 
     app.params(arg=SimpleArg('a value'))
 
@@ -155,7 +155,7 @@ To use in custom condtion:
 
 .. code-block:: python
 
-    from rocketry.args import Arg
+    from tocketry.args import Arg
 
     @app.cond("is foo")
     def is_foo(arg=Arg("my_arg")):

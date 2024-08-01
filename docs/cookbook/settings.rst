@@ -5,16 +5,16 @@ App Settings
 
 There are various ways to configure your application.
 Recommended way is to use the setup hook to 
-benefit Rocketry's dynamic arguments.
+benefit Tocketry's dynamic arguments.
 
 Here is a simple example to set some configurations:
 
 .. code-block:: python
 
-    from rocketry import Rocketry
-    from rocketry.args import Config
+    from tocketry import Tocketry
+    from tocketry.args import Config
     
-    app = Rocketry()
+    app = Tocketry()
 
     @app.setup()
     def set_config(config=Config()):
@@ -41,11 +41,11 @@ are in production or test:
     from redbird.repos import SQLRepo
     from sqlalchemy import create_engine
 
-    from rocketry import Rocketry
-    from rocketry.args import TaskLogger, Config, EnvArg, Session
-    from rocketry.log import MinimalRecord
+    from tocketry import Tocketry
+    from tocketry.args import TaskLogger, Config, EnvArg, Session
+    from tocketry.log import MinimalRecord
 
-    app = Rocketry()
+    app = Tocketry()
 
     @app.setup()
     def set_repo(logger=TaskLogger()):

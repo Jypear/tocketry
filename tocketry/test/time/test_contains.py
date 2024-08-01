@@ -1,4 +1,3 @@
-
 """
 Test whether a time is inside of an interval.
 Also tests conditions.IsPeriod that is essentially a
@@ -6,16 +5,16 @@ wrapper for periods.
 """
 
 import pytest
-from rocketry.pybox.time.convert import to_datetime
+from tocketry.pybox.time.convert import to_datetime
 
-from rocketry.time.interval import (
+from tocketry.time.interval import (
     TimeOfHour,
     TimeOfDay,
     TimeOfWeek,
     TimeOfMonth,
     TimeOfYear,
 )
-from rocketry.conditions import IsPeriod
+from tocketry.conditions import IsPeriod
 
 
 true_cases = [
@@ -44,56 +43,55 @@ true_cases = [
         "start": "45:00",
         "end": "15:00",
     },
-
     # TimeOfDay
     {
         "cls": TimeOfDay,
         "dt": "2020-01-01 10:00",
         "start": "09:00",
         "end": "12:00",
-        "id": "In period"
+        "id": "In period",
     },
     {
         "cls": TimeOfDay,
         "dt": "2020-01-01 23:00",
         "start": "22:00",
         "end": "02:00",
-        "id": "In period overnight before mid-night"
+        "id": "In period overnight before mid-night",
     },
     {
         "cls": TimeOfDay,
         "dt": "2020-01-01 01:00",
         "start": "22:00",
         "end": "02:00",
-        "id": "In period overnight after mid-night"
+        "id": "In period overnight after mid-night",
     },
     {
         "cls": TimeOfDay,
         "dt": "2020-01-01 09:00",
         "start": "10:00",
         "end": "10:00",
-        "id": "Full left"
+        "id": "Full left",
     },
     {
         "cls": TimeOfDay,
         "dt": "2020-01-01 11:00",
         "start": "10:00",
         "end": "10:00",
-        "id": "Full right"
+        "id": "Full right",
     },
     {
         "cls": TimeOfDay,
         "dt": "2020-01-01 10:00",
         "start": "10:00",
         "end": "10:00",
-        "id": "Full mid"
+        "id": "Full mid",
     },
     {
         "cls": TimeOfDay,
         "dt": "2020-01-01 10:00",
         "start": None,
         "end": None,
-        "id": "Full"
+        "id": "Full",
     },
     {
         "cls": TimeOfDay,
@@ -101,41 +99,39 @@ true_cases = [
         "start": "10:00",
         "end": None,
         "time_point": True,
-        "id": "at"
+        "id": "at",
     },
-
     # TimeOfWeek
     {
         "cls": TimeOfDay,
-        "dt": "2024-01-01 01:00", # 2024 starts from monday
+        "dt": "2024-01-01 01:00",  # 2024 starts from monday
         "start": "Mon",
         "end": "Wed",
     },
     {
         "cls": TimeOfDay,
-        "dt": "2024-01-03 01:00", # 2024 starts from monday
+        "dt": "2024-01-03 01:00",  # 2024 starts from monday
         "start": "Mon",
         "end": "Wed",
     },
     {
         "cls": TimeOfWeek,
-        "dt": "2024-01-02 01:00", # 2024 starts from monday
+        "dt": "2024-01-02 01:00",  # 2024 starts from monday
         "start": "Tue",
         "end": "Tue",
     },
     {
         "cls": TimeOfWeek,
-        "dt": "2024-01-07 01:00", # 2024 starts from monday
+        "dt": "2024-01-07 01:00",  # 2024 starts from monday
         "start": "Tue",
         "end": None,
     },
     {
         "cls": TimeOfWeek,
-        "dt": "2024-01-07 01:00", # 2024 starts from monday
+        "dt": "2024-01-07 01:00",  # 2024 starts from monday
         "start": None,
         "end": None,
     },
-
     # TimeOfMonth
     {
         "cls": TimeOfMonth,
@@ -149,7 +145,6 @@ true_cases = [
         "start": "5th",
         "end": "10th",
     },
-
     # TimeOfYear
     {
         "cls": TimeOfYear,
@@ -216,35 +211,34 @@ false_cases = [
         "start": "1 quarter",
         "end": "3 quarter",
     },
-
     # TimeOfDay
     {
         "cls": TimeOfDay,
         "dt": "2020-01-01 08:00",
         "start": "09:00",
         "end": "12:00",
-        "id": "Before period"
+        "id": "Before period",
     },
     {
         "cls": TimeOfDay,
         "dt": "2020-01-01 13:00",
         "start": "09:00",
         "end": "12:00",
-        "id": "After period"
+        "id": "After period",
     },
     {
         "cls": TimeOfDay,
         "dt": "2020-01-01 21:00",
         "start": "22:00",
         "end": "02:00",
-        "id": "Before period overnight"
+        "id": "Before period overnight",
     },
     {
         "cls": TimeOfDay,
         "dt": "2020-01-01 03:00",
         "start": "22:00",
         "end": "02:00",
-        "id": "After period overnight"
+        "id": "After period overnight",
     },
     {
         "cls": TimeOfDay,
@@ -252,7 +246,7 @@ false_cases = [
         "start": "10:00",
         "end": None,
         "time_point": True,
-        "id": "left of at"
+        "id": "left of at",
     },
     {
         "cls": TimeOfDay,
@@ -260,47 +254,45 @@ false_cases = [
         "start": "10:00",
         "end": None,
         "time_point": True,
-        "id": "right of at"
+        "id": "right of at",
     },
-
     # IsTimeOfWeek
     {
         "cls": TimeOfWeek,
-        "dt": "2024-01-01 23:59:59.999", # 2024 starts from monday
+        "dt": "2024-01-01 23:59:59.999",  # 2024 starts from monday
         "start": "Tue",
         "end": "Wed",
     },
     {
         "cls": TimeOfWeek,
-        "dt": "2024-01-04 00:00:00.001", # 2024 starts from monday
+        "dt": "2024-01-04 00:00:00.001",  # 2024 starts from monday
         "start": "Tue",
         "end": "Wed",
     },
     {
         "cls": TimeOfWeek,
-        "dt": "2024-01-01 23:59:59.999", # 2024 starts from monday
+        "dt": "2024-01-01 23:59:59.999",  # 2024 starts from monday
         "start": "Tue",
         "end": "Tue",
     },
     {
         "cls": TimeOfWeek,
-        "dt": "2024-01-03 01:00", # 2024 starts from monday
+        "dt": "2024-01-03 01:00",  # 2024 starts from monday
         "start": "Tue",
         "end": "Tue",
     },
     {
         "cls": TimeOfWeek,
-        "dt": "2024-01-01 01:00", # 2024 starts from monday
+        "dt": "2024-01-01 01:00",  # 2024 starts from monday
         "start": "Tue",
         "end": None,
     },
     {
         "cls": TimeOfWeek,
-        "dt": "2024-01-06 01:00", # 2024 starts from monday
+        "dt": "2024-01-06 01:00",  # 2024 starts from monday
         "start": None,
         "end": "Fri",
     },
-
     # TimeOfMonth
     {
         "cls": TimeOfMonth,
@@ -332,7 +324,6 @@ false_cases = [
         "start": "29th",
         "end": "5th",
     },
-
     # TimeOfYear
     {
         "cls": TimeOfYear,
@@ -361,6 +352,7 @@ false_cases = [
     },
 ]
 
+
 def _to_pyparams(cases):
     return pytest.mark.parametrize(
         "dt,start,end,cls,time_point",
@@ -370,12 +362,13 @@ def _to_pyparams(cases):
                 case["start"],
                 case["end"],
                 case["cls"],
-                case.get('time_point', None),
-                id=f"{case['cls'].__name__}({case['start']}, {case['end']}) --> {case['dt']}{' with time_point' if 'time_point' in case else ''}"
+                case.get("time_point", None),
+                id=f"{case['cls'].__name__}({case['start']}, {case['end']}) --> {case['dt']}{' with time_point' if 'time_point' in case else ''}",
             )
             for case in cases
-        ]
+        ],
     )
+
 
 @_to_pyparams(true_cases)
 def test_in(dt, start, end, cls, time_point):
@@ -384,6 +377,7 @@ def test_in(dt, start, end, cls, time_point):
 
     assert dt in time
 
+
 @_to_pyparams(false_cases)
 def test_not(dt, start, end, cls, time_point):
     dt = to_datetime(dt)
@@ -391,12 +385,14 @@ def test_not(dt, start, end, cls, time_point):
 
     assert dt not in time
 
+
 # Test conditions
 @_to_pyparams(true_cases)
 def test_true(dt, start, end, cls, time_point, mock_datetime_now, session):
     mock_datetime_now(dt)
     cond = IsPeriod(cls(start, end, time_point=time_point))
     assert cond.observe(session=session)
+
 
 @_to_pyparams(false_cases)
 def test_false(dt, start, end, cls, time_point, mock_datetime_now, session):

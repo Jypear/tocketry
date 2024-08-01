@@ -1,15 +1,18 @@
 import pytest
-from rocketry.args.builtin import SimpleArg
-from rocketry.conditions.task.task import TaskStarted
-from rocketry.core.parameters.parameters import Parameters
-from rocketry.tasks import FuncTask
-from rocketry.conditions import SchedulerCycles, AlwaysFalse
+from tocketry.args.builtin import SimpleArg
+from tocketry.conditions.task.task import TaskStarted
+from tocketry.core.parameters.parameters import Parameters
+from tocketry.tasks import FuncTask
+from tocketry.conditions import SchedulerCycles, AlwaysFalse
+
 
 def run_succeeding():
     pass
 
+
 def run_parametrized(arg=SimpleArg("incorrect")):
     assert arg == "correct"
+
 
 @pytest.mark.parametrize("execution", ["main", "thread", "process"])
 def test_set_running(execution, session):
@@ -18,7 +21,7 @@ def test_set_running(execution, session):
         start_cond=AlwaysFalse(),
         name="task",
         execution=execution,
-        session=session
+        session=session,
     )
     assert task.batches == []
     task.run()
@@ -34,6 +37,7 @@ def test_set_running(execution, session):
 
     assert len(task.batches) == 0
 
+
 @pytest.mark.parametrize("execution", ["main", "thread", "process"])
 def test_set_running_with_params(execution, session):
     task = FuncTask(
@@ -41,13 +45,15 @@ def test_set_running_with_params(execution, session):
         start_cond=AlwaysFalse(),
         name="task",
         execution=execution,
-        session=session
+        session=session,
     )
     task.run(arg="correct")
     task.run(arg="correct")
     task.run(arg="incorrect")
     assert task.batches == [
-        Parameters({"arg": "correct"}), Parameters({"arg": "correct"}), Parameters({"arg": "incorrect"})
+        Parameters({"arg": "correct"}),
+        Parameters({"arg": "correct"}),
+        Parameters({"arg": "incorrect"}),
     ]
 
     session.config.shut_cond = TaskStarted(task=task) == 3
@@ -59,6 +65,7 @@ def test_set_running_with_params(execution, session):
     assert 1 == logger.filter_by(action="fail").count()
 
     assert len(task.batches) == 0
+
 
 @pytest.mark.parametrize("execution", ["main", "thread", "process"])
 def test_set_running_disabled(execution, session):
@@ -72,7 +79,7 @@ def test_set_running_disabled(execution, session):
         start_cond=AlwaysFalse(),
         name="task",
         execution=execution,
-        session=session
+        session=session,
     )
     task.disabled = True
     task.run()
@@ -87,8 +94,10 @@ def test_set_running_disabled(execution, session):
 
     assert task.disabled
 
+
 # Deprecated
 # ----------
+
 
 @pytest.mark.parametrize("execution", ["main", "thread", "process"])
 def test_task_force_run(execution, session):
@@ -97,7 +106,7 @@ def test_task_force_run(execution, session):
         start_cond=AlwaysFalse(),
         name="task",
         execution=execution,
-        session=session
+        session=session,
     )
     with pytest.warns(DeprecationWarning):
         task.force_run = True
@@ -111,6 +120,7 @@ def test_task_force_run(execution, session):
     # The force_run should have reseted as it should have run once
     assert not task.force_run
 
+
 @pytest.mark.parametrize("execution", ["main", "thread", "process"])
 def test_task_force_disabled(execution, session):
     # NOTE: force_run overrides disabled
@@ -123,7 +133,7 @@ def test_task_force_disabled(execution, session):
         start_cond=AlwaysFalse(),
         name="task",
         execution=execution,
-        session=session
+        session=session,
     )
     task.disabled = True
     with pytest.warns(DeprecationWarning):
@@ -138,4 +148,4 @@ def test_task_force_disabled(execution, session):
     assert 1 == logger.filter_by(action="success").count()
 
     assert task.disabled
-    assert not task.force_run # This should be reseted
+    assert not task.force_run  # This should be reseted

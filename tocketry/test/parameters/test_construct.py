@@ -1,11 +1,11 @@
-
 import pytest
-import rocketry
-from rocketry.args import FuncArg
+import tocketry
+from tocketry.args import FuncArg
 
-from rocketry.core import Parameters
-from rocketry.args import Private
-from rocketry.parameters import FuncParam
+from tocketry.core import Parameters
+from tocketry.args import Private
+from tocketry.parameters import FuncParam
+
 
 @pytest.mark.parametrize(
     "get_param,mater,repr",
@@ -14,17 +14,20 @@ from rocketry.parameters import FuncParam
             lambda: Parameters({"x": 0, "y": 1}),
             {"x": 0, "y": 1},
             {"x": 0, "y": 1},
-            id="Dict"),
+            id="Dict",
+        ),
         pytest.param(
             lambda: Parameters(x=0, y=1),
             {"x": 0, "y": 1},
             {"x": 0, "y": 1},
-            id="Kwargs"),
+            id="Kwargs",
+        ),
         pytest.param(
             lambda: Parameters(password="pwd1234", user_id="myself", type_=Private),
             {"password": "pwd1234", "user_id": "myself"},
             {"password": "*****", "user_id": "*****"},
-            id="Dict as private"),
+            id="Dict as private",
+        ),
     ],
 )
 def test_contruct(get_param, mater, repr):
@@ -35,7 +38,6 @@ def test_contruct(get_param, mater, repr):
 
 
 def test_from_func(session):
-
     assert "myparam" not in session.parameters
     assert "a_param" not in session.parameters
 
@@ -55,24 +57,26 @@ def test_from_func(session):
     assert "a_param" in session.parameters
     assert session.parameters.materialize() == {"a_param": 5}
 
-def test_func_param(session:rocketry.Session):
+
+def test_func_param(session: tocketry.Session):
     @FuncParam()
     def my_param():
         return 5
 
     assert my_param() == 5
-    assert 'my_param' in session.parameters
-    assert isinstance(session.parameters._params['my_param'], FuncArg)
-    assert session.parameters['my_param'] == 5
-    assert session.parameters._params['my_param'].func is my_param
+    assert "my_param" in session.parameters
+    assert isinstance(session.parameters._params["my_param"], FuncArg)
+    assert session.parameters["my_param"] == 5
+    assert session.parameters._params["my_param"].func is my_param
 
-def test_func_param_named(session:rocketry.Session):
+
+def test_func_param_named(session: tocketry.Session):
     @FuncParam(name="a_param")
     def my_param():
         return 5
 
     assert my_param() == 5
-    assert 'a_param' in session.parameters
-    assert isinstance(session.parameters._params['a_param'], FuncArg)
-    assert session.parameters['a_param'] == 5
-    assert session.parameters._params['a_param'].func is my_param
+    assert "a_param" in session.parameters
+    assert isinstance(session.parameters._params["a_param"], FuncArg)
+    assert session.parameters["a_param"] == 5
+    assert session.parameters._params["a_param"].func is my_param

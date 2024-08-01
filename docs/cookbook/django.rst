@@ -9,9 +9,9 @@ First, let's `create a new command <https://docs.djangoproject.com/en/4.1/howto/
 
 .. code-block:: python
 
-    # Create Rocketry app
-    from rocketry import Rocketry
-    app = Rocketry(execution="async")
+    # Create Tocketry app
+    from tocketry import Tocketry
+    app = Tocketry(execution="async")
 
     # import BaseCommand
     from django.core.management.base import BaseCommand
@@ -61,9 +61,9 @@ For our example, we will use the same file for simplicity, but it's fine to move
 
 .. code-block:: python
 
-    # Create Rocketry app
-    from rocketry import Rocketry
-    app = Rocketry(execution="async")
+    # Create Tocketry app
+    from tocketry import Tocketry
+    app = Tocketry(execution="async")
 
     # import BaseCommand
     from django.core.management.base import BaseCommand

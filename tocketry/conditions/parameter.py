@@ -1,9 +1,9 @@
-
 import re
 from typing import Union
 
-from rocketry.core.condition import BaseCondition
-from rocketry.args import Session
+from tocketry.core.condition import BaseCondition
+from tocketry.args import Session
+
 
 class IsEnv(BaseCondition):
     """Condition checks whether session parameter `env`
@@ -17,11 +17,11 @@ class IsEnv(BaseCondition):
 
     Examples
     --------
-    >>> from rocketry.conditions import IsEnv
+    >>> from tocketry.conditions import IsEnv
     >>> is_prod = IsEnv("prod")
 
     >>> # Correct environment
-    >>> from rocketry import session
+    >>> from tocketry import session
     >>> session.env = 'prod'
     >>> bool(is_prod)
     True
@@ -31,6 +31,7 @@ class IsEnv(BaseCondition):
     >>> bool(is_prod)
     False
     """
+
     __parsers__ = {re.compile(r"env '(?P<env>.+)'"): "__init__"}
 
     def __init__(self, env):
@@ -38,6 +39,7 @@ class IsEnv(BaseCondition):
 
     def get_state(self, session=Session()):
         return session.parameters.get("env", None) == self.env
+
 
 class ParamExists(BaseCondition):
     """Condition to check whether parameter(s) (and their values)
@@ -56,11 +58,11 @@ class ParamExists(BaseCondition):
 
     Examples
     --------
-    >>> from rocketry.conditions import ParamExists
+    >>> from tocketry.conditions import ParamExists
     >>> condition = ParamExists("z", x=1, y=2)
 
     >>> # Parameters found
-    >>> from rocketry import session
+    >>> from tocketry import session
     >>> session.parameters = {"x": 1, "y": 2, "z": 3, "k": 4}
     >>> bool(condition)
     True
@@ -70,13 +72,14 @@ class ParamExists(BaseCondition):
     >>> bool(condition)
     False
     """
+
     __parsers__ = {
         re.compile(r"param '(?P<l>.+)' exists"): "_from_list",
         re.compile(r"param '(?P<key>.+)' is '(?P<value>.+)'"): "_from_key_value",
     }
 
-    param_keys:dict
-    param_vals:tuple
+    param_keys: dict
+    param_vals: tuple
 
     def __init__(self, *args, **kwargs):
         self.param_keys = args
@@ -96,9 +99,9 @@ class ParamExists(BaseCondition):
         return True
 
     @classmethod
-    def _from_list(cls, l:Union[tuple, list]):
+    def _from_list(cls, l: Union[tuple, list]):
         return cls(*l)
 
     @classmethod
-    def _from_key_value(cls, key:str, value):
+    def _from_key_value(cls, key: str, value):
         return cls(**{key: value})

@@ -1,9 +1,10 @@
-from rocketry.args import Return
+from tocketry.args import Return
+
 
 @app.task()
 def do_first():
+    return "Hello World"
 
-    return 'Hello World'
 
 @app.task()
 def do_second(arg=Return(do_first)):

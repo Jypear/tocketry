@@ -256,7 +256,7 @@ class FuncArg(BaseArgument):
 
     .. doctest:: funcarg
 
-        >>> from tocketry.import session
+        >>> from tocketry import session
         >>> session.parameters
         Parameters(myarg1=FuncArg(myarg1), myarg2=FuncArg(myfunc))
     """

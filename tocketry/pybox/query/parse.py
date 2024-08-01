@@ -1,13 +1,9 @@
 from typing import List
 from collections import Counter
 
-from .base import (
-    Key,
-    Any,
-    Equal, NotEqual, GreaterEqual, LessEqual,
-    true
-)
+from .base import Key, Any, Equal, NotEqual, GreaterEqual, LessEqual, true
 from .string import Regex
+
 
 class Parser:
     """Parse various formats to a generic query language
@@ -18,24 +14,25 @@ class Parser:
     """
 
     operators = {
-        'min': GreaterEqual,
-        'max': LessEqual,
-        'not': NotEqual,
-        'regex': Regex,
+        "min": GreaterEqual,
+        "max": LessEqual,
+        "not": NotEqual,
+        "regex": Regex,
     }
+
     def _get_operation(self, key, val):
-        if '$' in key:
-            key, oper = key.split('$')
+        if "$" in key:
+            key, oper = key.split("$")
             cls_oper = self.operators[oper]
             return cls_oper(Key(key), val)
         return Equal(Key(key), val)
 
-    def from_dict(self, d:dict):
+    def from_dict(self, d: dict):
         """Parse query from dict
 
         Examples
         --------
-        >>> from rocketry.pybox.query import parser
+        >>> from tocketry.pybox.query import parser
         >>> qry = parser.from_dict({
         ...     'mydate$min': '2021-07-01',
         ...     'mydate$max': '2021-07-15',
@@ -60,12 +57,12 @@ class Parser:
             return true
         return statement
 
-    def from_tuples(self, l:List[tuple]):
+    def from_tuples(self, l: List[tuple]):
         """Parse query from list of tuples
 
         Examples
         --------
-        >>> from rocketry.pybox.query import parser
+        >>> from tocketry.pybox.query import parser
         >>> qry = parser.from_tuples([
         ...     ('mydate$min', '2021-07-01'),
         ...     ('mydate$max', '2021-07-15'),
@@ -105,7 +102,7 @@ class Parser:
 
         Examples
         --------
-        >>> from rocketry.pybox.query import parser
+        >>> from tocketry.pybox.query import parser
         >>> qry = parser.from_kwargs(
         ...     mydate=('2021-07-01', '2021-07-15'),
         ...     mykey='this'
@@ -120,7 +117,9 @@ class Parser:
                 # A range
                 min_, max_ = val
                 if min_ is not None and max_ is not None:
-                    substatement = GreaterEqual(Key(key), min_) & LessEqual(Key(key), max_)
+                    substatement = GreaterEqual(Key(key), min_) & LessEqual(
+                        Key(key), max_
+                    )
                 elif min_ is not None:
                     substatement = GreaterEqual(Key(key), min_)
                 elif max_ is not None:

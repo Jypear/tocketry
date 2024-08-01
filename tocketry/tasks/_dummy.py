@@ -1,4 +1,6 @@
-from rocketry.core import Task
+from tocketry.core import Task
+
+
 class _DummyTask(Task):
     """
     Not used within core application. Only used in UnitTests
@@ -6,5 +8,6 @@ class _DummyTask(Task):
     to allow for use inside unit tests. Provides basic implementation
     of Task classs and overwrites required abstractmethods.
     """
+
     def execute(self, *args, **kwargs):
         return

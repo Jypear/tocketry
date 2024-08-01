@@ -21,7 +21,7 @@ which are both integers. This condition checks whether
 the scheduler has looped through the tasks for given
 number of time. This is useful for testing to, for example,
 do a short test that the scheduler launches your task.
-It is extensively used in Rocketry's unit tests.
+It is extensively used in Tocketry's unit tests.
 
 .. literalinclude:: /code/conds/api/scheduler_cycles.py
     :language: py

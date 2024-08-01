@@ -1,16 +1,14 @@
-
 import pytest
-from rocketry.pybox.time.convert import to_datetime
+from tocketry.pybox.time.convert import to_datetime
 
-from rocketry.time.interval import (
-    TimeOfWeek
-)
+from tocketry.time.interval import TimeOfWeek
 
-MS_IN_SECOND = 1e+6
-MS_IN_MINUTE = 1e+6 * 60
-MS_IN_HOUR   = 1e+6 * 60 * 60
-MS_IN_DAY    = 1e+6 * 60 * 60 * 24
-MS_IN_WEEK   = 1e+6 * 60 * 60 * 24 * 7
+MS_IN_SECOND = 1e6
+MS_IN_MINUTE = 1e6 * 60
+MS_IN_HOUR = 1e6 * 60 * 60
+MS_IN_DAY = 1e6 * 60 * 60 * 24
+MS_IN_WEEK = 1e6 * 60 * 60 * 24 * 7
+
 
 # TimeOfWeek
 # Year 2024 was chosen as it starts on monday
@@ -19,15 +17,14 @@ MS_IN_WEEK   = 1e+6 * 60 * 60 * 24 * 7
     [
         # Regular
         pytest.param(
-            to_datetime("2024-01-01 00:00:00"),
-            "Mon 00:00:00",
-            0,
-            id="Beginning"),
+            to_datetime("2024-01-01 00:00:00"), "Mon 00:00:00", 0, id="Beginning"
+        ),
         pytest.param(
             to_datetime("2024-01-07 23:59:59.999999"),
             "Sun 23:59:59.999999",
             604799999999,
-            id="Ending"),
+            id="Ending",
+        ),
     ],
 )
 def test_anchor_equal(dt, string, ms):
@@ -42,14 +39,18 @@ def test_anchor_equal(dt, string, ms):
         pytest.param(
             "Mon 00:00:00",
             "Sun 23:59:59.999999000",
-            0, MS_IN_WEEK - 1,
-            id="Strings: full"),
+            0,
+            MS_IN_WEEK - 1,
+            id="Strings: full",
+        ),
         pytest.param(
             # From Tue 00:00 to Wed 23:59:59.000 ()
             "Tue",
-            "Wed", #
-            MS_IN_DAY, MS_IN_DAY * 3,
-            id="Strings: minimal"),
+            "Wed",  #
+            MS_IN_DAY,
+            MS_IN_DAY * 3,
+            id="Strings: minimal",
+        ),
     ],
 )
 def test_construct(start, end, start_ms, end_ms):

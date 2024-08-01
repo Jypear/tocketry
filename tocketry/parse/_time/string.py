@@ -1,6 +1,7 @@
-from rocketry.core.time import Any, All
+from tocketry.core.time import Any, All
 from ..utils.string_parser import InstructionParser
 from .time_item import parse_time_item
+
 
 def _flatten(*args, types, with_attr):
     comps = []
@@ -11,13 +12,16 @@ def _flatten(*args, types, with_attr):
             comps.append(arg)
     return comps
 
+
 def _parse_any(*args):
     comps = _flatten(*args, types=Any, with_attr="periods")
     return Any(*comps)
 
+
 def _parse_all(*args):
     comps = _flatten(*args, types=All, with_attr="periods")
     return All(*comps)
+
 
 parse_time_string = InstructionParser(
     parse_time_item,
@@ -32,5 +36,5 @@ parse_time_string = InstructionParser(
             "func": _parse_any,
             "side": "both",
         },
-    ]
+    ],
 )

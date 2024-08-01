@@ -1,15 +1,15 @@
 from redbird.oper import in_, between
 
-from rocketry.core.condition import All, Any
-from rocketry.args import Task, Session
-from rocketry.core.condition import BaseCondition
-from rocketry.core.condition.base import BaseComparable
-from rocketry.core.time.utils import get_period_span
-from rocketry.pybox.time import to_timestamp
-from rocketry.log.utils import get_field_value
+from tocketry.core.condition import All, Any
+from tocketry.args import Task, Session
+from tocketry.core.condition import BaseCondition
+from tocketry.core.condition.base import BaseComparable
+from tocketry.core.time.utils import get_period_span
+from tocketry.pybox.time import to_timestamp
+from tocketry.log.utils import get_field_value
+
 
 class DependMixin(BaseCondition):
-
     _dep_actions = None
 
     def __init__(self, depend_task, task=None):
@@ -18,16 +18,18 @@ class DependMixin(BaseCondition):
         super().__init__()
 
     @classmethod
-    def _parse_multi_all(cls, depend_tasks:str, task=None):
-        from rocketry.parse import ParserError
+    def _parse_multi_all(cls, depend_tasks: str, task=None):
+        from tocketry.parse import ParserError
+
         tasks = depend_tasks.split("', '")
         if not tasks:
             raise ParserError
         return All(*(cls(depend_task=dep_task, task=task) for dep_task in tasks))
 
     @classmethod
-    def _parse_multi_any(cls, depend_tasks:str, task=None):
-        from rocketry.parse import ParserError
+    def _parse_multi_any(cls, depend_tasks: str, task=None):
+        from tocketry.parse import ParserError
+
         tasks = depend_tasks.split("', '")
         if not tasks:
             raise ParserError
@@ -38,7 +40,9 @@ class DependMixin(BaseCondition):
         depend_task = session[self.depend_task]
 
         #! TODO: use Task._last_success & Task._last_run if not none and not forced
-        last_depend_finish = depend_task.logger.get_latest(action=in_(self._dep_actions))
+        last_depend_finish = depend_task.logger.get_latest(
+            action=in_(self._dep_actions)
+        )
         last_actual_start = actual_task.logger.get_latest(action="run")
 
         if not last_depend_finish:
@@ -48,10 +52,12 @@ class DependMixin(BaseCondition):
             # Depend has succeeded but the actual task has not
             return True
 
-        return get_field_value(last_depend_finish, "created") > get_field_value(last_actual_start, "created")
+        return get_field_value(last_depend_finish, "created") > get_field_value(
+            last_actual_start, "created"
+        )
+
 
 class TaskStatusMixin(BaseComparable):
-
     _action = None
 
     def __init__(self, period=None, task=None):
@@ -61,22 +67,25 @@ class TaskStatusMixin(BaseComparable):
 
     def get_measurement(self, task=Task(default=None), session=Session()):
         task = session[self.task] if self.task is not None else task
-        _start_, _end_ = get_period_span(self.period if self.period is not None else task.period, session=session)
+        _start_, _end_ = get_period_span(
+            self.period if self.period is not None else task.period, session=session
+        )
 
         allow_optimization = not self.session.config.force_status_from_logs
 
         if allow_optimization:
-
             # Get features that could be used to bypass reading logs
             if isinstance(self._action, str):
-                last_occur = getattr(task, f'last_{self._action}')
-                occurred_on_period = _start_ <= last_occur <= _end_ if last_occur is not None else False
+                last_occur = getattr(task, f"last_{self._action}")
+                occurred_on_period = (
+                    _start_ <= last_occur <= _end_ if last_occur is not None else False
+                )
                 cannot_have_occurred = last_occur is None or last_occur < _start_
             else:
                 # Multiple actions
                 cannot_have_occurred = True
                 for action in self._action:
-                    last_occur = getattr(task, f'last_{action}')
+                    last_occur = getattr(task, f"last_{action}")
                     if last_occur is not None and _start_ <= last_occur <= _end_:
                         occurred_on_period = True
                         cannot_have_occurred = False
@@ -100,15 +109,13 @@ class TaskStatusMixin(BaseComparable):
                 if occurred_on_period:
                     return True
 
-
         records = task.logger.get_records(
             created=between(to_timestamp(_start_), to_timestamp(_end_)),
-            action=in_(self._action) if isinstance(self._action, list) else self._action
+            action=in_(self._action)
+            if isinstance(self._action, list)
+            else self._action,
         )
-        return [
-            get_field_value(record, "created")
-            for record in records
-        ]
+        return [get_field_value(record, "created") for record in records]
 
     def __str__(self):
         if hasattr(self, "_str"):

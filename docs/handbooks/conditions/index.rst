@@ -3,7 +3,7 @@
 Conditions
 ==========
 
-Rocketry's scheduling system works with conditions
+Tocketry's scheduling system works with conditions
 that are either true or false. A simple condition
 could be *time is now between 8 am and 2 pm* (12-hour clock) 
 or *time is now between 08:00 and 14:00* (24-hour clock).
@@ -15,7 +15,7 @@ The conditions can be combinded using logical operations:
 **AND**, **OR**, **NOT**. They also can be nested using 
 parentheses.
 
-There are three ways of creating conditions in Rocketry:
+There are three ways of creating conditions in Tocketry:
 
 - Condition syntax
 - Condition API
@@ -33,9 +33,9 @@ the state of the condition. You can test the status of a condition by:
 
 .. code-block:: python
     
-    >>> from rocketry import Rocketry
-    >>> app = Rocketry()
-    >>> from rocketry.conds import time_of_day
+    >>> from tocketry import Tocketry
+    >>> app = Tocketry()
+    >>> from tocketry.conds import time_of_day
     >>> condition = time_of_day.between("10:00", "14:00")
     >>> condition.observe(session=app.session)
     True

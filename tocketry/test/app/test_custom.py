@@ -1,20 +1,22 @@
 import logging
 
-from rocketry import Rocketry
-from rocketry.args import Arg
-from rocketry.conditions.task.task import TaskStarted
-from rocketry.conds import condition, true
-from rocketry.args import argument, Task
+from tocketry import Tocketry
+from tocketry.args import Arg
+from tocketry.conditions.task.task import TaskStarted
+from tocketry.conds import condition, true
+from tocketry.args import argument, Task
+
 
 def set_logging_defaults():
-    task_logger = logging.getLogger("rocketry.task")
+    task_logger = logging.getLogger("tocketry.task")
     task_logger.handlers = []
     task_logger.setLevel(logging.WARNING)
+
 
 def test_init_args_in_cond(session, tmpdir):
     set_logging_defaults()
 
-    app = Rocketry(execution="main")
+    app = Tocketry(execution="main")
 
     @app.cond()
     def file_exists(file):
@@ -26,12 +28,10 @@ def test_init_args_in_cond(session, tmpdir):
 
     # Creating some tasks
     @app.task(file_exists("exists.txt"))
-    def do_always():
-        ...
+    def do_always(): ...
 
     @app.task(file_exists("non_existent.txt"))
-    def do_never():
-        ...
+    def do_never(): ...
 
     app.session.config.shut_cond = TaskStarted(task=do_always)
     app.run()
@@ -47,7 +47,7 @@ def test_decors():
     set_logging_defaults()
 
     # Creating app
-    app = Rocketry(config={'execution': 'main'})
+    app = Tocketry(config={"execution": "main"})
 
     @argument()
     def myarg(task=Task()):
@@ -66,14 +66,15 @@ def test_decors():
     app.session.config.shut_cond = TaskStarted(task=do_things)
     app.run()
 
-    logger = app.session['do_things'].logger
+    logger = app.session["do_things"].logger
     assert logger.filter_by(action="success").count() == 1
+
 
 def test_decors_pass_args():
     set_logging_defaults()
 
     # Creating app
-    app = Rocketry(config={'execution': 'main'}, parameters={"session_arg": "arg val"})
+    app = Tocketry(config={"execution": "main"}, parameters={"session_arg": "arg val"})
 
     @argument()
     def myarg(arg=Arg("session_arg")):
@@ -93,5 +94,5 @@ def test_decors_pass_args():
     app.session.config.shut_cond = TaskStarted(task=do_things)
     app.run()
 
-    logger = app.session['do_things'].logger
+    logger = app.session["do_things"].logger
     assert logger.filter_by(action="success").count() == 1

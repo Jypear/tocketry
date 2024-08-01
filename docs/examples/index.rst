@@ -7,9 +7,9 @@ Example Projects
 
 .. glossary::
 
-    `Rocketry with FastAPI (and React) <https://github.com/Miksus/rocketry-with-fastapi>`_
+    `Tocketry with FastAPI (and React) <https://github.com/Jypear/tocketry-with-fastapi>`_
 
-        Rocketry template that has FastAPI (REST API) integrated and also has web UI built
+        Tocketry template that has FastAPI (REST API) integrated and also has web UI built
         with React.
 
 Example Snippets

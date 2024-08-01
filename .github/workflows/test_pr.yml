@@ -37,7 +37,7 @@ jobs:
      
     - name: Run test suite
       run: |
-        python -m pytest --pyargs rocketry
+        python -m pytest --pyargs tocketry
     
     # Seems there is a possible problem with pytest-cov parallelization
     #- name: Run test suite

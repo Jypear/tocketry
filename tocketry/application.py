@@ -5,25 +5,25 @@ import warnings
 from redbird import BaseRepo
 from redbird.logging import RepoHandler
 from redbird.repos import MemoryRepo
-from rocketry.log.log_record import LogRecord
+from tocketry.log.log_record import LogRecord
 
-from rocketry.conditions import FuncCond
-from rocketry.parameters import FuncParam
-from rocketry import Session
+from tocketry.conditions import FuncCond
+from tocketry.parameters import FuncParam
+from tocketry import Session
+
 
 class _AppMixin:
-
     session: Session
 
     def task(self, start_cond=None, name=None, **kwargs):
         "Create a task"
         return self.session.create_task(start_cond=start_cond, name=name, **kwargs)
 
-    def param(self, name:Optional[str]=None):
+    def param(self, name: Optional[str] = None):
         "Set one session parameter (decorator)"
         return FuncParam(name, session=self.session)
 
-    def cond(self, syntax: Union[str, Pattern, List[Union[str, Pattern]]]=None):
+    def cond(self, syntax: Union[str, Pattern, List[Union[str, Pattern]]] = None):
         "Create a condition (decorator)"
         return FuncCond(syntax=syntax, session=self.session, decor_return_func=False)
 
@@ -31,22 +31,26 @@ class _AppMixin:
         "Set session parameters"
         self.session.parameters.update(kwargs)
 
-    def include_grouper(self, group:'Grouper'):
+    def include_grouper(self, group: "Grouper"):
         for task in group.session.tasks:
             if group.prefix:
                 task.name = group.prefix + task.name
             if group.start_cond is not None:
                 task.start_cond &= group.start_cond
-            task.execution = group.execution if task.execution is None else task.execution
+            task.execution = (
+                group.execution if task.execution is None else task.execution
+            )
 
             self.session.add_task(task)
         self.session.parameters.update(group.session.parameters)
 
-class Rocketry(_AppMixin):
-    """Rocketry scheduling application"""
 
-    def __init__(self, session:Session=None, logger_repo:Optional[BaseRepo]=None, **kwargs):
+class Tocketry(_AppMixin):
+    """Tocketry scheduling application"""
 
+    def __init__(
+        self, session: Session = None, logger_repo: Optional[BaseRepo] = None, **kwargs
+    ):
         self.session = session if session is not None else Session(**kwargs)
 
         logger = logging.getLogger(self.session.config.task_logger_basename)
@@ -67,12 +71,17 @@ class Rocketry(_AppMixin):
         await self.session.serve()
 
     def set_logger(self):
-        warnings.warn((
-            "set_logger is deprecated and will be removed in the future. "
-            "Please set the logger using logging.getLogger"
-        ), DeprecationWarning)
+        warnings.warn(
+            (
+                "set_logger is deprecated and will be removed in the future. "
+                "Please set the logger using logging.getLogger"
+            ),
+            DeprecationWarning,
+        )
+
         def wrapper(func):
             func(self._get_task_logger())
+
         return wrapper
 
     def _get_task_logger(self):
@@ -90,9 +99,9 @@ class Rocketry(_AppMixin):
             return self.session.hook_startup()(func)
         return self.session.hook_startup()
 
-class Grouper(_AppMixin):
 
-    def __init__(self, prefix:str=None, start_cond=None, execution=None):
+class Grouper(_AppMixin):
+    def __init__(self, prefix: str = None, start_cond=None, execution=None):
         self.prefix = prefix
         self.start_cond = start_cond
         self.execution = execution

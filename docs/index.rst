@@ -1,18 +1,18 @@
 
 .. meta::
-   :description: Rocketry, modern scheduling framework
+   :description: Tocketry, modern scheduling framework
    :keywords: schedule, task, script, run, Python
 
 .. raw:: html
    :file: header.html
 
-- `Documentation <https://rocketry.readthedocs.io/>`_
-- `Source code (Github) <https://github.com/Miksus/rocketry>`_
-- `Releases (PyPI) <https://pypi.org/project/rocketry/>`_
+- `Documentation <https://tocketry.readthedocs.io/>`_
+- `Source code (Github) <https://github.com/Jypear/tocketry>`_
+- `Releases (PyPI) <https://pypi.org/project/tocketry/>`_
 
 No time to read? :ref:`Get started then. <getting-started>`
 
-Rocketry is a modern scheduling framework for Python 
+Tocketry is a modern scheduling framework for Python 
 applications. It is simple, clean and extensive.
 
 **Key features:**
@@ -49,7 +49,7 @@ applications. It is simple, clean and extensive.
 
    </details>
 
-Why Rocketry?
+Why Tocketry?
 -------------
 
 There are some alternatives for a scheduler:
@@ -58,18 +58,18 @@ There are some alternatives for a scheduler:
 - APScheduler
 - Airflow
 
-Unlike the alternatives, Rocketry's scheduler is 
-statement-based. Rocketry natively supports the 
+Unlike the alternatives, Tocketry's scheduler is 
+statement-based. Tocketry natively supports the 
 same scheduling strategies as the other options, 
 including cron and task pipelining, but it can also be
 arbitrarily extended using custom scheduling statements.
 
-In addition, Rocketry is very easy to use. It does not 
+In addition, Tocketry is very easy to use. It does not 
 require complex setup but it can be used for bigger applications. 
 It has a lot of options to fine-tune and a lot of features 
 to support various needs.
  
-Rocketry is designed to be modified and it suits well as the 
+Tocketry is designed to be modified and it suits well as the 
 engine for autonomous applications. It is the automation 
 back-end that sets your applications alive.
 
@@ -135,7 +135,7 @@ Just install the library:
 
 .. code-block:: console
 
-    pip install rocketry
+    pip install tocketry
 
 There is much more to offer. See :ref:`quick start <getting-started>`
 and get started with :ref:`tutorials <tutorials>`. There are also 
@@ -152,7 +152,7 @@ and get started with :ref:`tutorials <tutorials>`. There are also
    examples/index
    condition_syntax/index
    how_it_works
-   rocketry_vs_alternatives
+   tocketry_vs_alternatives
    contributing
    versions
 

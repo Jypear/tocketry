@@ -2,19 +2,23 @@ import datetime
 from typing import Optional
 from pydantic import field_validator, BaseModel, Field
 
-from rocketry.pybox.time import to_datetime, to_timedelta
+from tocketry.pybox.time import to_datetime, to_timedelta
+
 
 class MinimalRecord(BaseModel):
-    """A log record with minimal number of fields for Rocketry to work"""
+    """A log record with minimal number of fields for Tocketry to work"""
+
     task_name: str
     action: str = Field(description="Scheduler action: 'run', 'success', 'fail'")
     created: float
+
 
 class LogRecord(MinimalRecord):
     """A logging record
 
     See attributes: https://docs.python.org/3/library/logging.html#logrecord-attributes
     """
+
     name: str
     msg: str
     levelname: str
@@ -34,10 +38,12 @@ class LogRecord(MinimalRecord):
     process: int
     message: str
 
-    formatted_message: str = Field(description="Formatted message. This field is created by RepoHandler.")
+    formatted_message: str = Field(
+        description="Formatted message. This field is created by RepoHandler."
+    )
+
 
 class TaskLogRecord(MinimalRecord):
-
     start: Optional[datetime.datetime] = None
     end: Optional[datetime.datetime] = None
     runtime: Optional[datetime.timedelta] = None
@@ -66,11 +72,14 @@ class TaskLogRecord(MinimalRecord):
             value = to_timedelta(value)
         return value
 
+
 class MinimalRunRecord(MinimalRecord):
     run_id: Optional[str] = None
 
+
 class RunRecord(LogRecord):
     run_id: Optional[str] = None
+
 
 class TaskRunRecord(TaskLogRecord):
     run_id: Optional[str] = None

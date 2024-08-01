@@ -90,7 +90,7 @@ from previous examples. Also note how we can use parentheses
 Pipelining
 ----------
 
-Rocketry supports two types of task pipelining:
+Tocketry supports two types of task pipelining:
 
 - Run a task after another has succeeded, failed or both
 - Put the return or output value of a task as an input argument to another
@@ -139,7 +139,7 @@ Here is an illustration of using a session level parameter:
 
 .. code-block:: python
 
-    from rocketry.args import Arg
+    from tocketry.args import Arg
 
     # Setting parameters to the session
     app.params(
@@ -163,7 +163,7 @@ this:
 
 .. code-block:: python
 
-    from rocketry.args import SimpleArg
+    from tocketry.args import SimpleArg
 
     @app.task()
     def do_things(item = SimpleArg('Hello world')):
@@ -186,7 +186,7 @@ set a session level function argument:
 
 .. code-block:: python
 
-    from rocketry.args import Arg
+    from tocketry.args import Arg
 
     @app.param('my_arg')
     def get_item():
@@ -201,7 +201,7 @@ To set task-level-only function argument:
 
 .. code-block:: python
 
-    from rocketry.args import FuncArg
+    from tocketry.args import FuncArg
 
     def get_item():
         return 'hello world'
@@ -226,7 +226,7 @@ An example of the session argument:
 
 .. code-block:: python
 
-    from rocketry.args import Session
+    from tocketry.args import Session
 
     @app.task()
     def manipulate_session(session = Session()):
@@ -236,7 +236,7 @@ An example of the task argument:
 
 .. code-block:: python
 
-    from rocketry.args import Task
+    from tocketry.args import Task
 
     @app.task()
     def manipulate_task(this_task=Task(), another_task=Task('do_things')):
@@ -253,7 +253,7 @@ in the app:
 
 .. code-block:: python
 
-    from rocketry.conds import daily
+    from tocketry.conds import daily
 
     @app.cond()
     def things_ready():
@@ -269,7 +269,7 @@ You can also pass arguments to the conditions:
 .. code-block:: python
 
     from pathlib import Path
-    from rocketry.conds import daily
+    from tocketry.conds import daily
 
     @app.cond()
     def file_exists(file):
@@ -284,12 +284,12 @@ You can also pass arguments to the conditions:
     You can pass the arguments as positional (ie. ``file_exists("myfile.csv")``)
     or as keyword arguments (ie. ``file_exists(file="myfile.csv")``).
 
-You can also use Rocketry's arguments:
+You can also use Tocketry's arguments:
 
 .. code-block:: python
 
-    from rocketry.args import Task
-    from rocketry.conds import daily
+    from tocketry.args import Task
+    from tocketry.conds import daily
 
     @app.cond()
     def is_right_task(this_task=Task()):
@@ -310,7 +310,7 @@ You can also use Rocketry's arguments:
 Task Logging
 ------------
 
-Rocketry uses `Red Bird's <https://red-bird.readthedocs.io/>`_
+Tocketry uses `Red Bird's <https://red-bird.readthedocs.io/>`_
 `logging handler <https://red-bird.readthedocs.io/en/latest/logging_handler.html>`_
 for implementing a logger that can be read programmatically.
 Red Bird is a repository pattern library that abstracts 
@@ -334,12 +334,12 @@ pass the new repo as ``logger_repo``:
 
 .. code-block:: python
 
-    from rocketry import Rocketry
-    from rocketry.log import MinimalRecord
+    from tocketry import Tocketry
+    from tocketry.log import MinimalRecord
     from redbird.repos import CSVFileRepo
 
     repo = CSVFileRepo(filename="tasks.csv", model=MinimalRecord)
-    app = Rocketry(logger_repo=repo)
+    app = Tocketry(logger_repo=repo)
 
 In the example above, we changed the log records to go to a CSV file
 called *tasks.csv*. We also specified a log record format that contains
@@ -354,21 +354,21 @@ you can also add other logging handlers as well:
 .. code-block:: python
 
     import logging
-    from rocketry import Rocketry
+    from tocketry import Tocketry
 
-    app = Rocketry()
+    app = Tocketry()
 
     # Create a handler
     handler = logging.StreamHandler()
     handler.setLevel(logging.DEBUG)
 
     # Add the handler
-    task_logger = logging.getLogger('rocketry.task')
+    task_logger = logging.getLogger('tocketry.task')
     task_logger.addHandler(handler)
 
 .. warning::
 
-    Make sure the logger ``rocketry.task`` has at least 
+    Make sure the logger ``tocketry.task`` has at least 
     one ``redbird.logging.RepoHandler`` in handlers or 
     the system cannot read the log information.
 
@@ -409,7 +409,7 @@ You can pass the name yourself as well:
     task, the decorator returns the function itself due to pickling
     issues on some platforms. However, the task can be fetched from
     session using just the function: ``session[do_things]``.
-    There is a special attribute (``__rocketry__``) in 
+    There is a special attribute (``__tocketry__``) in 
     the task function for enabling this.
 
 .. note::

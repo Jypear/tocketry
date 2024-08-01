@@ -59,7 +59,7 @@ To access the session:
 
 .. code-block:: python
 
-    from rocketry.args import Session
+    from tocketry.args import Session
 
     @app.task(execution="thread")
     def do_shutdown(session=Session()):
@@ -81,7 +81,7 @@ To access this task using the ``Session`` argument:
 
 .. code-block:: python
 
-    from rocketry.args import Session
+    from tocketry.args import Session
 
     @app.task(execution="thread")
     def read_task(session=Session()):
@@ -102,7 +102,7 @@ To access this task using the ``Task`` argument:
 
 .. code-block:: python
 
-    from rocketry.args import Task
+    from tocketry.args import Task
 
     @app.task(execution="thread")
     def read_task(task=Task(do_things)):
@@ -127,7 +127,7 @@ its log:
 
 .. code-block:: python
 
-    from rocketry.args import Session
+    from tocketry.args import Session
 
     @app.task(execution="thread")
     def read_logs(session=Session()):

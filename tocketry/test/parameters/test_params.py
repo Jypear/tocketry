@@ -1,8 +1,8 @@
-
 import pytest
 
-from rocketry.core import Parameters
-from rocketry.args import Private
+from tocketry.core import Parameters
+from tocketry.args import Private
+
 
 @pytest.mark.parametrize(
     "a,b,union",
@@ -11,22 +11,27 @@ from rocketry.args import Private
             lambda: Parameters({"a": 0, "b": 1}),
             lambda: Parameters({"c": 3, "d": 4}),
             lambda: Parameters({"a": 0, "b": 1, "c": 3, "d": 4}),
-            id="Parameters | Parameters"),
+            id="Parameters | Parameters",
+        ),
         pytest.param(
             lambda: Parameters({"a": 0, "b": Private(1)}),
             lambda: Parameters({"c": 3, "d": Private(4)}),
             lambda: Parameters({"a": 0, "b": Private(1), "c": 3, "d": Private(4)}),
-            id="Parameters | Parameters, with private"),
+            id="Parameters | Parameters, with private",
+        ),
         pytest.param(
             lambda: Parameters({"a": 0, "b": 1}),
             lambda: {"c": 3, "d": 4},
             lambda: Parameters({"a": 0, "b": 1, "c": 3, "d": 4}),
-            id="Parameters | Dict"),
+            id="Parameters | Dict",
+        ),
         pytest.param(
             lambda: {"c": 3, "d": 4},
             lambda: Parameters({"a": 0, "b": 1}),
             lambda: Parameters({"a": 0, "b": 1, "c": 3, "d": 4}),
-            id="Dict | Parameters", marks=pytest.mark.xfail),
+            id="Dict | Parameters",
+            marks=pytest.mark.xfail,
+        ),
     ],
 )
 def test_union(a, b, union):
@@ -44,22 +49,27 @@ def test_union(a, b, union):
             lambda: Parameters({"a": 0, "b": 1}),
             lambda: Parameters({"c": 3, "d": 4}),
             lambda: Parameters({"a": 0, "b": 1, "c": 3, "d": 4}),
-            id="Parameters | Parameters"),
+            id="Parameters | Parameters",
+        ),
         pytest.param(
             lambda: Parameters({"a": 0, "b": Private(1)}),
             lambda: Parameters({"c": 3, "d": Private(4)}),
             lambda: Parameters({"a": 0, "b": Private(1), "c": 3, "d": Private(4)}),
-            id="Parameters | Parameters, with private"),
+            id="Parameters | Parameters, with private",
+        ),
         pytest.param(
             lambda: Parameters({"a": 0, "b": 1}),
             lambda: {"c": 3, "d": 4},
             lambda: Parameters({"a": 0, "b": 1, "c": 3, "d": 4}),
-            id="Parameters | Dict"),
+            id="Parameters | Dict",
+        ),
         pytest.param(
             lambda: {"c": 3, "d": 4},
             lambda: Parameters({"a": 0, "b": 1}),
             lambda: Parameters({"a": 0, "b": 1, "c": 3, "d": 4}),
-            id="Dict | Parameters", marks=pytest.mark.xfail),
+            id="Dict | Parameters",
+            marks=pytest.mark.xfail,
+        ),
     ],
 )
 def test_update(a, b, union):
@@ -68,6 +78,7 @@ def test_update(a, b, union):
     union = union()
     a.update(b)
     assert union.materialize() == a.materialize()
+
 
 def test_equal():
     assert Parameters({"a": 0, "b": 1}) == Parameters({"a": 0, "b": 1})

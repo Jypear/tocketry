@@ -1,8 +1,8 @@
-
 import copy
 from typing import Callable, List, Optional, Pattern, Union
-from rocketry.core.parameters.parameters import Parameters
-from rocketry.core.condition import BaseCondition
+from tocketry.core.parameters.parameters import Parameters
+from tocketry.core.condition import BaseCondition
+
 
 class FuncCond(BaseCondition):
     """Condition from a function.
@@ -29,8 +29,8 @@ class FuncCond(BaseCondition):
     Examples
     --------
 
-    >>> from rocketry.conditions import FuncCond
-    >>> from rocketry.parse import parse_condition
+    >>> from tocketry.conditions import FuncCond
+    >>> from tocketry.parse import parse_condition
 
     Simple example:
 
@@ -58,14 +58,15 @@ class FuncCond(BaseCondition):
     FuncCond(is_foo, syntax=re.compile('is foo in (?P<myval>.+)'), args=(), kwargs={'myval': 'house'})
     """
 
-    def __init__(self,
-                 func:Callable[..., bool]=None,
-                 syntax:Union[str, Pattern, List[Union[str, Pattern]]]=None,
-                 args:Optional[tuple]=None,
-                 kwargs:Optional[dict]=None,
-                 decor_return_func=False,
-                 session=None):
-
+    def __init__(
+        self,
+        func: Callable[..., bool] = None,
+        syntax: Union[str, Pattern, List[Union[str, Pattern]]] = None,
+        args: Optional[tuple] = None,
+        kwargs: Optional[dict] = None,
+        decor_return_func=False,
+        session=None,
+    ):
         self.func = func
         self.syntax = syntax
         self.args = () if args is None else args
@@ -76,7 +77,7 @@ class FuncCond(BaseCondition):
         if self.syntax is not None:
             self._set_parsing()
 
-    def _recreate(self, *args, **kwargs) -> 'FuncCond':
+    def _recreate(self, *args, **kwargs) -> "FuncCond":
         "Recreate the condition using args and kwargs"
         new_self = copy.copy(self)
         new_self.args = args
@@ -90,10 +91,9 @@ class FuncCond(BaseCondition):
             func = args[0]
             self.func = func
             if self.decor_return_func:
-                return func # To prevent problems with pickling
+                return func  # To prevent problems with pickling
             return self
         return self._recreate(*args, **kwargs)
-
 
     def __bool__(self):
         return self.func(*self.args, **self.kwargs)
@@ -107,10 +107,13 @@ class FuncCond(BaseCondition):
         return self.func(*args, **kwargs)
 
     def _set_parsing(self):
-
         session = self.session
 
-        syntaxes = [self.syntax] if not isinstance(self.syntax, (list, tuple, set)) else self.syntax
+        syntaxes = (
+            [self.syntax]
+            if not isinstance(self.syntax, (list, tuple, set))
+            else self.syntax
+        )
         for syntax in syntaxes:
             session._cond_parsers[syntax] = self._recreate
 
@@ -118,4 +121,4 @@ class FuncCond(BaseCondition):
         cls_name = type(self).__name__
         func_name = self.func.__name__
         syntax = repr(self.syntax)
-        return f'{cls_name}({func_name}, syntax={syntax}, args={repr(self.args)}, kwargs={repr(self.kwargs)})'
+        return f"{cls_name}({func_name}, syntax={syntax}, args={repr(self.args)}, kwargs={repr(self.kwargs)})"

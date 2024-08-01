@@ -1,34 +1,27 @@
-
 import pytest
 
-from rocketry.conditions import (
-    All, Any, Not
-)
-from rocketry.conds import true, false
+from tocketry.conditions import All, Any, Not
+from tocketry.conds import true, false
 
-@pytest.mark.parametrize("actual,expected",
+
+@pytest.mark.parametrize(
+    "actual,expected",
     [
         pytest.param(
-            lambda: (true & (true & true)),
-            lambda: All(true, true, true),
-            id="All"
+            lambda: (true & (true & true)), lambda: All(true, true, true), id="All"
         ),
         pytest.param(
-            lambda: (true | (true | true)),
-            lambda: Any(true, true, true),
-            id="Any"
+            lambda: (true | (true | true)), lambda: Any(true, true, true), id="Any"
         ),
         pytest.param(
-            lambda: Not(Not(Not(true))),
-            lambda: Not(Not(Not(true))),
-            id="Not"
+            lambda: Not(Not(Not(true))), lambda: Not(Not(Not(true))), id="Not"
         ),
         pytest.param(
             lambda: (true & true) & (false | false),
             lambda: All(All(true, true), Any(false, false)),
-            id="Complex"
+            id="Complex",
         ),
-    ]
+    ],
 )
 def test_nested(actual, expected):
     expected = expected()

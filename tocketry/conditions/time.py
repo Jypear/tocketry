@@ -1,8 +1,9 @@
 import datetime
 
-from rocketry.time import TimeDelta
-from rocketry.core.condition.base import BaseCondition
-from rocketry.args import Session
+from tocketry.time import TimeDelta
+from tocketry.core.condition.base import BaseCondition
+from tocketry.args import Session
+
 
 class IsPeriod(BaseCondition):
     """Condition for checking whether current time
@@ -10,7 +11,7 @@ class IsPeriod(BaseCondition):
 
     Parameters
     ----------
-    period : rocketry.core.time.TimePeriod
+    period : tocketry.core.time.TimePeriod
         Time period to check.
 
     Examples
@@ -18,16 +19,17 @@ class IsPeriod(BaseCondition):
 
     **Parsing example:**
 
-    >>> from rocketry.parse import parse_condition
+    >>> from tocketry.parse import parse_condition
     >>> parse_condition("time of day between 10:00 and 15:00")
     IsPeriod(period=TimeOfDay('10:00', '15:00'))
 
     **Construction example:**
 
-    >>> from rocketry.conditions import IsPeriod
-    >>> from rocketry.time import TimeOfDay
+    >>> from tocketry.conditions import IsPeriod
+    >>> from tocketry.time import TimeOfDay
     >>> is_morning = IsPeriod(period=TimeOfDay("06:00", "12:00")) # doctest: +SKIP
     """
+
     def __init__(self, period):
         if isinstance(period, TimeDelta):
             raise AttributeError("TimeDelta does not have __contains__.")
@@ -41,7 +43,7 @@ class IsPeriod(BaseCondition):
         if hasattr(self, "_str"):
             return self._str
         if hasattr(self, "period"):
-            return f'currently {str(self.period)}'
+            return f"currently {str(self.period)}"
         return type(self).__name__
 
     def __repr__(self):

@@ -4,7 +4,7 @@
 Cron Scheduling
 ===============
 
-Rocketry also natively supports `cron-like scheduling <https://en.wikipedia.org/wiki/Cron>`_.
+Tocketry also natively supports `cron-like scheduling <https://en.wikipedia.org/wiki/Cron>`_.
 
 Cron
 ----

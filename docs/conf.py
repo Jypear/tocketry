@@ -12,14 +12,15 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
+
+sys.path.insert(0, os.path.abspath(".."))
 print(f"Root dir: {sys.path[0]}")
 
 # -- Project information -----------------------------------------------------
 
-project = 'rocketry'
-copyright = '2022, Mikael Koli'
-author = 'Mikael Koli'
+project = "tocketry"
+copyright = "2024, Josh Pearson"
+author = "Josh Pearson"
 
 
 # -- General configuration ---------------------------------------------------
@@ -28,55 +29,55 @@ author = 'Mikael Koli'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.doctest',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.coverage',
-    'sphinx.ext.napoleon',
-    'sphinx_copybutton',
+    "sphinx.ext.doctest",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.coverage",
+    "sphinx.ext.napoleon",
+    "sphinx_copybutton",
 ]
 rst_prolog = """
 .. include:: <s5defs.txt>
 
 """
 
-doctest_global_setup = '''
+doctest_global_setup = """
 def cleanup():
     ...
     
 cleanup()
-'''
+"""
 
 # Extension settings
 
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 
-autodoc_typehints = 'none'
-autodoc_member_order = 'bysource'
+autodoc_typehints = "none"
+autodoc_member_order = "bysource"
 
 # Add any paths that contain templates here, relative to this directory.
-#templates_path = ['_templates']
+# templates_path = ['_templates']
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-#html_sidebars = {}
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+# html_sidebars = {}
 
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_title = "Rocketry"
-html_theme = 'sphinx_material'
+html_title = "Tocketry"
+html_theme = "sphinx_material"
 html_logo = "logo.svg"
-html_favicon = 'favicon.ico'
+html_favicon = "favicon.ico"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 html_css_files = [
     #'css/types.css',
@@ -85,38 +86,27 @@ html_css_files = [
 ]
 
 html_sidebars = {
-    "**": [
-        "logo-text.html",
-        "globaltoc.html",
-        "localtoc.html",
-        "searchbox.html"
-    ]
+    "**": ["logo-text.html", "globaltoc.html", "localtoc.html", "searchbox.html"]
 }
 
 html_theme_options = {
-    'nav_title': 'Rocketry',
-
-    'color_primary': 'white',
-    'color_accent': 'grey',
-
-    'repo_url': 'https://github.com/Miksus/rocketry/',
-    'repo_name': 'Rocketry',
+    "nav_title": "Tocketry",
+    "color_primary": "white",
+    "color_accent": "grey",
+    "repo_url": "https://github.com/Jypear/tocketry/",
+    "repo_name": "Tocketry",
     "repo_type": "github",
-
     # Visible levels of the global TOC; -1 means unlimited
-    'globaltoc_depth': 3,
+    "globaltoc_depth": 3,
     # If False, expand all TOC entries
-    'globaltoc_collapse': True,
+    "globaltoc_collapse": True,
     # If True, show hidden TOC entries
-    'globaltoc_includehidden': False,
-
+    "globaltoc_includehidden": False,
     "html_minify": False,
     "html_prettify": False,
     "css_minify": True,
-
     "heroes": {
         "index": "Scheduler to power your Python apps.",
     },
-    "nav_links": [
-    ],
+    "nav_links": [],
 }

@@ -1,11 +1,15 @@
-
 import pytest
 
-from rocketry.conditions import (
-    AlwaysTrue, AlwaysFalse,
-    All, Any, Not,
-    TaskFinished, TaskRunning,
+from tocketry.conditions import (
+    AlwaysTrue,
+    AlwaysFalse,
+    All,
+    Any,
+    Not,
+    TaskFinished,
+    TaskRunning,
 )
+
 
 @pytest.mark.parametrize(
     "get_cond",
@@ -15,7 +19,9 @@ from rocketry.conditions import (
         pytest.param(lambda: All(AlwaysTrue(), AlwaysTrue()), id="All"),
         pytest.param(lambda: Any(AlwaysTrue(), AlwaysTrue()), id="Any"),
         pytest.param(lambda: Not(AlwaysTrue()), id="Not"),
-        pytest.param(lambda: Not(Any(AlwaysTrue(), All(AlwaysTrue(), AlwaysTrue()))), id="Nested"),
+        pytest.param(
+            lambda: Not(Any(AlwaysTrue(), All(AlwaysTrue(), AlwaysTrue()))), id="Nested"
+        ),
         pytest.param(lambda: TaskFinished(task="mytask"), id="Comparable 1"),
         pytest.param(lambda: TaskRunning(task="mytask"), id="Comparable 2"),
     ],
@@ -28,24 +34,18 @@ def test_equal(get_cond):
     "get_a,get_b",
     [
         pytest.param(
-            lambda: AlwaysTrue(),
-            lambda: AlwaysFalse(),
-            id="AlwaysTrue/AlwaysFalse"
+            lambda: AlwaysTrue(), lambda: AlwaysFalse(), id="AlwaysTrue/AlwaysFalse"
         ),
         pytest.param(
             lambda: All(AlwaysTrue(), AlwaysTrue()),
             lambda: Any(AlwaysTrue(), AlwaysTrue()),
-            id="All/Any"
+            id="All/Any",
         ),
-        pytest.param(
-            lambda: AlwaysTrue(),
-            lambda: Not(AlwaysTrue()),
-            id="Not"
-        ),
+        pytest.param(lambda: AlwaysTrue(), lambda: Not(AlwaysTrue()), id="Not"),
         pytest.param(
             lambda: TaskFinished(task="mytask"),
             lambda: TaskFinished(task="another task"),
-            id="TaskFinished"
+            id="TaskFinished",
         ),
     ],
 )

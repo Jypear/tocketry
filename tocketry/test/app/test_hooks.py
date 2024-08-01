@@ -5,23 +5,32 @@ import pytest
 from redbird.logging import RepoHandler
 from redbird.repos import MemoryRepo, CSVFileRepo
 
-from rocketry import Rocketry
-from rocketry.conditions.task.task import TaskStarted
-from rocketry.args import Return, Arg, FuncArg, Session as SessionArg, TaskLogger, Config
-from rocketry.log.log_record import LogRecord, MinimalRecord
-from rocketry.tasks import CommandTask
-from rocketry.tasks import FuncTask
-from rocketry.conds import false, true
-from rocketry.core.log import TaskAdapter
-from rocketry import Session
+from tocketry import Tocketry
+from tocketry.conditions.task.task import TaskStarted
+from tocketry.args import (
+    Return,
+    Arg,
+    FuncArg,
+    Session as SessionArg,
+    TaskLogger,
+    Config,
+)
+from tocketry.log.log_record import LogRecord, MinimalRecord
+from tocketry.tasks import CommandTask
+from tocketry.tasks import FuncTask
+from tocketry.conds import false, true
+from tocketry.core.log import TaskAdapter
+from tocketry import Session
+
 
 def set_logging_defaults():
-    task_logger = logging.getLogger("rocketry.task")
+    task_logger = logging.getLogger("tocketry.task")
     task_logger.handlers = []
     task_logger.setLevel(logging.WARNING)
 
+
 def test_setup():
-    app = Rocketry(execution='async')
+    app = Tocketry(execution="async")
     calls = []
 
     @app.setup()
@@ -39,7 +48,7 @@ def test_setup():
     # Test the setup
 
     # Make some handlers (these should be deleted)
-    task_logger = logging.getLogger("rocketry.task")
+    task_logger = logging.getLogger("tocketry.task")
     task_logger.addHandler(RepoHandler(MemoryRepo(model=MinimalRecord)))
     task_logger.addHandler(RepoHandler(MemoryRepo(model=MinimalRecord)))
 
@@ -49,14 +58,15 @@ def test_setup():
         calls.append("startup task")
 
     app.session.config.shut_cond = true
-    calls.append('starting')
+    calls.append("starting")
     app.run()
-    assert calls == ['starting', 'setup 1', 'setup 2', 'startup task']
+    assert calls == ["starting", "setup 1", "setup 2", "startup task"]
     assert len(task_logger.handlers) == 1
     assert task_logger.handlers[0].repo.model == LogRecord
 
+
 def test_setup_cache():
-    app = Rocketry()
+    app = Tocketry()
     repo = MemoryRepo(model=MinimalRecord)
     repo.add(MinimalRecord(created=1000, action="run", task_name="do_things"))
     repo.add(MinimalRecord(created=2000, action="success", task_name="do_things"))

@@ -1,9 +1,7 @@
-
 from datetime import datetime, timedelta
 import pytest
-from rocketry.core.time import (
-    TimeDelta
-)
+from tocketry.core.time import TimeDelta
+
 
 @pytest.mark.parametrize(
     "dt,dt_ref,offset",
@@ -13,22 +11,26 @@ from rocketry.core.time import (
             datetime(2020, 1, 1, 10, 00),
             datetime(2020, 1, 1, 12, 00),
             "2:00:00",
-            id="Left of interval"),
+            id="Left of interval",
+        ),
         pytest.param(
             datetime(2020, 1, 1, 12, 00),
             datetime(2020, 1, 1, 12, 00),
             "2:00:00",
-            id="Right of interval"),
+            id="Right of interval",
+        ),
         pytest.param(
             datetime(2020, 1, 1, 11, 00),
             datetime(2020, 1, 1, 12, 00),
             "2:00:00",
-            id="Middle of interval"),
+            id="Middle of interval",
+        ),
     ],
 )
 def test_in_offset(dt, dt_ref, offset):
     time = TimeDelta(offset, reference=dt_ref)
     assert dt in time
+
 
 @pytest.mark.parametrize(
     "dt,dt_ref,offset",
@@ -38,12 +40,14 @@ def test_in_offset(dt, dt_ref, offset):
             datetime(2020, 1, 1, 9, 59, 59, 999999),
             datetime(2020, 1, 1, 12, 00),
             "2:00:00",
-            id="Left from interval"),
+            id="Left from interval",
+        ),
         pytest.param(
             datetime(2020, 1, 1, 12, 00, 1),
             datetime(2020, 1, 1, 12, 00),
             "2:00:00",
-            id="Right from interval"),
+            id="Right from interval",
+        ),
     ],
 )
 def test_not_in_offset(dt, dt_ref, offset):

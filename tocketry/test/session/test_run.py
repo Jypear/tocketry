@@ -1,16 +1,17 @@
-from rocketry.args import Task
-from rocketry.tasks import FuncTask
+from tocketry.args import Task
+from tocketry.tasks import FuncTask
+
 
 def test_run(tmpdir, session):
     task1 = FuncTask(
-        lambda : None,
+        lambda: None,
         name="example 1",
         execution="main",
         session=session,
     )
 
     task2 = FuncTask(
-        lambda : None,
+        lambda: None,
         name="example 2",
         execution="main",
         session=session,
@@ -21,25 +22,27 @@ def test_run(tmpdir, session):
     assert not task1.disabled
     assert not task2.disabled
 
+
 def test_run_obey_cond(session):
     task1 = FuncTask(
-        lambda : None,
+        lambda: None,
         name="example 1",
         execution="main",
         session=session,
     )
 
     task2 = FuncTask(
-        lambda : None,
+        lambda: None,
         name="example 2",
         execution="main",
         session=session,
     )
     session.run("example 2", obey_cond=True)
     assert task1.status is None
-    assert task2.status is None # start cond is false
+    assert task2.status is None  # start cond is false
     assert not task1.disabled
     assert not task2.disabled
+
 
 def test_run_execution(session):
     def run_task(task=Task()):
@@ -47,8 +50,9 @@ def test_run_execution(session):
         assert task.execution == "main"
         assert task.is_alive_as_main()
         assert not task.is_alive_as_process()
+
     task1 = FuncTask(
-        lambda : None,
+        lambda: None,
         name="example 1",
         execution="main",
         session=session,

@@ -15,7 +15,7 @@ There are several argument types including:
 - ``EnvArg``: represents an environment variable
 - ``CliArg``: represents a command line argument for the whole program
 
-There are also arguments that simply represent a Rocketry component:
+There are also arguments that simply represent a Tocketry component:
 
 - ``Task``: represents a task instance
 - ``Session``: represents the session instance
@@ -38,15 +38,15 @@ sources for a parameter and would like to get the one that is available.
 
 .. code-block:: python
 
-    from rocketry.args import Arg, EnvArg, CliArg
+    from tocketry.args import Arg, EnvArg, CliArg
 
-    env_arg = EnvArg('ROCKETRY_ENV') >> CliArg('--env') >> Arg('env') >> SimpleArg('test')
+    env_arg = EnvArg('TOCKETRY_ENV') >> CliArg('--env') >> Arg('env') >> SimpleArg('test')
 
     @app.task()
     def do_things(arg=env_arg):
         ...
 
-The above will take the value of the environment variable ``ROCKETRY_ENV`` if this exists,
+The above will take the value of the environment variable ``TOCKETRY_ENV`` if this exists,
 else it will take the value of the CLI argument ``--env`` if this exists, else it will take
 the session argument ``env`` if this exists and if none of the previous exists, 
 it will take the value ``test``. 
@@ -59,7 +59,7 @@ It is useful mostly in testing.
 
 .. code-block:: python
 
-    from rocketry.args import SimpleArg
+    from tocketry.args import SimpleArg
 
     @app.task()
     def do_things(arg=SimpleArg('a value')):
@@ -73,7 +73,7 @@ It is useful mostly in testing.
 
 .. code-block:: python
 
-    from rocketry.args import Arg
+    from tocketry.args import Arg
 
     @app.task()
     def do_things(arg=Arg('my_session_param')):
@@ -94,7 +94,7 @@ of a given function when the argument is materialized.
 
 .. code-block:: python
 
-    from rocketry.args import FuncArg
+    from tocketry.args import FuncArg
 
     def get_value():
         return 'a value'
@@ -112,7 +112,7 @@ of a given environment variable.
 .. code-block:: python
 
     import os
-    from rocketry.args import EnvArg
+    from tocketry.args import EnvArg
 
     @app.task()
     def do_things(arg=EnvArg("MY_ARG")):
@@ -133,7 +133,7 @@ of a given CLI argument.
 
 .. code-block:: python
 
-    from rocketry.args import CliArg
+    from tocketry.args import CliArg
 
     @app.task()
     def do_things(arg=CliArg("--myparam")):
@@ -158,7 +158,7 @@ of another task. It is useful for pipelining tasks' outputs.
 
 .. code-block:: python
 
-    from rocketry.args import Return
+    from tocketry.args import Return
 
     @app.task()
     def do_first():
@@ -183,7 +183,7 @@ metatasks that manipulate other tasks.
 
 .. code-block:: python
 
-    from rocketry.args import Task
+    from tocketry.args import Task
 
     @app.task()
     def do_things(arg=Task()):
@@ -193,7 +193,7 @@ Alternatively, you can specify another task to use:
 
 .. code-block:: python
 
-    from rocketry.args import Task
+    from tocketry.args import Task
 
     @app.task()
     def do_other():
@@ -215,8 +215,8 @@ process.
 
 .. code-block:: python
 
-    from rocketry.args import TerminationFlag
-    from rocketry.exc import TaskTerminationException
+    from tocketry.args import TerminationFlag
+    from tocketry.exc import TaskTerminationException
 
     @app.task()
     def do_second(arg=TerminationFlag()):
@@ -227,7 +227,7 @@ process.
 
 .. note::
 
-    The task should raise ``rocketry.exc.TaskTerminationException``
+    The task should raise ``tocketry.exc.TaskTerminationException``
     if the flag was set as otherwise the task is considered to be 
     successful (instead of terminated).
 
@@ -241,7 +241,7 @@ or other external communication with the scheduler.
 
 .. code-block:: python
 
-    from rocketry.args import Session
+    from tocketry.args import Session
 
     @app.task()
     def do_things(arg=Session()):

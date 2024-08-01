@@ -14,7 +14,7 @@ Topics of the tutorial:
 Scheduling Basics
 -----------------
 
-Rocketry's scheduling system works with conditions
+Tocketry's scheduling system works with conditions
 that are either true or false. A simple condition
 could be *time is now between 8:00 (8 am) and 14:00 (2 pm)*.
 If current time is inside this range, the condition
@@ -30,7 +30,7 @@ There are three ways of creating conditions:
 In this tutorial we will stick with the string syntax to keep
 things simple. Read more about the options in :ref:`the handbook <condition-handbook>`.
 
-There are a lot of scheduling options in Rocketry:
+There are a lot of scheduling options in Tocketry:
 the tasks can run at specific time, after some other 
 tasks have run or when other conditions are met. In 
 this tutorial we focus on the time specific scheduling
@@ -104,7 +104,7 @@ if there is one that you prefer in your project:
 
 .. code-block:: python
 
-    app = Rocketry(execution="async")
+    app = Tocketry(execution="async")
 
     @app.task("daily")
     def do_main():
@@ -116,13 +116,13 @@ Read more about the execution types in :ref:`execution handbook <handbook-execut
 Changing Logging Destination
 ----------------------------
 
-Logging the states of the tasks is vital for Rocketry's system.
+Logging the states of the tasks is vital for Tocketry's system.
 This includes the logs about when each task started, succeeded 
 and failed. This information is used in many of the scheduling 
 statements and to prevent setting the same task running multiple
 times.
 
-Rocketry extends `logging library's <https://docs.python.org/3/library/logging.html>`_ 
+Tocketry extends `logging library's <https://docs.python.org/3/library/logging.html>`_ 
 loggers extending them with `Red Bird <https://red-bird.readthedocs.io/>`_
 to enable reading the logs. 
 
@@ -135,10 +135,10 @@ pass that as the ``logger_repo`` to the application.
 
 .. code-block:: python
 
-    from rocketry import Rocketry
+    from tocketry import Tocketry
     from redbird.repos import MemoryRepo
 
-    app = Rocketry(
+    app = Tocketry(
         logger_repo=MemoryRepo()
     )
 
@@ -146,10 +146,10 @@ pass that as the ``logger_repo`` to the application.
 
 .. code-block:: python
 
-    from rocketry import Rocketry
+    from tocketry import Tocketry
     from redbird.repos import CSVFileRepo
 
-    app = Rocketry(
+    app = Tocketry(
         logger_repo=CSVFileRepo(
             filename="logs.csv"
         )

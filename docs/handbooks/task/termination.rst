@@ -25,8 +25,8 @@ This section discusses these ways to terminate tasks.
 
     .. code-block:: python
 
-        from rocketry.args import TerminationFlag
-        from rocketry.exc import TaskTerminationException
+        from tocketry.args import TerminationFlag
+        from tocketry.exc import TaskTerminationException
 
         @app.task(execution="thread")
         def do_thread(flag=TerminationFlag()):
@@ -70,9 +70,9 @@ To set it on session level:
 
 .. code-block:: python
 
-    from rocketry import Rocketry
+    from tocketry import Tocketry
 
-    app = Rocketry(config={"timeout": 0.1})
+    app = Tocketry(config={"timeout": 0.1})
 
     @app.task(timeout="1 hour", execution="process")
     def do_things():
@@ -97,7 +97,7 @@ For example, this task will be terminated if it is running between
 
 .. code-block:: python
 
-    from rocketry.conds import time_of_day
+    from tocketry.conds import time_of_day
 
     @app.task(end_cond=time_of_day.between("08:00", "18:00"))
     def do_things():

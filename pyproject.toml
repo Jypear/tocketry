@@ -3,15 +3,16 @@ requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["rocketry"]
+packages = ["tocketry"]
 
 [project]
-name = "rocketry"
+name = "tocketry"
 description = "Advanced scheduling framework"
 readme = "README.md"
 license = {file="LICENSE"}
 authors = [
     {name = "Mikael Koli", email = "koli.mikael@gmail.com"},
+    {name = "Josh Pearson", email = "pearson.josh@outlook.com"},
 ]
 requires-python = ">=3.7"
 classifiers = [
@@ -43,15 +44,14 @@ dependencies = [
 ]
 
 [tool.setuptools_scm]
-write_to = "rocketry/_version.py"
+write_to = "tocketry/_version.py"
 local_scheme = "no-local-version"
 
 [project.urls]
-Homepage = 'https://github.com/Miksus/rocketry'
-Documentation = 'https://rocketry.readthedocs.io'
-Funding = 'https://github.com/sponsors/Miksus'
-Source = 'https://github.com/Miksus/rocketry'
-Changelog = 'https://rocketry.readthedocs.io/en/stable/versions.html'
+Homepage = 'https://github.com/jypear/tocketry'
+Documentation = 'https://tocketry.readthedocs.io'
+Source = 'https://github.com/Jypear/tocketry'
+Changelog = 'https://tocketry.readthedocs.io/en/stable/versions.html'
 
 [project.optional-dependencies]
 test = [
@@ -68,7 +68,7 @@ docs = [
 ]
 
 [tool.coverage.run]
-source = ["rocketry"]
+source = ["tocketry"]
 branch = false
 omit = [
     "test/*",
@@ -78,9 +78,9 @@ data_file = "cov_data/.coverage"
 
 [tool.coverage.report]
 omit = [
-    "rocketry/test/*",
-    "rocketry/_version.py",
-    "rocketry/__main__.py"
+    "tocketry/test/*",
+    "tocketry/_version.py",
+    "tocketry/__main__.py"
 ]
 # Regexes for lines to exclude from consideration
 exclude_lines = [

@@ -1,25 +1,35 @@
 import warnings
-from rocketry.conditions import (
-    DependFailure, DependFinish, DependSuccess, TaskFailed,
-    TaskFinished, TaskRunnable,
-    TaskStarted, TaskSucceeded,
+from tocketry.conditions import (
+    DependFailure,
+    DependFinish,
+    DependSuccess,
+    TaskFailed,
+    TaskFinished,
+    TaskRunnable,
+    TaskStarted,
+    TaskSucceeded,
     Retry,
-    SchedulerStarted, SchedulerCycles,
+    SchedulerStarted,
+    SchedulerCycles,
 )
-from rocketry.conditions.func import FuncCond
-from rocketry.core import (
-    BaseCondition
+from tocketry.conditions.func import FuncCond
+from tocketry.core import BaseCondition
+from tocketry.core.condition import (
+    AlwaysTrue,
+    AlwaysFalse,
 )
-from rocketry.core.condition import (
-    AlwaysTrue, AlwaysFalse,
-)
-from rocketry.core.condition.base import All, Any
-from rocketry.time import Cron
+from tocketry.core.condition.base import All, Any
+from tocketry.time import Cron
 
-from rocketry.time import (
-    TimeOfSecond, TimeOfMinute, TimeOfHour,
-    TimeOfDay, TimeOfWeek, TimeOfMonth,
-    TimeDelta, TimeSpanDelta
+from tocketry.time import (
+    TimeOfSecond,
+    TimeOfMinute,
+    TimeOfHour,
+    TimeOfDay,
+    TimeOfWeek,
+    TimeOfMonth,
+    TimeDelta,
+    TimeSpanDelta,
 )
 
 from .time import IsPeriod
@@ -28,8 +38,8 @@ from .task import TaskExecutable, TaskRunning
 # Utility classes
 # ---------------
 
-class TimeCondWrapper(BaseCondition):
 
+class TimeCondWrapper(BaseCondition):
     def __init__(self, cls_cond, cls_period, **kwargs):
         self._cls_cond = cls_cond
         self._cls_period = cls_period
@@ -78,8 +88,8 @@ class TimeCondWrapper(BaseCondition):
         except AttributeError:
             return str(self.get_cond())
 
-class TimeActionWrapper(BaseCondition):
 
+class TimeActionWrapper(BaseCondition):
     def __init__(self, cls_cond, task=None):
         self.cls_cond = cls_cond
         self.task = task
@@ -116,15 +126,17 @@ class TimeActionWrapper(BaseCondition):
         return self.this_day
 
     def _get_wrapper(self, cls_period):
-        return TimeCondWrapper(cls_cond=self.cls_cond, cls_period=cls_period, task=self.task)
+        return TimeCondWrapper(
+            cls_cond=self.cls_cond, cls_period=cls_period, task=self.task
+        )
 
     def get_cond(self):
         "Get condition the wrapper represents"
         return self.cls_cond(task=self.task)
 
-class RetryWrapper(BaseCondition):
 
-    def __call__(self, n:int):
+class RetryWrapper(BaseCondition):
+    def __call__(self, n: int):
         return Retry(n)
 
     def observe(self, **kwargs):
@@ -134,8 +146,8 @@ class RetryWrapper(BaseCondition):
         "Get condition the wrapper represents"
         return Retry(-1)
 
-class RunningWrapper(BaseCondition):
 
+class RunningWrapper(BaseCondition):
     def __init__(self, task=None):
         self.task = task
 
@@ -147,27 +159,37 @@ class RunningWrapper(BaseCondition):
             warnings.warn(
                 "running(more_than=..., less_than=...) and running() are derpecated. "
                 "Please use running.more_than, running.less_than, running.between or just running instead.",
-                DeprecationWarning
+                DeprecationWarning,
             )
             period = None
             if more_than is not None or less_than is not None:
-                period = TimeSpanDelta(near=more_than, far=less_than, reference=self.session._get_datetime_now)
+                period = TimeSpanDelta(
+                    near=more_than,
+                    far=less_than,
+                    reference=self.session._get_datetime_now,
+                )
             return TaskRunning(task=task, period=period)
         return RunningWrapper(task)
 
     def more_than(self, delta):
         "Get condition the wrapper represents"
-        period = TimeSpanDelta(near=delta, far=None, reference=self.session._get_datetime_now)
+        period = TimeSpanDelta(
+            near=delta, far=None, reference=self.session._get_datetime_now
+        )
         return TaskRunning(task=self.task, period=period)
 
     def less_than(self, delta):
         "Get condition the wrapper represents"
-        period = TimeSpanDelta(near=None, far=delta, reference=self.session._get_datetime_now)
+        period = TimeSpanDelta(
+            near=None, far=delta, reference=self.session._get_datetime_now
+        )
         return TaskRunning(task=self.task, period=period)
 
     def between(self, more_than, less_than):
         "Get condition the wrapper represents"
-        period = TimeSpanDelta(near=more_than, far=less_than, reference=self.session._get_datetime_now)
+        period = TimeSpanDelta(
+            near=more_than, far=less_than, reference=self.session._get_datetime_now
+        )
         return TaskRunning(task=self.task, period=period)
 
     def get_cond(self):
@@ -191,6 +213,7 @@ class RunningWrapper(BaseCondition):
 
     def __ne__(self, other):
         return self.get_cond() != other
+
 
 # Basics
 # ------
@@ -218,8 +241,9 @@ time_of_day = TimeCondWrapper(IsPeriod, TimeOfDay)
 time_of_week = TimeCondWrapper(IsPeriod, TimeOfWeek)
 time_of_month = TimeCondWrapper(IsPeriod, TimeOfMonth)
 
-def every(past:str, based="run"):
-    kws_past = {} # 'unit': 's'
+
+def every(past: str, based="run"):
+    kws_past = {}  # 'unit': 's'
     if based == "run":
         return TaskStarted(period=TimeDelta(past, kws_past=kws_past)) == 0
     if based == "success":
@@ -230,6 +254,7 @@ def every(past:str, based="run"):
         return TaskExecutable(period=TimeDelta(past, kws_past=kws_past))
     raise ValueError(f"Invalid status: {based}")
 
+
 def cron(__expr=None, **kwargs):
     if __expr:
         args = __expr.split(" ")
@@ -238,6 +263,7 @@ def cron(__expr=None, **kwargs):
 
     period = Cron(*args, **kwargs)
     return TaskRunnable(period=period)
+
 
 def crontime(__expr=None, **kwargs):
     if __expr:
@@ -248,14 +274,18 @@ def crontime(__expr=None, **kwargs):
     period = Cron(*args, **kwargs)
     return IsPeriod(period=period)
 
+
 # Task pipelining
 # ---------------
+
 
 def after_success(task):
     return DependSuccess(depend_task=task)
 
+
 def after_fail(task):
     return DependFailure(depend_task=task)
+
 
 def after_finish(task):
     return DependFinish(depend_task=task)
@@ -264,8 +294,10 @@ def after_finish(task):
 def after_all_success(*tasks):
     return All(*(after_success(task) for task in tasks))
 
+
 def after_all_fail(*tasks):
     return All(*(after_fail(task) for task in tasks))
+
 
 def after_all_finish(*tasks):
     return All(*(after_finish(task) for task in tasks))
@@ -274,11 +306,14 @@ def after_all_finish(*tasks):
 def after_any_success(*tasks):
     return Any(*(after_success(task) for task in tasks))
 
+
 def after_any_fail(*tasks):
     return Any(*(after_fail(task) for task in tasks))
 
+
 def after_any_finish(*tasks):
     return Any(*(after_finish(task) for task in tasks))
+
 
 # Task Status
 # -----------
@@ -295,19 +330,23 @@ finished = TimeActionWrapper(TaskFinished)
 # Scheduler
 # ---------
 
-def scheduler_running(more_than:str=None, less_than:str=None):
+
+def scheduler_running(more_than: str = None, less_than: str = None):
     return SchedulerStarted(period=TimeSpanDelta(near=more_than, far=less_than))
 
-def scheduler_cycles(more_than:int=None, less_than:int=None):
+
+def scheduler_cycles(more_than: int = None, less_than: int = None):
     kwds = {}
     if more_than is not None:
-        kwds['__gt__'] = more_than
+        kwds["__gt__"] = more_than
     if less_than is not None:
-        kwds['__lt__'] = less_than
+        kwds["__lt__"] = less_than
     return SchedulerCycles.from_magic(**kwds)
+
 
 # Custom
 # ------
+
 
 def condition():
     return FuncCond(syntax=None, decor_return_func=False)

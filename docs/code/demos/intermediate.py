@@ -1,8 +1,9 @@
-from rocketry import Rocketry
-from rocketry.args import Return, Session, Arg, FuncArg
-from rocketry.conds import daily, time_of_week, after_success
+from tocketry import Tocketry
+from tocketry.args import Return, Session, Arg, FuncArg
+from tocketry.conds import daily, time_of_week, after_success
 
-app = Rocketry()
+app = Tocketry()
+
 
 @app.cond()
 def is_foo():
@@ -10,14 +11,18 @@ def is_foo():
     ...
     return True
 
+
 @app.task(daily & is_foo)
 def do_daily():
     "This task runs once a day when foo is true"
     ...
     return ...
 
-@app.task((daily.at("10:00") | daily.at("19:00")) & time_of_week.between("Mon", "Fri"),
-          execution="process")
+
+@app.task(
+    (daily.at("10:00") | daily.at("19:00")) & time_of_week.between("Mon", "Fri"),
+    execution="process",
+)
 def do_complex():
     "This task runs on complex interval and on separate process"
     ...
@@ -30,10 +35,12 @@ def do_after_another(arg=Return(do_daily)):
     return argument as an input"""
     ...
 
+
 @app.task(daily)
 def do_with_params(arg1=FuncArg(lambda: ...), arg2=Arg("myparam")):
     """This task runs with variety of arguments"""
     ...
+
 
 @app.task(daily, execution="thread")
 def do_on_session(session=Session()):
@@ -45,6 +52,7 @@ def do_on_session(session=Session()):
 
     # Call for shut down
     session.shut_down()
+
 
 if __name__ == "__main__":
     app.params(myparam="...")

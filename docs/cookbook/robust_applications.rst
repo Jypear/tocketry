@@ -21,10 +21,10 @@ errors:
 
 .. code-block:: python
 
-    from rocketry import Rocketry
-    from rocketry.log import LogRecord
+    from tocketry import Tocketry
+    from tocketry.log import LogRecord
 
-    app = Rocketry(config={
+    app = Tocketry(config={
         'silence_task_prerun': True,
         'silence_task_logging': True,
         'silence_cond_check': True
@@ -33,7 +33,7 @@ errors:
 .. note::
 
     The errors and their tracebacks are still logged to 
-    logger called ``rocketry.scheduler`` even if they are 
+    logger called ``tocketry.scheduler`` even if they are 
     silenced. Setting this logger up helps with diagnosing
     the errors.
 
@@ -68,7 +68,7 @@ for simple projects:
 .. code-block:: python
 
     from redbird.repos import SQLRepo
-    from rocketry.log import RunRecord
+    from tocketry.log import RunRecord
 
     repo = CSVFileRepo(model=RunRecord, filename="tasks.csv")
     repo.create()
@@ -84,7 +84,7 @@ option for larger projects that:
 .. code-block:: python
 
     from redbird.repos import SQLRepo
-    from rocketry.log import RunRecord
+    from tocketry.log import RunRecord
     from sqlalchemy import create_engine
 
     engine = create_engine('sqlite://')
@@ -137,7 +137,7 @@ Logging Task Errors
 
 Logging errors is often cruicial for diagnostic 
 purposes and for quickly addressing failures. 
-Because Rocketry simply extends logging library,
+Because Tocketry simply extends logging library,
 you can direct the log task records to anywhere you 
 wish.
 
@@ -148,7 +148,7 @@ Recommended way to send errors via email is to use
 `Red Mail's <https://red-mail.readthedocs.io>`_
 email handler and add it to the logger that handles
 the task logs. Red Mail is an advanced email sending
-library created by Rocketry's author. 
+library created by Tocketry's author. 
 
 .. code-block:: python
 
@@ -169,12 +169,12 @@ library created by Rocketry's author.
     )
     handler.setLevel(logging.ERROR)
 
-    task_logger = logging.getLogger("rocketry.task")
+    task_logger = logging.getLogger("tocketry.task")
     task_logger.addHandler(handler)
 
 First we created a logging handler that sends emails, then 
 we set the level of this handler to log errors only and then
-we set this handler to Rocketry's task logger. 
+we set this handler to Tocketry's task logger. 
 
 .. warning::
 
@@ -192,7 +192,7 @@ be useful for additional diagnostics.
 
     import logging
 
-    sched_logger = logging.getLogger("rocketry.scheduler")
+    sched_logger = logging.getLogger("tocketry.scheduler")
     sched_logger.addHandler(logging.StreamHandler())
 
 Retry Failed
@@ -204,7 +204,7 @@ but some might. For example,
 
 .. code-block:: python
 
-    from rocketry.conds import retry, daily
+    from tocketry.conds import retry, daily
 
     @app.task(daily | retry(3))
     def do_things():
@@ -220,7 +220,7 @@ the task is allowed to run:
 
 .. code-block:: python
 
-    from rocketry.conds import retry, daily, time_of_day
+    from tocketry.conds import retry, daily, time_of_day
 
     @app.task((daily | retry(3)) & time_of_day.between("10:00", "12:00"))
     def do_things():

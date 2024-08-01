@@ -6,10 +6,11 @@ from typing import Callable, ClassVar, Dict, FrozenSet, List, Optional, Pattern,
 import itertools
 from dataclasses import dataclass, field
 
-from rocketry._base import RedBase
-from rocketry.pybox.time import to_datetime, to_timedelta, Interval
+from tocketry._base import RedBase
+from tocketry.pybox.time import to_datetime, to_timedelta, Interval
 
-PARSERS: Dict[Union[str, Pattern], Union[Callable, 'TimePeriod']] = {}
+PARSERS: Dict[Union[str, Pattern], Union[Callable, "TimePeriod"]] = {}
+
 
 @dataclass(frozen=True)
 class TimePeriod(RedBase):
@@ -37,7 +38,9 @@ class TimePeriod(RedBase):
         # using & operator
         is_time_period = isinstance(other, TimePeriod)
         if not is_time_period:
-            raise TypeError(f"AND operator only supports TimePeriod. Given: {type(other)}")
+            raise TypeError(
+                f"AND operator only supports TimePeriod. Given: {type(other)}"
+            )
 
         if self is always:
             # Reducing the operation
@@ -52,7 +55,9 @@ class TimePeriod(RedBase):
         # bitwise or
         is_time_period = isinstance(other, TimePeriod)
         if not is_time_period:
-            raise TypeError(f"AND operator only supports TimePeriod. Given: {type(other)}")
+            raise TypeError(
+                f"AND operator only supports TimePeriod. Given: {type(other)}"
+            )
 
         if self is always or other is always:
             # Reducing the operation
@@ -69,6 +74,7 @@ class TimePeriod(RedBase):
         "Get previous time interval of the period."
         raise NotImplementedError
 
+
 class TimeInterval(TimePeriod):
     """Base for all time intervals
 
@@ -81,7 +87,9 @@ class TimeInterval(TimePeriod):
 
     Answers to "between 11:00 and 12:00" and "from monday to tuesday"
     """
+
     _type_name: ClassVar = "interval"
+
     @abstractmethod
     def __contains__(self, dt):
         "Check whether the datetime is on the period"
@@ -182,6 +190,7 @@ class TimeInterval(TimePeriod):
             return (self._start == other._start) and (self._end == other._end)
         return False
 
+
 @dataclass(frozen=True)
 class TimeDelta(TimePeriod):
     """Base for all time deltas
@@ -192,12 +201,14 @@ class TimeDelta(TimePeriod):
     the reference point is set. This reference
     point is typically current datetime.
     """
+
     _type_name: ClassVar = "delta"
 
     reference: Optional[datetime.datetime] = field(default=None)
 
-    def __init__(self, past=None, future=None, reference=None, *, kws_past=None, kws_future=None):
-
+    def __init__(
+        self, past=None, future=None, reference=None, *, kws_past=None, kws_future=None
+    ):
         past = 0 if past is None else past
         future = 0 if future is None else future
 
@@ -213,7 +224,7 @@ class TimeDelta(TimePeriod):
 
     @abstractmethod
     def __contains__(self, dt):
-        "Check whether the datetime is in "
+        "Check whether the datetime is in"
         reference = self.get_reference()
         start = reference - abs(self.past)
         end = reference + abs(self.future)
@@ -253,8 +264,10 @@ class TimeDelta(TimePeriod):
     def __repr__(self):
         return f"TimeDelta(past={repr(self.past)}, future={repr(self.future)})"
 
-def all_overlap(times:List[Interval]):
+
+def all_overlap(times: List[Interval]):
     return all(a.overlaps(b) for a, b in itertools.combinations(times, 2))
+
 
 def get_overlapping(times):
     # Example:
@@ -269,9 +282,9 @@ def get_overlapping(times):
     end = min(ends)
     return Interval(start, end)
 
+
 @dataclass(frozen=True)
 class All(TimePeriod):
-
     periods: FrozenSet[TimePeriod]
 
     def __init__(self, *args):
@@ -295,18 +308,16 @@ class All(TimePeriod):
         object.__setattr__(self, "periods", frozenset(periods))
 
     def rollback(self, dt):
-
         # We solve this iteratively
         # 1. rollback
         # 2. check if everything overlaps
         # 3. If not overlaps, take max and check again
         # 4. If overlaps, get the period that overlaps
 
-        intervals = [
-            period.rollback(dt)
-            for period in self.periods
-        ]
-        all_overlaps = all(a.overlaps(b) for a, b in itertools.combinations(intervals, 2))
+        intervals = [period.rollback(dt) for period in self.periods]
+        all_overlaps = all(
+            a.overlaps(b) for a, b in itertools.combinations(intervals, 2)
+        )
         if all_overlaps:
             return reduce(lambda a, b: a & b, intervals)
         # Not found, trying again with next period
@@ -319,7 +330,7 @@ class All(TimePeriod):
         next_dt = min(intervals, key=lambda x: x.right).right
 
         opened = any(
-            interv.closed not in ('right', 'both')
+            interv.closed not in ("right", "both")
             for interv in intervals
             if interv.right == next_dt
         )
@@ -335,11 +346,10 @@ class All(TimePeriod):
         # 3. If not overlaps, take max and check again
         # 4. If overlaps, get the period that overlaps
 
-        intervals = [
-            period.rollforward(dt)
-            for period in self.periods
-        ]
-        all_overlaps = all(a.overlaps(b) for a, b in itertools.combinations(intervals, 2))
+        intervals = [period.rollforward(dt) for period in self.periods]
+        all_overlaps = all(
+            a.overlaps(b) for a, b in itertools.combinations(intervals, 2)
+        )
         if all_overlaps:
             return reduce(lambda a, b: a & b, intervals)
         # Not found, trying again with next period
@@ -351,7 +361,7 @@ class All(TimePeriod):
         # Next try:          |
         next_dt = max(intervals, key=lambda x: x.left).left
         opened = any(
-            interv.closed not in ('left', 'both')
+            interv.closed not in ("left", "both")
             for interv in intervals
             if interv.left == next_dt
         )
@@ -367,15 +377,15 @@ class All(TimePeriod):
         return False
 
     def __repr__(self):
-        sub = ', '.join(repr(p) for p in self.periods)
+        sub = ", ".join(repr(p) for p in self.periods)
         return f"All({sub})"
 
     def __str__(self):
-        return ' & '.join(str(p) for p in self.periods)
+        return " & ".join(str(p) for p in self.periods)
+
 
 @dataclass(frozen=True)
 class Any(TimePeriod):
-
     periods: FrozenSet[TimePeriod]
 
     def __init__(self, *args):
@@ -400,10 +410,7 @@ class Any(TimePeriod):
         object.__setattr__(self, "periods", frozenset(periods))
 
     def rollback(self, dt):
-        intervals = [
-            period.rollback(dt)
-            for period in self.periods
-        ]
+        intervals = [period.rollback(dt) for period in self.periods]
 
         # Example:
         # Current time           |
@@ -444,16 +451,10 @@ class Any(TimePeriod):
             else:
                 break
 
-        return Interval(
-            curr_interval.left,
-            end_interval.right
-        )
+        return Interval(curr_interval.left, end_interval.right)
 
     def rollforward(self, dt):
-        intervals = [
-            period.rollforward(dt)
-            for period in self.periods
-        ]
+        intervals = [period.rollforward(dt) for period in self.periods]
 
         # We solve the problem iteratively
         # 1. Find the interval that starts closest to the dt
@@ -473,10 +474,7 @@ class Any(TimePeriod):
             else:
                 break
 
-        return Interval(
-            start_interval.left,
-            curr_interval.right
-        )
+        return Interval(start_interval.left, curr_interval.right)
 
     def __eq__(self, other):
         # self | other
@@ -486,11 +484,12 @@ class Any(TimePeriod):
         return False
 
     def __repr__(self):
-        sub = ', '.join(repr(p) for p in self.periods)
+        sub = ", ".join(repr(p) for p in self.periods)
         return f"Any({sub})"
 
     def __str__(self):
-        return ' | '.join(str(p) for p in self.periods)
+        return " | ".join(str(p) for p in self.periods)
+
 
 @dataclass(frozen=True)
 class StaticInterval(TimePeriod):
@@ -500,8 +499,12 @@ class StaticInterval(TimePeriod):
     end: datetime.datetime
 
     def __init__(self, start=None, end=None):
-        object.__setattr__(self, "start", to_datetime(start) if start is not None else self.min)
-        object.__setattr__(self, "end", to_datetime(end) if end is not None else self.max)
+        object.__setattr__(
+            self, "start", to_datetime(start) if start is not None else self.min
+        )
+        object.__setattr__(
+            self, "end", to_datetime(end) if end is not None else self.max
+        )
 
     def rollback(self, dt):
         dt = to_datetime(dt)
@@ -529,17 +532,18 @@ class StaticInterval(TimePeriod):
 
     def __str__(self):
         if self.is_max_interval:
-            return 'always'
+            return "always"
         if self.start == self.max:
-            return 'never'
-        return f'between {self.start} and {self.end}'
+            return "never"
+        return f"between {self.start} and {self.end}"
 
     def __repr__(self):
         if self.is_max_interval:
-            return 'always'
+            return "always"
         if self.start == self.max:
-            return 'never'
+            return "never"
         return f"StaticInterval(start={self.start!r}, end={self.end!r})"
+
 
 always = StaticInterval()
 never = StaticInterval(StaticInterval.max, StaticInterval.max)

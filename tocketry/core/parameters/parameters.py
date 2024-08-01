@@ -3,16 +3,19 @@ from typing import Callable, Type, Union, TYPE_CHECKING
 from functools import partial
 import inspect
 
-from rocketry._base import RedBase
-from rocketry.core.utils import is_pickleable
-from rocketry.core.utils import filter_keyword_args
+from tocketry._base import RedBase
+from tocketry.core.utils import is_pickleable
+from tocketry.core.utils import filter_keyword_args
 
 from .arguments import BaseArgument
 
 if TYPE_CHECKING:
-    import rocketry
+    import tocketry
 
-class Parameters(RedBase, Mapping): # Mapping so that mytask(**Parameters(...)) would work
+
+class Parameters(
+    RedBase, Mapping
+):  # Mapping so that mytask(**Parameters(...)) would work
     """Parameter set for tasks.
 
     Parameter set is a mapping (like dictionary).
@@ -31,9 +34,14 @@ class Parameters(RedBase, Mapping): # Mapping so that mytask(**Parameters(...)) 
     """
 
     _params: dict
-    session: 'rocketry.Session'
+    session: "tocketry.Session"
 
-    def __init__(self, _param:Union[dict, 'Parameters']=None, type_:Type[BaseArgument]=None, **params):
+    def __init__(
+        self,
+        _param: Union[dict, "Parameters"] = None,
+        type_: Type[BaseArgument] = None,
+        **params,
+    ):
         if _param is not None:
             # We get original values if _param has Private or other arguments that are
             # hidden
@@ -41,14 +49,11 @@ class Parameters(RedBase, Mapping): # Mapping so that mytask(**Parameters(...)) 
             params.update(_param)
 
         if type_ is not None:
-            params = {
-                name: type_(value)
-                for name, value in params.items()
-            }
+            params = {name: type_(value) for name, value in params.items()}
         self._params = params
 
     @classmethod
-    def _from_signature(cls, __func:Callable, **kwargs) -> 'Parameters':
+    def _from_signature(cls, __func: Callable, **kwargs) -> "Parameters":
         # Get parameters from a function signature
         # ie.
         # def myfunc(task=Task(), session=Session()): ...
@@ -60,7 +65,7 @@ class Parameters(RedBase, Mapping): # Mapping so that mytask(**Parameters(...)) 
                 params[name] = default
         return params
 
-# For mapping interface
+    # For mapping interface
     def get(self, key, default=None):
         try:
             return self[key]
@@ -69,10 +74,16 @@ class Parameters(RedBase, Mapping): # Mapping so that mytask(**Parameters(...)) 
 
     def _get(self, __item, **kwargs):
         item = __item
-        if callable(item) and hasattr(item, "__rocketry__") and "param_name" in item.__rocketry__:
-            item = item.__rocketry__['param_name']
+        if (
+            callable(item)
+            and hasattr(item, "__tocketry__")
+            and "param_name" in item.__tocketry__
+        ):
+            item = item.__tocketry__["param_name"]
         value = self._params[item]
-        return value if not isinstance(value, BaseArgument) else value.get_value(**kwargs)
+        return (
+            value if not isinstance(value, BaseArgument) else value.get_value(**kwargs)
+        )
 
     def __iter__(self):
         return iter(self._params)
@@ -89,10 +100,9 @@ class Parameters(RedBase, Mapping): # Mapping so that mytask(**Parameters(...)) 
         to child processes/threads.
         """
         self._params = {
-            key:
-                value
-                if not isinstance(value, BaseArgument)
-                else value.stage(*args, **kwargs)
+            key: value
+            if not isinstance(value, BaseArgument)
+            else value.stage(*args, **kwargs)
             for key, value in self._params.items()
         }
         return self
@@ -104,10 +114,9 @@ class Parameters(RedBase, Mapping): # Mapping so that mytask(**Parameters(...)) 
         """
 
         return {
-            key:
-                value
-                if not isinstance(value, BaseArgument)
-                else value.get_value(*args, **get_kwargs(value.get_value, **kwargs))
+            key: value
+            if not isinstance(value, BaseArgument)
+            else value.get_value(*args, **get_kwargs(value.get_value, **kwargs))
             for key, value in self._params.items()
         }
 
@@ -119,7 +128,7 @@ class Parameters(RedBase, Mapping): # Mapping so that mytask(**Parameters(...)) 
         params = params._params if isinstance(params, Parameters) else params
         self._params.update(params)
 
-    def param_func(self, _func:Callable=None, *, key:str=None):
+    def param_func(self, _func: Callable = None, *, key: str = None):
         """Add a function as an argument to the parameters.
 
         Parameters
@@ -130,7 +139,8 @@ class Parameters(RedBase, Mapping): # Mapping so that mytask(**Parameters(...)) 
             Key or the name of the argument,
             by default the name of the function
         """
-        from rocketry.args import FuncArg
+        from tocketry.args import FuncArg
+
         if _func is None:
             return partial(self.param_func, key=key)
 
@@ -148,8 +158,8 @@ class Parameters(RedBase, Mapping): # Mapping so that mytask(**Parameters(...)) 
 
     def __repr__(self):
         cls_name = type(self).__name__
-        params = ', '.join(f'{name}={repr(arg)}' for name, arg in self._params.items())
-        return f'{cls_name}({params})'
+        params = ", ".join(f"{name}={repr(arg)}" for name, arg in self._params.items())
+        return f"{cls_name}({params})"
 
     def __or__(self, other):
         "| operator is union"
@@ -171,21 +181,19 @@ class Parameters(RedBase, Mapping): # Mapping so that mytask(**Parameters(...)) 
             return self._params != other._params
         return True
 
-# Pickling
+    # Pickling
     def __getstate__(self):
         # capture what is normally pickled
         state = self.__dict__.copy()
 
         # Remove unpicklable parameters
         state["_params"] = {
-            key: val
-            for key, val in state["_params"].items()
-            if is_pickleable(val)
+            key: val for key, val in state["_params"].items() if is_pickleable(val)
         }
         return state
 
-#    def __setstate__(self, newstate):
-#        self.__dict__.update(newstate)
+    #    def __setstate__(self, newstate):
+    #        self.__dict__.update(newstate)
 
     def items(self):
         return self._params.items()
@@ -209,6 +217,7 @@ class Parameters(RedBase, Mapping): # Mapping so that mytask(**Parameters(...)) 
             key: val if hasattr(val, "to_json") else repr(val)
             for key, val in self._params.items()
         }
+
 
 def get_kwargs(__func, **kwargs) -> dict:
     "Get function arguments"

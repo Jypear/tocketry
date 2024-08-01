@@ -1,15 +1,16 @@
-from rocketry import Rocketry
-from rocketry.args import Return
+from tocketry import Tocketry
+from tocketry.args import Return
 
-app = Rocketry()
+app = Tocketry()
 
-@app.task('daily')
+
+@app.task("daily")
 def do_daily():
     "This function runs once a day"
     ...
 
 
-@app.task('daily between 07:00 and 10:00 | daily between 16:00 and 20:00')
+@app.task("daily between 07:00 and 10:00 | daily between 16:00 and 20:00")
 def do_twice_a_day():
     "This function runs twice a day (in the morning and in the afternoon)"
     # The '|' means OR operator. Fully supports logical operations.
@@ -17,7 +18,7 @@ def do_twice_a_day():
 
 
 @app.task("after task 'do_daily'")
-def do_after_another(arg=Return('do_daily')):
+def do_after_another(arg=Return("do_daily")):
     "Run after 'do_daily' task"
     # The parameter 'arg' has the return value of the function 'do_daily'
     ...

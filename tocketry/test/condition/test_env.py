@@ -1,11 +1,7 @@
+from tocketry.conditions import IsEnv
 
-
-from rocketry.conditions import (
-    IsEnv
-)
 
 def test_env(session):
-
     cond = IsEnv("test")
     assert not cond.observe(session=session)
 
