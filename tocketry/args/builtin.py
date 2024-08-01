@@ -1,24 +1,27 @@
-
 import logging
 import os
 import sys
 import threading
 import warnings
 from typing import Any, Callable, Optional, Union
-from rocketry.core.log.adapter import TaskAdapter
+from tocketry.core.log.adapter import TaskAdapter
+
 try:
     from typing import Literal
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     from typing_extensions import Literal
 
-from rocketry.core.task import Task as BaseTask
-from rocketry.core.parameters import BaseArgument, Parameters
+from tocketry.core.task import Task as BaseTask
+from tocketry.core.parameters import BaseArgument, Parameters
+
 
 class NotSet:
     def __repr__(self):
-        return 'NOTSET'
+        return "NOTSET"
+
 
 NOTSET = NotSet()
+
 
 class SimpleArg(BaseArgument):
     """A simple argument.
@@ -29,11 +32,13 @@ class SimpleArg(BaseArgument):
         Value of the argument.
 
     """
-    def __init__(self, value:Any):
+
+    def __init__(self, value: Any):
         self._value = value
 
     def get_value(self, task=None, **kwargs) -> Any:
         return self._value
+
 
 class Arg(BaseArgument):
     """A simple argument got from the session
@@ -44,7 +49,8 @@ class Arg(BaseArgument):
         Value of the argument.
 
     """
-    def __init__(self, key:Any, default:Union[NotSet, str]=NOTSET):
+
+    def __init__(self, key: Any, default: Union[NotSet, str] = NOTSET):
         self.key = key
         self.default = default
 
@@ -52,7 +58,9 @@ class Arg(BaseArgument):
         if session is None:
             session = task.session
         try:
-            return session.parameters._get(self.key, task=task, session=session, **kwargs)
+            return session.parameters._get(
+                self.key, task=task, session=session, **kwargs
+            )
         except KeyError:
             if self.default is NOTSET:
                 raise
@@ -62,17 +70,18 @@ class Arg(BaseArgument):
         return self.key
 
     def __repr__(self):
-        return f'session.parameters[{repr(self.key)}]'
+        return f"session.parameters[{repr(self.key)}]"
 
     def __eq__(self, other):
         if isinstance(other, type(self)):
             return self.key == other.key
         return False
 
+
 class Session(BaseArgument):
     "An argument that represents the session"
 
-    def __init__(self, default:Union[NotSet, str]=NOTSET):
+    def __init__(self, default: Union[NotSet, str] = NOTSET):
         self.default = default
 
     def get_value(self, task=None, session=None, scheduler=None, **kwargs) -> Any:
@@ -87,12 +96,13 @@ class Session(BaseArgument):
         raise TypeError("Missing session")
 
     def __repr__(self):
-        return 'session'
+        return "session"
+
 
 class Task(BaseArgument):
     "An argument that represents a task"
 
-    def __init__(self, name=None, default:Union[NotSet, str]=NOTSET):
+    def __init__(self, name=None, default: Union[NotSet, str] = NOTSET):
         self.name = name
         self.default = default
 
@@ -112,26 +122,40 @@ class Task(BaseArgument):
     def __repr__(self):
         return f'Task({repr(self.name) if self.name is not None else ""})'
 
+
 class Config(BaseArgument):
     "Argument that represents the session config"
 
     def get_value(self, session=Session(), **kwargs):
         return session.config
 
+
 class TaskLogger(BaseArgument):
     "Argument that represents the task logger (adapter)"
 
-    def get_value(self, session=Session(default=None), task=Task(default=None), **kwargs) -> Any:
-        logger_name = session.config.task_logger_basename if session is not None else 'rocketry.task'
+    def get_value(
+        self, session=Session(default=None), task=Task(default=None), **kwargs
+    ) -> Any:
+        logger_name = (
+            session.config.task_logger_basename
+            if session is not None
+            else "tocketry.task"
+        )
         task_logger = logging.getLogger(logger_name)
         return TaskAdapter(task_logger, task=task)
+
 
 class SchedulerLogger(BaseArgument):
     "Argument that represents the scheduler logger"
 
     def get_value(self, session=Session(default=None), **kwargs) -> Any:
-        logger_name = session.config.scheduler_logger_basename if session is not None else 'rocketry.scheduler'
+        logger_name = (
+            session.config.scheduler_logger_basename
+            if session is not None
+            else "tocketry.scheduler"
+        )
         return logging.getLogger(logger_name)
+
 
 class Return(BaseArgument):
     """A return argument
@@ -150,8 +174,8 @@ class Return(BaseArgument):
 
     .. code-block:: python
 
-        from rocketry.arguments import Return
-        from rocketry.tasks import FuncTask
+        from tocketry.arguments import Return
+        from tocketry.tasks import FuncTask
 
         # Create a task with a return
         @FuncTask()
@@ -164,7 +188,7 @@ class Return(BaseArgument):
             ...
     """
 
-    def __init__(self, task_name, default:Union[NotSet, str]=NOTSET):
+    def __init__(self, task_name, default: Union[NotSet, str] = NOTSET):
         self.task_name = task_name
         self.default = default
 
@@ -174,7 +198,9 @@ class Return(BaseArgument):
         try:
             input_task = session[self.task_name]
         except KeyError:
-            raise ValueError(f"Task {repr(self.task_name)} does not exists. Cannot get return value")
+            raise ValueError(
+                f"Task {repr(self.task_name)} does not exists. Cannot get return value"
+            )
         try:
             return session.returns[input_task]
         except KeyError:
@@ -186,7 +212,8 @@ class Return(BaseArgument):
         return f'Return({repr(self.task_name)}{"" if self.default is None else ", default=" + repr(self.default)})'
 
     def __str__(self):
-        return f'Return of {self.task_name!r}'
+        return f"Return of {self.task_name!r}"
+
 
 class FuncArg(BaseArgument):
     """An argument which value is defined by the
@@ -208,8 +235,8 @@ class FuncArg(BaseArgument):
 
     .. code-block:: python
 
-        from rocketry.tasks import FuncTask
-        from rocketry.arguments import FuncArg
+        from tocketry.tasks import FuncTask
+        from tocketry.arguments import FuncArg
 
         def my_func():
             ...
@@ -223,17 +250,24 @@ class FuncArg(BaseArgument):
 
     .. doctest:: funcarg
 
-        >>> from rocketry.arguments import FuncArg
+        >>> from tocketry.arguments import FuncArg
 
     The ``session.parameters`` were updated.
 
     .. doctest:: funcarg
 
-        >>> from rocketry import session
+        >>> from tocketry.import session
         >>> session.parameters
         Parameters(myarg1=FuncArg(myarg1), myarg2=FuncArg(myfunc))
     """
-    def __init__(self, __func:Callable, *args, materialize:Optional[Literal['pre', 'post']]=None, **kwargs):
+
+    def __init__(
+        self,
+        __func: Callable,
+        *args,
+        materialize: Optional[Literal["pre", "post"]] = None,
+        **kwargs,
+    ):
         self.func = __func
         self.materialize = materialize
         self.args = args
@@ -248,8 +282,12 @@ class FuncArg(BaseArgument):
         return self.func(*self.args, **params, **self.kwargs)
 
     def stage(self, **kwargs):
-        session = kwargs['session']
-        materialize = self.materialize if self.materialize is not None else session.config.param_materialize
+        session = kwargs["session"]
+        materialize = (
+            self.materialize
+            if self.materialize is not None
+            else session.config.param_materialize
+        )
 
         if materialize == "pre":
             return self.get_value(**kwargs)
@@ -257,27 +295,30 @@ class FuncArg(BaseArgument):
 
     def __repr__(self):
         cls_name = type(self).__name__
-        return f'{cls_name}({self.func.__name__})'
+        return f"{cls_name}({self.func.__name__})"
+
 
 class TerminationFlag(BaseArgument):
-
     def get_value(self, task=None, session=None, terminate_event=None, **kwargs) -> Any:
         execution = task.execution
         if execution in ("process", "main"):
-            warnings.warn(f"Termination flag passed to non-threaded task. Task with 'execution_type={execution}' cannot use termination flag.")
+            warnings.warn(
+                f"Termination flag passed to non-threaded task. Task with 'execution_type={execution}' cannot use termination flag."
+            )
             return threading.Event()
         return terminate_event
 
     def __repr__(self):
-        return 'TerminationFlag()'
+        return "TerminationFlag()"
 
     def __str__(self):
-        return 'termination flag'
+        return "termination flag"
+
 
 class EnvArg(BaseArgument):
     """Argument that has the value of an environment variable"""
 
-    def __init__(self, var, default:Union[NotSet, str]=NOTSET):
+    def __init__(self, var, default: Union[NotSet, str] = NOTSET):
         self.var = var
         self.default = default
 
@@ -289,19 +330,20 @@ class EnvArg(BaseArgument):
                 raise
             return self.default
 
+
 class CliArg(BaseArgument):
     """Argument that has the value of a command line argument"""
 
     cli_args = sys.argv
 
-    def __init__(self, param, default:Union[NotSet, str]=NOTSET):
+    def __init__(self, param, default: Union[NotSet, str] = NOTSET):
         self.param = param
         self.default = default
 
     def get_value(self, **kwargs) -> Any:
         return self._get_arg(self.cli_args)
 
-    def _get_arg(self, args:list):
+    def _get_arg(self, args: list):
         arg_name = self.param
         for i, arg in enumerate(args):
             if arg == arg_name:
@@ -310,9 +352,11 @@ class CliArg(BaseArgument):
             if self.default is NOTSET:
                 raise KeyError("CLI argument not found")
             return self.default
-        return args[i+1]
+        return args[i + 1]
+
 
 def argument(**kwargs):
     def wrapper(func):
         return FuncArg(func, **kwargs)
+
     return wrapper

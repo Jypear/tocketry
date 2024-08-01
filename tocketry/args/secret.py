@@ -1,5 +1,5 @@
+from tocketry.core.parameters import BaseArgument
 
-from rocketry.core.parameters import BaseArgument
 
 class Private(BaseArgument):
     """Private argument not meant to be shown outside.
@@ -26,7 +26,7 @@ class Private(BaseArgument):
 
     def __repr__(self):
         cls_name = type(self).__name__
-        return f'{cls_name}({self.string_hidden})'
+        return f"{cls_name}({self.string_hidden})"
 
     def __str__(self):
         return self.string_hidden
