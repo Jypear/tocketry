@@ -1,39 +1,28 @@
-
-
-<h1 align="center"><a href="https://rocketry.readthedocs.io">Rocketry</a></h1>
+<h1 align="center"><a href="https://rocketry.readthedocs.io">Tocketry</a></h1>
+<h2 align="center">This code is currently a work in progress and not stable</h2>
 <p align="center">
-    <em>The engine to power your Python apps</em>
-</p>
-<p align="center">
-    <a href="https://github.com/Miksus/rocketry/actions/workflows/main.yml/badge.svg?branch=master" target="_blank">
-        <img src="https://github.com/Miksus/rocketry/actions/workflows/main.yml/badge.svg?branch=master" alt="Test">
-    </a>
-    <a href="https://codecov.io/gh/Miksus/rocketry" target="_blank">
-        <img src="https://codecov.io/gh/Miksus/rocketry/branch/master/graph/badge.svg?token=U2KF1QA5HT" alt="Test coverage">
-    </a>
-    <a href="https://pypi.org/project/rocketry" target="_blank">
-        <img src="https://badgen.net/pypi/v/rocketry?color=969696" alt="Package version">
-    </a>
-    <a href="https://pypi.org/project/rocketry" target="_blank">
-        <img src="https://badgen.net/pypi/python/rocketry?color=969696&labelColor=black" alt="Supported Python versions">
-    </a>
+    <em>The fork of the engine to power your Python apps</em>
 </p>
 
------------------
+---
 
 ## What is it?
 
-Rocketry is a modern statement-based scheduling framework 
+Tocketry is a fork of the project Rocketry created by [Miksus](https://github.com/Miksus)
+
+Tocketry is a modern statement-based scheduling framework
 for Python. It is simple, clean and extensive.
 It is suitable for small and big projects.
+
+Tocketry aims to be a lighter version of Rocketry without the need for pydantic as a dependency
 
 This is how it looks like:
 
 ```python
-from rocketry import Rocketry
-from rocketry.conds import daily
+from tocketry import Tocketry
+from tocketry.conds import daily
 
-app = Rocketry()
+app = Tocketry()
 
 @app.task(daily)
 def do_daily():
@@ -54,22 +43,22 @@ Core functionalities:
 
 Links:
 
-- Documentation: https://rocketry.readthedocs.io
-- Source code: https://github.com/Miksus/rocketry
-- Releases: https://pypi.org/project/rocketry/
+- Documentation: _Work in Progress_
+- Source code: https://github.com/Jypear/tocketry
+- Releases: _Work in Progress_
 
-## Why Rocketry?
+## Why Tocketry?
 
-Unlike the alternatives, Rocketry's scheduler is 
-statement-based. Rocketry natively supports the 
-same scheduling strategies as the other options, 
+Unlike the alternatives, Tocketry's scheduler is
+statement-based. Tocketry natively supports the
+same scheduling strategies as the other options,
 including cron and task pipelining, but it can also be
 arbitrarily extended using custom scheduling statements.
 
 Here is an example of custom conditions:
 
 ```python
-from rocketry.conds import daily, time_of_week
+from tocketry.conds import daily, time_of_week
 from pathlib import Path
 
 @app.cond()
@@ -81,18 +70,17 @@ def do_work():
     ...
 ```
 
-Rocketry is suitable for quick automation projects
+Tocketry is suitable for quick automation projects
 and for larger scale applications. It does not make
 assumptions of your project structure.
 
 ## Installation
 
-Install Rocketry from [PyPI](https://pypi.org/project/rocketry/):
+Install Tocketry from _Work in Progress_
 
 ```shell
-pip install rocketry
+pip install tocketry
 ```
-
 
 ## More Examples
 
@@ -101,10 +89,10 @@ Here are some more examples of what it can do.
 **Scheduling:**
 
 ```python
-from rocketry.conds import every
-from rocketry.conds import hourly, daily, weekly, 
-from rocketry.conds import time_of_day
-from rocketry.conds import cron
+from tocketry.conds import every
+from tocketry.conds import hourly, daily, weekly,
+from tocketry.conds import time_of_day
+from tocketry.conds import cron
 
 @app.task(every("10 seconds"))
 def do_continuously():
@@ -130,8 +118,8 @@ def do_based_on_cron():
 **Pipelining tasks:**
 
 ```python
-from rocketry.conds import daily, after_success
-from rocketry.args import Return
+from tocketry.conds import daily, after_success
+from tocketry.args import Return
 
 @app.task(daily.after("07:00"))
 def do_first():
@@ -145,11 +133,10 @@ def do_second(arg=Return('do_first')):
     return 'Hello Python'
 ```
 
-
 **Parallelizing tasks:**
 
 ```python
-from rocketry.conds import daily
+from tocketry.conds import daily
 
 @app.task(daily, execution="main")
 def do_unparallel():
@@ -172,10 +159,11 @@ def do_on_separate_process():
 
 ## Interested?
 
-Read more from [the documentation](https://rocketry.readthedocs.io).
+Read more from _Work in Progress_.
 
 ## About Library
 
-- **Author:** Mikael Koli ([Miksus](https://github.com/Miksus)) - koli.mikael@gmail.com
+- **Author and Maintainer:** Josh Pearson ([Jypear](https://github.com/Jypear))
+- **Original Creator:** Mikael Koli ([Miksus](https://github.com/Miksus)) - koli.mikael@gmail.com
 - **License:** MIT
 
