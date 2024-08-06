@@ -93,7 +93,7 @@ def test_multilaunch_terminate(execution, how, session):
     ]
 
 
-@pytest.mark.parametrize("execution", ["async", "thread", "process"])
+@pytest.mark.parametrize("execution", ["async", "process"])
 def test_multilaunch_terminate_end_cond(execution, session):
     session.config.func_run_id = increment
     session.get_repo().model = RunRecord

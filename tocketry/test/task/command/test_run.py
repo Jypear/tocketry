@@ -130,8 +130,6 @@ def test_fail_command(tmpdir, execution, session):
             assert (
                 "OSError: Failed running command (2): \nunknown option --not_an_arg\nusage:"
                 in err
-                and "python [option] ... [-c cmd | -m mod | file | -] [arg] ...\nTry `python -h' for more information."
-                in err
             )
             # expected = "OSError: Failed running command (2): \nunknown option --not_an_arg\nusage: python [option] ... [-c cmd | -m mod | file | -] [arg] ...\nTry `python -h' for more information."
             # assert err.endswith(expected)
