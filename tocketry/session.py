@@ -124,6 +124,21 @@ class Config:
                 DeprecationWarning,
             )
             name = "execution"
+            
+        # Handle field validation on assignment (similar to pydantic field validators)
+        if name == "timeout" and value is not None:
+            if isinstance(value, str):
+                value = to_timedelta(value)
+            elif isinstance(value, (float, int)):
+                value = datetime.timedelta(seconds=value)
+        elif name == "shut_cond" and value is not None:
+            if isinstance(value, str) or (hasattr(value, '__class__') and not hasattr(value, '_check')):
+                # If it's a string or other parseable condition (not already a BaseCondition)
+                from tocketry.parse import parse_condition
+                value = parse_condition(value)
+        elif name == "execution" and value is None:
+            value = "async"
+            
         super().__setattr__(name, value)
 
 
@@ -606,12 +621,32 @@ class Session(RedBase):
             setattr(new_self, attr, None)
 
         # For dataclass, create a copy manually excluding unpicklable fields
-        from dataclasses import asdict, fields
+        from dataclasses import fields
         
-        config_dict = asdict(self.config)
-        # Remove unpicklable fields
-        for field_name in unpicklable_conf:
-            config_dict.pop(field_name, None)
+        # Create config dict manually, avoiding problematic fields
+        config_dict = {}
+        config_fields = fields(self.config)
+        
+        for field in config_fields:
+            field_name = field.name
+            if field_name not in unpicklable_conf:
+                field_value = getattr(self.config, field_name)
+                
+                # Handle fields that might contain unpicklable objects or need special handling
+                if field_name == 'cls_lock':
+                    # Use the default factory for cls_lock 
+                    config_dict[field_name] = field.default_factory()
+                elif field_name == 'timeout':
+                    # Ensure timeout is properly converted to timedelta
+                    if isinstance(field_value, (float, int)):
+                        config_dict[field_name] = datetime.timedelta(seconds=field_value)
+                    elif isinstance(field_value, str):
+                        from tocketry.pybox.time import to_timedelta
+                        config_dict[field_name] = to_timedelta(field_value)
+                    else:
+                        config_dict[field_name] = field_value
+                else:
+                    config_dict[field_name] = field_value
         
         copied = Config(**config_dict)
         new_self.config = copied
