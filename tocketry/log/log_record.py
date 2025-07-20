@@ -19,10 +19,16 @@ class MinimalRecord:
         self.action = action
         self.created = created
 
-    def model_dump(self):
+    def model_dump(self, exclude=None, **kwargs):
         """Compatibility method to replace pydantic's model_dump"""
         from dataclasses import asdict
-        return asdict(self)
+        data = asdict(self)
+        if exclude:
+            if isinstance(exclude, set):
+                exclude = list(exclude)
+            for field in exclude:
+                data.pop(field, None)
+        return data
 
     def __iter__(self):
         """Make dataclass compatible with dict(**item) calls"""
