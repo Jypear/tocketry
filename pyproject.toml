@@ -38,8 +38,7 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = [
-    'python-dateutil', 
-    'pydantic'
+    'python-dateutil'
 ]
 
 [tool.setuptools_scm]
@@ -95,3 +94,17 @@ ignore_errors = true
 
 [tool.coverage.html]
 directory = "htmlcov"
+
+[tool.ruff]
+# match black
+line-length = 120
+target-version = "py311"
+select = [
+    "ALL", # include all the rules, including new ones
+]
+ignore = [
+    #### modules
+    "DJ",  # django
+    "T10", # debugger
+    "FAST" # fastAPI
+]

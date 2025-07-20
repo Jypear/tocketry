@@ -1,27 +1,19 @@
 import logging
 
 import pytest
-from tocketry import redbird
-from tocketry.redbird.logging import RepoHandler
-from tocketry.redbird.repos import CSVFileRepo, SQLRepo
+from tocketry.repo import RepoHandler, MemoryRepo
 from tocketry import Tocketry
 from tocketry.log import MinimalRecord, MinimalRunRecord, TaskLogRecord, TaskRunRecord
 
 
 def get_csv(model, tmpdir):
-    file = tmpdir.join("logs.csv")
-    return CSVFileRepo(filename=str(file), model=model)
+    # CSV repo removed - use MemoryRepo for testing
+    return MemoryRepo(model=model)
 
 
 def get_sql(model, tmpdir):
-    pytest.importorskip("sqlalchemy")
-    return SQLRepo(
-        conn_string="sqlite://",
-        table="mylogs",
-        if_missing="create",
-        model=model,
-        id_field="created",
-    )
+    # SQL repo removed - use MemoryRepo for testing  
+    return MemoryRepo(model=model)
 
 
 @pytest.mark.parametrize("get_repo", [get_csv, get_sql])

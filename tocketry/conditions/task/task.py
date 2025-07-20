@@ -1,7 +1,7 @@
 from typing import Optional
 import datetime
 
-from tocketry.redbird.oper import in_, greater_equal, between
+from tocketry.repo import in_, greater_equal, between
 
 from tocketry.core.condition import BaseCondition, BaseComparable
 from tocketry.log.utils import get_field_value
