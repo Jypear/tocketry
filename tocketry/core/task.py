@@ -33,14 +33,7 @@ try:
 except ImportError:  # pragma: no cover
     from typing_extensions import Literal
 
-from pydantic import (
-    BaseModel,
-    Field,
-    PrivateAttr,
-    ConfigDict,
-    field_validator,
-    field_serializer,
-)
+from dataclasses import dataclass, field
 
 from tocketry._base import RedBase
 from tocketry.core.condition import BaseCondition, AlwaysFalse, All
@@ -124,7 +117,8 @@ class TaskRun:
         return isinstance(self.task, threading.Thread)
 
 
-class Task(BaseModel, RedBase):
+@dataclass
+class Task(RedBase):
     """Base class for Tasks.
 
     A task can be a function, command or other procedure that
@@ -223,13 +217,7 @@ class Task(BaseModel, RedBase):
 
     """
 
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True,
-        validate_assignment=True,
-        extra="allow",
-    )
-
-    session: "Session" = Field(default=None, validate_default=False)
+    session: "Session" = None
 
     # Class
     permanent: bool = False  # Whether the task is not meant to finish (Ie. RestAPI)
@@ -245,145 +233,199 @@ class Task(BaseModel, RedBase):
     fmt_log_message: str = r"Task '{task}' status: '{action}'"
 
     daemon: Optional[bool] = None
-    batches: List[Parameters] = Field(
-        default_factory=list,
-        description="Run batches (parameters). If not empty, run is triggered regardless of starting condition",
-    )
+    batches: List[Parameters] = field(default_factory=list)  # Run batches (parameters). If not empty, run is triggered regardless of starting condition
 
     # Instance
-    name: Optional[str] = Field(
-        description="Name of the task. Must be unique", default=None
-    )
-    description: Optional[str] = Field(
-        description="Description of the task for documentation", default=None
-    )
-    logger_name: Optional[str] = Field(
-        description="Logger name to be used in logging the task records",
-        default="tocketry.task",
-    )
+    name: Optional[str] = None  # Name of the task. Must be unique
+    description: Optional[str] = None  # Description of the task for documentation
+    logger_name: Optional[str] = "tocketry.task"  # Logger name to be used in logging the task records
     execution: Optional[Literal["main", "async", "thread", "process"]] = None
     priority: int = 0
     disabled: bool = False
     force_run: bool = False
     force_termination: bool = False
-    status: Optional[
-        Literal["run", "fail", "success", "terminate", "inaction", "crash"]
-    ] = Field(description="Latest status of the task", default=None)
+    status: Optional[Literal["run", "fail", "success", "terminate", "inaction", "crash"]] = None  # Latest status of the task
     timeout: Optional[datetime.timedelta] = None
 
-    parameters: Parameters = Parameters()
+    parameters: Parameters = field(default_factory=Parameters)
 
-    start_cond: Optional[BaseCondition] = (
-        AlwaysFalse()
-    )  #! TODO: Create get_start_cond so that this could also be as string (lazily parsed)
-    end_cond: Optional[BaseCondition] = AlwaysFalse()
+    start_cond: Optional[BaseCondition] = field(default_factory=AlwaysFalse)  #! TODO: Create get_start_cond so that this could also be as string (lazily parsed)
+    end_cond: Optional[BaseCondition] = field(default_factory=AlwaysFalse)
 
     multilaunch: Optional[bool] = None
     on_startup: bool = False
     on_shutdown: bool = False
     func_run_id: Union[Callable, None] = None
 
-    _last_run: Optional[float]
-    _last_success: Optional[float]
-    _last_fail: Optional[float]
-    _last_terminate: Optional[float]
-    _last_inaction: Optional[float]
-    _last_crash: Optional[float]
+    _last_run: Optional[float] = field(default=None, init=False)
+    _last_success: Optional[float] = field(default=None, init=False)
+    _last_fail: Optional[float] = field(default=None, init=False)
+    _last_terminate: Optional[float] = field(default=None, init=False)
+    _last_inaction: Optional[float] = field(default=None, init=False)
+    _last_crash: Optional[float] = field(default=None, init=False)
 
-    _run_stack: List[TaskRun] = PrivateAttr(default_factory=list)
-    _lock: Optional[Type] = PrivateAttr(default=None)
-    _main_alive: bool = PrivateAttr(default=False)
+    _run_stack: List[TaskRun] = field(default_factory=list, init=False)
+    _lock: Optional[Type] = field(default=None, init=False)
+    _main_alive: bool = field(default=False, init=False)
 
     _mark_running = False
 
-    @field_validator("start_cond", mode="before")
-    def parse_start_cond(cls, value, values):
-        from tocketry.parse.condition import parse_condition
-
-        session = values.data["session"]
-        if isinstance(value, str):
-            value = parse_condition(value, session=session)
-        elif value is None:
-            value = AlwaysFalse()
-        return copy(value)
-
-    @field_validator("end_cond", mode="before")
-    def parse_end_cond(cls, value, values):
-        from tocketry.parse.condition import parse_condition
-
-        session = values.data["session"]
-        if isinstance(value, str):
-            value = parse_condition(value, session=session)
-        elif value is None:
-            value = AlwaysFalse()
-        return copy(value)
-
-    @field_validator("logger_name", mode="before")
-    def parse_logger_name(cls, value, values):
-        session = values.data["session"]
-
-        if isinstance(value, str):
-            logger_name = value
-        elif value is None:
-            logger_name = session.config.task_logger_basename
+    def __post_init__(self):
+        """Handle field validation that was previously done by pydantic field validators"""
+        # Validate start_cond
+        if isinstance(self.start_cond, str):
+            from tocketry.parse.condition import parse_condition
+            self.start_cond = parse_condition(self.start_cond, session=self.session)
+        elif self.start_cond is None:
+            self.start_cond = AlwaysFalse()
         else:
-            logger_name = value.name
-            basename = session.config.task_logger_basename
-            if not value.name.startswith(basename):
-                raise ValueError(
-                    f"Logger name must start with '{basename}' as session finds loggers with names"
-                )
-        return logger_name
+            self.start_cond = copy(self.start_cond)
 
-    @field_validator("timeout", mode="before")
-    def parse_timeout(cls, value, values):
-        if value == "never":
-            return datetime.timedelta.max
-        if isinstance(value, (float, int)):
-            return to_timedelta(value, unit="s")
-        if value is not None:
-            return to_timedelta(value)
-        return value
+        # Validate end_cond
+        if isinstance(self.end_cond, str):
+            from tocketry.parse.condition import parse_condition
+            self.end_cond = parse_condition(self.end_cond, session=self.session)
+        elif self.end_cond is None:
+            self.end_cond = AlwaysFalse()
+        else:
+            self.end_cond = copy(self.end_cond)
 
-    @field_serializer("parameters", when_used="json")
-    def ser_parameters(self, parameters):
-        return parameters.to_json()
+        # Validate logger_name
+        if isinstance(self.logger_name, str):
+            pass  # Already a string, keep as is
+        elif self.logger_name is None:
+            self.logger_name = self.session.config.task_logger_basename if self.session else "tocketry.task"
+        else:
+            # Assume it's a logger object
+            self.logger_name = self.logger_name.name
+            if self.session:
+                basename = self.session.config.task_logger_basename
+                if not self.logger_name.startswith(basename):
+                    raise ValueError(
+                        f"Logger name must start with '{basename}' as session finds loggers with names"
+                    )
 
-    @field_serializer("start_cond", when_used="json")
-    def ser_start_cond(self, start_cond):
-        return str(start_cond)
+        # Validate timeout
+        if self.timeout == "never":
+            from tocketry.pybox.time import to_timedelta
+            self.timeout = datetime.timedelta.max
+        elif isinstance(self.timeout, (float, int)):
+            from tocketry.pybox.time import to_timedelta
+            self.timeout = to_timedelta(self.timeout, unit="s")
+        elif self.timeout is not None and not isinstance(self.timeout, datetime.timedelta):
+            from tocketry.pybox.time import to_timedelta
+            self.timeout = to_timedelta(self.timeout)
 
-    @field_serializer("end_cond", when_used="json")
-    def ser_end_cond(self, end_cond):
-        return str(end_cond)
+        # Validate parameters
+        if not isinstance(self.parameters, Parameters):
+            self.parameters = Parameters(self.parameters)
 
-    @field_serializer("session", when_used="json", check_fields=False)
-    def ser_session(self, session):
-        return id(session)
+        # Handle force_run deprecation
+        if self.force_run:
+            warnings.warn(
+                "Attribute 'force_run' is deprecated. Please use method set_running() instead",
+                DeprecationWarning,
+            )
+            self.batches.append(Parameters())
+
+    # JSON serialization methods (replacement for pydantic field_serializers)
+    def _serialize_for_json(self):
+        """Custom serialization for JSON compatibility"""
+        return {
+            'parameters': self.parameters.to_json() if hasattr(self.parameters, 'to_json') else str(self.parameters),
+            'start_cond': str(self.start_cond),
+            'end_cond': str(self.end_cond),
+            'session': id(self.session) if self.session else None,
+            # Add other fields as needed
+        }
 
     @property
     def logger(self):
         logger = logging.getLogger(self.logger_name)
         return TaskAdapter(logger, task=self)
 
-    def __init__(self, **kwargs):
-        hooker = _Hooker(self.session.hooks.task_init)
-        hooker.prerun(task=self)
-
-        if kwargs.get("session") is None:
+    def __init__(self, session=None, name=None, description=None, logger_name="tocketry.task", 
+                 execution=None, priority=0, disabled=False, force_run=False, force_termination=False,
+                 status=None, timeout=None, parameters=None, start_cond=None, end_cond=None,
+                 multilaunch=None, on_startup=False, on_shutdown=False, func_run_id=None,
+                 daemon=None, batches=None, permanent=False, **kwargs):
+        """Initialize Task with validation and setup"""
+        
+        # Handle session creation
+        if session is None:
             warnings.warn("Task's session not defined. Creating new.", UserWarning)
-            kwargs["session"] = _create_session()
-        kwargs["name"] = self._get_name(**kwargs)
-
+            session = _create_session()
+        
+        # Handle name generation
+        if name is None:
+            use_instance_naming = session.config.use_instance_naming if session else False
+            if use_instance_naming:
+                name = str(id(self))
+            else:
+                name = self.get_default_name(name=name, **kwargs)
+        
+        # Handle deprecated arguments
         if "permanent_task" in kwargs:
             warnings.warn(
-                "Argument 'permanent_task' is deprecated. " "Please use 'permanent'.",
+                "Argument 'permanent_task' is deprecated. Please use 'permanent'.",
                 DeprecationWarning,
             )
-            kwargs["permanent"] = kwargs.pop("permanent_task")
-
-        super().__init__(**kwargs)
-
+            permanent = kwargs.pop("permanent_task")
+        
+        # Set up defaults
+        if parameters is None:
+            parameters = Parameters()
+        if start_cond is None:
+            start_cond = AlwaysFalse()
+        if end_cond is None:
+            end_cond = AlwaysFalse()
+        if batches is None:
+            batches = []
+        
+        # Initialize the dataclass fields
+        self.session = session
+        self.name = name
+        self.description = description
+        self.logger_name = logger_name
+        self.execution = execution
+        self.priority = priority
+        self.disabled = disabled
+        self.force_run = force_run
+        self.force_termination = force_termination
+        self.status = status
+        self.timeout = timeout
+        self.parameters = parameters
+        self.start_cond = start_cond
+        self.end_cond = end_cond
+        self.multilaunch = multilaunch
+        self.on_startup = on_startup
+        self.on_shutdown = on_shutdown
+        self.func_run_id = func_run_id
+        self.daemon = daemon
+        self.batches = batches
+        self.permanent = permanent
+        
+        # Initialize private attributes
+        self._last_run = None
+        self._last_success = None
+        self._last_fail = None
+        self._last_terminate = None
+        self._last_inaction = None
+        self._last_crash = None
+        self._run_stack = []
+        self._lock = None
+        self._main_alive = False
+        
+        # Set up hooks
+        hooker = _Hooker(self.session.hooks.task_init)
+        hooker.prerun(task=self)
+        
+        # Run field validation
+        self.__post_init__()
+        
+        # Validate name in session context
+        self._validate_name_in_session()
+        
         # Set default readable logger if missing
         self.session._check_readable_logger()
 
@@ -401,53 +443,24 @@ class Task(BaseModel, RedBase):
             return self.get_default_name(**kwargs)
         return name
 
-    @field_validator("name", mode="before")
-    def parse_name(cls, value, values):
-        session = values.data["session"]
-        on_exists = session.config.task_pre_exist
-        name_exists = value in session
-        if name_exists:
-            if on_exists == "ignore":
-                return value
-            if on_exists == "raise":
-                raise ValueError(f"Task name '{value}' already exists.")
-            if on_exists == "rename":
-                basename = value
-                name = value
-                num = 0
-                while name in session:
-                    num += 1
-                    name = f"{basename} - {num}"
-                return name
-        return value
-
-    @field_validator("name", mode="after")
-    def validate_name(cls, value, values):
-        session = values.data["session"]
-        on_exists = session.config.task_pre_exist
-        name_exists = value in session
-
-        if name_exists:
-            if on_exists == "ignore":
-                return value
-            raise ValueError(f"Task name '{value}' already exists. Please pick another")
-        return value
-
-    @field_validator("parameters", mode="before")
-    def parse_parameters(cls, value):
-        if isinstance(value, Parameters):
-            return value
-        return Parameters(value)
-
-    @field_validator("force_run", mode="after")
-    def parse_force_run(cls, value, values):
-        if value:
-            warnings.warn(
-                "Attribute 'force_run' is deprecated. Please use method set_running() instead",
-                DeprecationWarning,
-            )
-            values.data["batches"].append(Parameters())
-        return value
+    def _validate_name_in_session(self):
+        """Validate task name in session context (called from __init__)"""
+        if self.session and self.name:
+            on_exists = self.session.config.task_pre_exist
+            name_exists = self.name in self.session
+            if name_exists:
+                if on_exists == "ignore":
+                    return
+                elif on_exists == "raise":
+                    raise ValueError(f"Task name '{self.name}' already exists.")
+                elif on_exists == "rename":
+                    basename = self.name
+                    name = self.name
+                    num = 0
+                    while name in self.session:
+                        num += 1
+                        name = f"{basename} - {num}"
+                    self.name = name
 
     def __hash__(self):
         return id(self)
