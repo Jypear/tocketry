@@ -1,6 +1,4 @@
 from typing import TYPE_CHECKING, Any, ClassVar
-from pydantic.dataclasses import dataclass, Field
-from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from tocketry import Session
