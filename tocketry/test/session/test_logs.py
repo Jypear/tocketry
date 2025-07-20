@@ -6,9 +6,7 @@ from pydantic import field_validator, model_validator
 
 import pytest
 
-from tocketry.redbird.oper import in_, between
-from tocketry.redbird.logging import RepoHandler
-from tocketry.redbird.repos import MemoryRepo
+from tocketry.repo import in_, between, RepoHandler, MemoryRepo
 from tocketry.conditions import TaskFinished
 from tocketry.conditions.scheduler import SchedulerCycles
 

@@ -2,8 +2,7 @@ import logging
 from textwrap import dedent
 import pytest
 
-from tocketry.redbird.logging import RepoHandler
-from tocketry.redbird.repos import MemoryRepo
+from tocketry.repo import RepoHandler, MemoryRepo
 
 from tocketry.log.log_record import LogRecord
 from tocketry.tasks import CodeTask

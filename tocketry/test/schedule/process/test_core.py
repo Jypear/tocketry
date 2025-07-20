@@ -3,8 +3,7 @@ import multiprocessing
 import time
 import logging
 
-from tocketry.redbird.repos import MemoryRepo
-from tocketry.redbird.logging import RepoHandler
+from tocketry.repo import MemoryRepo, RepoHandler
 
 from tocketry.args.builtin import TerminationFlag
 from tocketry.conditions.scheduler import SchedulerCycles

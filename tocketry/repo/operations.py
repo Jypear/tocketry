@@ -75,18 +75,32 @@ class In(Operation):
 class Between(Operation):
     """Between operation - check if value is in a range."""
     
-    def __init__(self, start: Any, end: Any):
+    def __init__(self, start: Any, end: Any, none_as_open: bool = False):
         self.start = start
         self.end = end
+        self.none_as_open = none_as_open
         self.value = (start, end)
     
     def __call__(self, item_value: Any) -> bool:
         try:
-            return self.start <= item_value <= self.end
+            if self.none_as_open:
+                # Handle None as open-ended range
+                if self.start is None and self.end is None:
+                    return True
+                elif self.start is None:
+                    return item_value <= self.end
+                elif self.end is None:
+                    return self.start <= item_value
+                else:
+                    return self.start <= item_value <= self.end
+            else:
+                return self.start <= item_value <= self.end
         except TypeError:
             return False
     
     def __repr__(self):
+        if self.none_as_open:
+            return f"Between({self.start!r}, {self.end!r}, none_as_open=True)"
         return f"Between({self.start!r}, {self.end!r})"
 
 
@@ -126,9 +140,9 @@ def in_(values: Union[List, tuple, set]) -> In:
     return In(values)
 
 
-def between(start: Any, end: Any) -> Between:
+def between(start: Any, end: Any, none_as_open: bool = False) -> Between:
     """Create a between operation."""
-    return Between(start, end)
+    return Between(start, end, none_as_open=none_as_open)
 
 
 class QueryMatcher:

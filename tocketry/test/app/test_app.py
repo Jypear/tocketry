@@ -49,12 +49,12 @@ def test_app_defaults(tmpdir):
 
     assert isinstance(app.session, Session)
 
-    # Test setting SQL repo
+    # Test setting custom repo (using MemoryRepo instead of removed CSVFileRepo)
     with tmpdir.as_cwd():
-        app = Tocketry(logger_repo=CSVFileRepo(filename="myrepo.csv"))
+        app = Tocketry(logger_repo=MemoryRepo())
     assert len(task_logger.handlers) == 2
     assert isinstance(task_logger.handlers[0], RepoHandler)
-    assert isinstance(task_logger.handlers[0].repo, CSVFileRepo)
+    assert isinstance(task_logger.handlers[0].repo, MemoryRepo)
 
     assert isinstance(app.session, Session)
 
