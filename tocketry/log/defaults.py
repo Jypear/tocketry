@@ -1,5 +1,4 @@
-from tocketry.redbird.logging import RepoHandler
-from tocketry.redbird.repos import MemoryRepo
+from tocketry.repo import RepoHandler, MemoryRepo
 from .log_record import MinimalRecord
 
 
