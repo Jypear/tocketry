@@ -1577,9 +1577,71 @@ class Task(RedBase):
     def last_inaction(self):
         return self.get_last_inaction()
 
+    def model_dump(self, exclude=None, **kwargs):
+        """Compatibility method to replace pydantic's model_dump"""
+        import json
+        from dataclasses import asdict
+        data = asdict(self)
+        
+        # Exclude private fields by default (like pydantic did)
+        private_fields = [k for k in data.keys() if k.startswith('_')]
+        for field in private_fields:
+            data.pop(field, None)
+        
+        if exclude:
+            if isinstance(exclude, set):
+                exclude = list(exclude)
+            for field in exclude:
+                data.pop(field, None)
+        
+        # Special handling for parameters to match pydantic format
+        if 'parameters' in data and hasattr(data['parameters'], '__dict__'):
+            # Convert Parameters object to dict like pydantic did
+            params = data['parameters']
+            if hasattr(params, '_data'):
+                data['parameters'] = params._data
+            elif hasattr(params, '__dict__'):
+                param_dict = {}
+                for k, v in params.__dict__.items():
+                    if not k.startswith('_'):
+                        param_dict[k] = str(v)
+                data['parameters'] = param_dict
+        
+        return data
+    
+    def model_dump_json(self, exclude=None, indent=None, **kwargs):
+        """Compatibility method to replace pydantic's model_dump_json"""
+        import json
+        data = self.model_dump(exclude=exclude, **kwargs)
+        # Convert non-serializable objects to strings
+        def serialize_obj(obj):
+            if hasattr(obj, '__dict__'):
+                return str(obj)
+            elif hasattr(obj, '__name__'):
+                return obj.__name__
+            else:
+                return str(obj)
+        
+        # Handle complex objects that can't be JSON serialized
+        def clean_for_json(data):
+            if isinstance(data, dict):
+                return {k: clean_for_json(v) for k, v in data.items()}
+            elif isinstance(data, list):
+                return [clean_for_json(v) for v in data]
+            elif hasattr(data, '__dict__') or callable(data):
+                return serialize_obj(data)
+            else:
+                try:
+                    json.dumps(data)  # Test if it's JSON serializable
+                    return data
+                except (TypeError, ValueError):
+                    return serialize_obj(data)
+        
+        clean_data = clean_for_json(data)
+        return json.dumps(clean_data, indent=indent, default=str)
+
     def json(self, **kwargs):
         if "exclude" not in kwargs:
             kwargs["exclude"] = set()
         kwargs["exclude"].update({"session"})
-        d = super().model_dump_json(**kwargs)
-        return d
+        return self.model_dump_json(**kwargs)

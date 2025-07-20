@@ -21,14 +21,7 @@ def get_sql(model, tmpdir):
     "model", [MinimalRecord, MinimalRunRecord, TaskLogRecord, TaskRunRecord]
 )
 def test_cache(session, tmpdir, model, get_repo):
-    if (
-        get_repo == get_sql
-        and model in (TaskRunRecord, TaskLogRecord)
-        and redbird.version_tuple[:3] <= (0, 6, 0)
-    ):
-        pytest.skip(
-            reason="Red Bird <= 0.6.0 does not support date-like in SQL table creation"
-        )
+    # Version check removed since redbird is no longer used
     repo = get_repo(model=model, tmpdir=tmpdir)
     task_logger = logging.getLogger(session.config.task_logger_basename)
     task_logger.handlers = [

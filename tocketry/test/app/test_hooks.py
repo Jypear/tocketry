@@ -2,8 +2,7 @@ import asyncio
 import logging
 import pytest
 
-from tocketry.redbird.logging import RepoHandler
-from tocketry.redbird.repos import MemoryRepo, CSVFileRepo
+from tocketry.repo import RepoHandler, MemoryRepo
 
 from tocketry import Tocketry
 from tocketry.conditions.task.task import TaskStarted
