@@ -1,7 +1,7 @@
 import copy
 from typing import Callable, ClassVar, Optional, Pattern, Union
 
-from pydantic import Field
+# Removed pydantic import - Field no longer needed
 from tocketry.args import Session
 from tocketry import Session as _Session
 
@@ -12,7 +12,7 @@ from tocketry.tasks.func import FuncTask
 class _FuncTaskCondWrapper(FuncTask):
     # For some reason, the order of cls attrs broke here so we need to reorder then:
     session: _Session
-    name: Optional[str] = Field(description="Name of the task. Must be unique")
+    name: Optional[str] = None  # Name of the task. Must be unique
 
     def _handle_return(self, value):
         # Handle the return value of the function

@@ -1,6 +1,8 @@
+from dataclasses import dataclass
 from tocketry.core import Task
 
 
+@dataclass(eq=False)
 class CodeTask(Task):
     """Task to run a piece of Python code
 
@@ -47,13 +49,18 @@ class CodeTask(Task):
     """
 
     output_variable: str = "return_value"
-    code: str
+    code: str = ""
 
     def execute(self, **params):
         loc = params
         glob = {}
         exec(self.code, glob, loc)
         return loc.get(self.output_variable, None)
+
+    def __init__(self, **kwargs):
+        """Initialize CodeTask by calling parent Task.__init__"""
+        # Call the parent Task's __init__ method with all kwargs
+        super().__init__(**kwargs)
 
     def get_default_name(self, **kwargs):
         raise ValueError("CodeTask must have name defined")

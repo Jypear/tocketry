@@ -1,7 +1,5 @@
 from typing import List, Optional, Union
 
-from pydantic import ConfigDict, BaseModel
-
 from tocketry.conditions import Any, All, DependFinish, DependSuccess
 from tocketry.conditions.task import DependFailure
 from tocketry.core import Task
@@ -45,13 +43,9 @@ class Link:
         return f'Link({self.parent.name!r}, {self.child.name!r}, relation={getattr(self.relation, "__name__", None)}, type={getattr(self.type, "__name__", None)})'
 
 
-class Dependencies(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
-    session: Session
-
+class Dependencies:
     def __init__(self, session, **kwargs):
-        super().__init__(session=session, **kwargs)
+        self.session = session
 
     def __iter__(self):
         for task in self.session.tasks:

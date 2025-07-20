@@ -117,7 +117,7 @@ class TaskRun:
         return isinstance(self.task, threading.Thread)
 
 
-@dataclass
+@dataclass(eq=False)
 class Task(RedBase):
     """Base class for Tasks.
 
@@ -344,12 +344,31 @@ class Task(RedBase):
         logger = logging.getLogger(self.logger_name)
         return TaskAdapter(logger, task=self)
 
-    def __init__(self, session=None, name=None, description=None, logger_name="tocketry.task", 
-                 execution=None, priority=0, disabled=False, force_run=False, force_termination=False,
-                 status=None, timeout=None, parameters=None, start_cond=None, end_cond=None,
-                 multilaunch=None, on_startup=False, on_shutdown=False, func_run_id=None,
-                 daemon=None, batches=None, permanent=False, **kwargs):
+    def __init__(self, **kwargs):
         """Initialize Task with validation and setup"""
+        
+        # Extract values from kwargs
+        session = kwargs.get('session')
+        name = kwargs.get('name')
+        description = kwargs.get('description')
+        logger_name = kwargs.get('logger_name', "tocketry.task")
+        execution = kwargs.get('execution')
+        priority = kwargs.get('priority', 0)
+        disabled = kwargs.get('disabled', False)
+        force_run = kwargs.get('force_run', False)
+        force_termination = kwargs.get('force_termination', False)
+        status = kwargs.get('status')
+        timeout = kwargs.get('timeout')
+        parameters = kwargs.get('parameters')
+        start_cond = kwargs.get('start_cond')
+        end_cond = kwargs.get('end_cond')
+        multilaunch = kwargs.get('multilaunch')
+        on_startup = kwargs.get('on_startup', False)
+        on_shutdown = kwargs.get('on_shutdown', False)
+        func_run_id = kwargs.get('func_run_id')
+        daemon = kwargs.get('daemon')
+        batches = kwargs.get('batches')
+        permanent = kwargs.get('permanent', False)
         
         # Handle session creation
         if session is None:
@@ -362,7 +381,9 @@ class Task(RedBase):
             if use_instance_naming:
                 name = str(id(self))
             else:
-                name = self.get_default_name(name=name, **kwargs)
+                # Remove 'name' from kwargs to avoid conflict in get_default_name
+                kwargs_copy = {k: v for k, v in kwargs.items() if k != 'name'}
+                name = self.get_default_name(name=name, **kwargs_copy)
         
         # Handle deprecated arguments
         if "permanent_task" in kwargs:
@@ -1441,30 +1462,25 @@ class Task(RedBase):
         # state["_lock"] = None # Process task cannot lock anything anyways
 
         # capture what is normally pickled
-        state = super().__getstate__()
-        # state['__dict__'] = state['__dict__'].copy()
+        state = self.__dict__.copy()
 
-        # remove unpicklable
-        state["__pydantic_private__"] = state["__pydantic_private__"].copy()
-        priv_attrs = state["__pydantic_private__"]
-        priv_attrs["_lock"] = None
-        priv_attrs["_process"] = None
-        priv_attrs["_thread"] = None
-        priv_attrs["_run_stack"] = None
+        # remove unpicklable attributes
+        state["_lock"] = None
+        state["_process"] = None
+        state["_thread"] = None
+        state["_run_stack"] = None
 
         # We also get rid of the conditions as if there is a task
         # containing an attr that cannot be pickled (like FuncTask
         # containing lambda function but ran as main/thread), we
         # would face sudden crash.
-        state["__dict__"] = state["__dict__"].copy()
-        dict_state = state["__dict__"]
-        dict_state["start_cond"] = None
-        dict_state["end_cond"] = None
+        state["start_cond"] = None
+        state["end_cond"] = None
 
         # Removing possibly unpicklable manually. There is a problem in Pydantic
         # and for some reason it does not use Session's pickling
-        dict_state["parameters"] = Parameters()
-        dict_state["session"] = dict_state["session"]._copy_pickle()
+        state["parameters"] = Parameters()
+        state["session"] = state["session"]._copy_pickle()
 
         if not is_pickleable(state):
             if self._mark_running:
