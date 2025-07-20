@@ -1,17 +1,17 @@
 import subprocess
 from typing import List, Optional, Union
+from dataclasses import dataclass, field
 
 try:
     from typing import Literal
 except ImportError:  # pragma: no cover
     from typing_extensions import Literal
 
-from pydantic import Field, field_validator
-
 from tocketry.core.parameters.parameters import Parameters
 from tocketry.core.task import Task
 
 
+@dataclass(eq=False)
 class CommandTask(Task):
     """Task that executes a command from
     shell/terminal.
@@ -40,14 +40,42 @@ class CommandTask(Task):
     >>> task = CommandTask(["python", "-m", "pip", "install", "tocketry"], name="my_cmd_task_2")
     """
 
-    command: Union[str, List[str]]
+    command: Union[str, List[str]] = None
     shell: bool = False
     cwd: Optional[str] = None
-    kwds_popen: dict = {}
-    argform: Optional[Literal["-", "--", "short", "long"]] = Field(
-        description="Whether the arguments are turned as short or long form command line arguments",
-        default=None,
-    )
+    kwds_popen: dict = field(default_factory=dict)
+    argform: Optional[Literal["-", "--", "short", "long"]] = None
+
+    def __init__(self, command=None, **kwargs):
+        """Initialize CommandTask with command and other parameters"""
+        # Extract CommandTask specific arguments before calling parent
+        shell = kwargs.pop('shell', False)
+        cwd = kwargs.pop('cwd', None)
+        kwds_popen = kwargs.pop('kwds_popen', {})
+        argform = kwargs.pop('argform', None)
+        
+        # Call parent initialization
+        super().__init__(**kwargs)
+        
+        # Set our dataclass fields manually
+        self.command = command
+        self.shell = shell
+        self.cwd = cwd
+        self.kwds_popen = kwds_popen
+        self.argform = argform
+        
+        # Handle field validation
+        self._validate_argform()
+    
+    def _validate_argform(self):
+        """Validate and transform argform"""
+        self.argform = {
+            "long": "--",
+            "--": "--",
+            "short": "-",
+            "-": "-",
+            None: "--",
+        }[self.argform]
 
     def get_kwargs_popen(self) -> dict:
         kwargs = {
@@ -60,15 +88,6 @@ class CommandTask(Task):
         kwargs.update(self.kwds_popen)
         return kwargs
 
-    @field_validator("argform")
-    def parse_argform(cls, value):
-        return {
-            "long": "--",
-            "--": "--",
-            "short": "-",
-            "-": "-",
-            None: "--",
-        }[value]
 
     def execute(self, **parameters):
         """Run the command."""
@@ -105,5 +124,9 @@ class CommandTask(Task):
         # for simplicity
         return params
 
-    def get_default_name(self, command, **kwargs):
+    def get_default_name(self, command=None, **kwargs):
+        if command is None:
+            command = getattr(self, 'command', None)
+        if command is None:
+            return "unnamed_command"
         return command if isinstance(command, str) else " ".join(command)
