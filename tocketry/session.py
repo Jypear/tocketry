@@ -25,7 +25,7 @@ from typing import (
     Type,
     Union,
 )
-from pydantic import field_validator, model_validator, ConfigDict, BaseModel, validator
+from dataclasses import dataclass, field
 from tocketry.pybox.time import to_timedelta
 from tocketry.log.defaults import create_default_handler
 from tocketry._base import RedBase
@@ -50,74 +50,61 @@ if TYPE_CHECKING:
     )
 
 
-class Config(BaseModel):
-    model_config = ConfigDict(
-        validate_assignment=True, arbitrary_types_allowed=True, validate_default=True
-    )
-
+@dataclass
+class Config:
     # Fields
     use_instance_naming: bool = False
     task_priority: int = 0
     execution: Optional[str] = None
     task_pre_exist: str = "raise"
-    force_status_from_logs: bool = (
-        False  # Force to check status from logs every time (slow but robust)
-    )
+    force_status_from_logs: bool = False  # Force to check status from logs every time (slow but robust)
 
     task_logger_basename: str = "tocketry.task"
     scheduler_logger_basename: str = "tocketry.scheduler"
 
-    silence_task_prerun: bool = (
-        False  # Whether to silence errors occurred in setting a task to run
-    )
-    silence_task_logging: bool = (
-        False  # Whether to silence errors occurred in logging a task
-    )
-    silence_cond_check: bool = (
-        False  # Whether to silence errors occurred in checking conditions
-    )
+    silence_task_prerun: bool = False  # Whether to silence errors occurred in setting a task to run
+    silence_task_logging: bool = False  # Whether to silence errors occurred in logging a task
+    silence_cond_check: bool = False  # Whether to silence errors occurred in checking conditions
     cycle_sleep: Optional[float] = 0.1
     debug: bool = False
 
     multilaunch: bool = False
-    func_run_id: Callable = uuid
-    max_process_count: int = cpu_count()
+    func_run_id: Callable = field(default_factory=lambda: uuid)
+    max_process_count: int = field(default_factory=cpu_count)
     tasks_as_daemon: bool = True
     restarting: str = "replace"
     instant_shutdown: bool = False
 
-    timeout: datetime.timedelta = datetime.timedelta(minutes=30)
+    timeout: datetime.timedelta = field(default_factory=lambda: datetime.timedelta(minutes=30))
     shut_cond: Optional["BaseCondition"] = None
-    cls_lock: Callable = threading.Lock
+    cls_lock: Callable = field(default_factory=lambda: threading.Lock)
 
     param_materialize: Literal["pre", "post"] = "post"
 
     timezone: Optional[datetime.tzinfo] = None
     time_func: Union[Callable, None] = None
 
-    @field_validator("execution", mode="before")
-    def parse_task_execution(cls, value):
-        if value is None:
-            return "async"
-        return value
-
-    @field_validator("shut_cond", mode="before")
-    @classmethod
-    def parse_shut_cond(cls, value):
-        from tocketry.parse import parse_condition
-        from tocketry.conditions import AlwaysFalse
-
-        if value is None:
-            return AlwaysFalse()
-        return parse_condition(value)
-
-    @field_validator("timeout", mode="before")
-    def parse_timeout(cls, value):
-        if isinstance(value, str):
-            return to_timedelta(value)
-        if isinstance(value, (float, int)):
-            return datetime.timedelta(seconds=value)
-        return value
+    def __post_init__(self):
+        # Handle deprecated 'task_execution' field - this is handled in Session._get_config now
+        
+        # Validate and convert execution field
+        if self.execution is None:
+            self.execution = "async"
+            
+        # Validate and convert shut_cond field
+        if self.shut_cond is None:
+            from tocketry.conditions import AlwaysFalse
+            self.shut_cond = AlwaysFalse()
+        elif isinstance(self.shut_cond, str) or (hasattr(self.shut_cond, '__class__') and not hasattr(self.shut_cond, '_check')):
+            # If it's a string or other parseable condition (not already a BaseCondition)
+            from tocketry.parse import parse_condition
+            self.shut_cond = parse_condition(self.shut_cond)
+            
+        # Validate and convert timeout field
+        if isinstance(self.timeout, str):
+            self.timeout = to_timedelta(self.timeout)
+        elif isinstance(self.timeout, (float, int)):
+            self.timeout = datetime.timedelta(seconds=self.timeout)
 
     @property
     def task_execution(self):
@@ -128,26 +115,26 @@ class Config(BaseModel):
         )
         return self.execution
 
-    @model_validator(mode="before")
-    @classmethod
-    def set_deprecated(cls, values):
-        if "task_execution" in values:
+    def __setattr__(self, name, value):
+        # Handle deprecated 'task_execution' attribute assignment
+        if name == "task_execution":
             warnings.warn(
                 "Option 'task_execution' is deprecated. "
                 "Please use 'execution' instead.",
                 DeprecationWarning,
             )
-            values["execution"] = values.pop("task_execution")
-        return values
+            name = "execution"
+        super().__setattr__(name, value)
 
 
-class Hooks(BaseModel):
-    task_init: List[Callable] = []
-    task_execute: List[Callable] = []
+@dataclass
+class Hooks:
+    task_init: List[Callable] = field(default_factory=list)
+    task_execute: List[Callable] = field(default_factory=list)
 
-    scheduler_startup: List[Callable] = []
-    scheduler_cycle: List[Callable] = []
-    scheduler_shutdown: List[Callable] = []
+    scheduler_startup: List[Callable] = field(default_factory=list)
+    scheduler_cycle: List[Callable] = field(default_factory=list)
+    scheduler_shutdown: List[Callable] = field(default_factory=list)
 
 
 class Session(RedBase):
@@ -193,8 +180,6 @@ class Session(RedBase):
     """
 
     config: Config
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
     tasks: Set["Task"]
     hooks: Hooks
     parameters: "Parameters"
@@ -213,9 +198,27 @@ class Session(RedBase):
         return value
 
     def _get_config(self, value, kwargs):
+        # Handle deprecated 'task_execution' field before creating Config
+        if 'task_execution' in kwargs:
+            warnings.warn(
+                "Option 'task_execution' is deprecated. "
+                "Please use 'execution' instead.",
+                DeprecationWarning,
+            )
+            kwargs['execution'] = kwargs.pop('task_execution')
+        
         if value is None:
             return Config(**kwargs)
         if isinstance(value, dict):
+            # Handle deprecated field in dict as well
+            if 'task_execution' in value:
+                warnings.warn(
+                    "Option 'task_execution' is deprecated. "
+                    "Please use 'execution' instead.",
+                    DeprecationWarning,
+                )
+                value = value.copy()  # Don't modify original dict
+                value['execution'] = value.pop('task_execution')
             return Config(**value, **kwargs)
         if isinstance(value, Config):
             return value
@@ -602,8 +605,15 @@ class Session(RedBase):
         for attr in unpicklable:
             setattr(new_self, attr, None)
 
-        data = self.config.model_dump(exclude=unpicklable_conf, round_trip=True)
-        copied = self.config.model_validate(data)
+        # For dataclass, create a copy manually excluding unpicklable fields
+        from dataclasses import asdict, fields
+        
+        config_dict = asdict(self.config)
+        # Remove unpicklable fields
+        for field_name in unpicklable_conf:
+            config_dict.pop(field_name, None)
+        
+        copied = Config(**config_dict)
         new_self.config = copied
         return new_self
 

@@ -17,7 +17,7 @@ def _setup_defaults():
         {"true": true, "false": false, "always false": false, "always true": true}
     )
 
-    # Update type hints
+    # Update type hints for remaining pydantic models
     cls_tasks = (
         Task,
         FuncTask,
@@ -29,19 +29,15 @@ def _setup_defaults():
         _FuncTaskCondWrapper,
     )
     for cls_task in cls_tasks:
-        # cls_task.update_forward_refs(Session=Session, BaseCondition=BaseCondition)
-        cls_task.model_rebuild(
-            force=True,
-            _types_namespace={"Session": Session, "BaseCondition": BaseCondition},
-            _parent_namespace_depth=4,
-        )
+        # Skip model_rebuild for non-pydantic classes (Config is now a dataclass)
+        if hasattr(cls_task, 'model_rebuild'):
+            cls_task.model_rebuild(
+                force=True,
+                _types_namespace={"Session": Session, "BaseCondition": BaseCondition},
+                _parent_namespace_depth=4,
+            )
 
-    # Config.update_forward_refs(BaseCondition=BaseCondition)
-    Config.model_rebuild(
-        force=True,
-        _types_namespace={"Session": Session, "BaseCondition": BaseCondition},
-        _parent_namespace_depth=4,
-    )
+    # Config is now a dataclass, no model_rebuild needed
     # Session.update_forward_refs(
     #    Task=Task, Parameters=Parameters, Scheduler=Scheduler
     # )
