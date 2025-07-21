@@ -17,6 +17,10 @@ class RepoHandler(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
         """Emit a log record to the repository."""
         try:
+            # Format the record to populate exc_text if there's exception info
+            if record.exc_info:
+                self.format(record)
+            
             # Convert log record to dictionary format for storage
             self.write(vars(record))
         except Exception:

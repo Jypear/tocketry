@@ -209,7 +209,10 @@ class Return(BaseArgument):
             return self.default
 
     def __repr__(self):
-        return f'Return({repr(self.task_name)}{"" if self.default is None else ", default=" + repr(self.default)})'
+        default_str = ""
+        if self.default is not None:
+            default_str = f", default={repr(self.default)}"
+        return f'Return({repr(self.task_name)}{default_str})'
 
     def __str__(self):
         return f"Return of {self.task_name!r}"

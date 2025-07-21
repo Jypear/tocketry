@@ -316,6 +316,11 @@ class Task(RedBase):
             from tocketry.pybox.time import to_timedelta
             self.timeout = to_timedelta(self.timeout)
 
+        # Validate execution
+        valid_executions = {"main", "async", "thread", "process", None}
+        if self.execution not in valid_executions:
+            raise ValueError(f"Invalid execution '{self.execution}'. Must be one of {sorted([e for e in valid_executions if e is not None])}")
+
         # Validate parameters
         if not isinstance(self.parameters, Parameters):
             self.parameters = Parameters(self.parameters)
@@ -1579,15 +1584,23 @@ class Task(RedBase):
 
     def model_dump(self, exclude=None, **kwargs):
         """Compatibility method to replace pydantic's model_dump"""
-        import json
-        from dataclasses import asdict
-        data = asdict(self)
+        from dataclasses import fields
         
-        # Exclude private fields by default (like pydantic did)
-        private_fields = [k for k in data.keys() if k.startswith('_')]
-        for field in private_fields:
-            data.pop(field, None)
+        # Get data from dataclass fields that exist as attributes
+        data = {}
+        for field in fields(self):
+            if not field.name.startswith('_'):  # Exclude private fields
+                # Check if the attribute was explicitly deleted by checking __dict__
+                if field.name in self.__dict__:
+                    value = getattr(self, field.name)
+                    data[field.name] = value
+                elif hasattr(self, field.name):
+                    # Include fields with default values that weren't explicitly set
+                    value = getattr(self, field.name)
+                    if value is not None or field.default is not None:
+                        data[field.name] = value
         
+        # Remove excluded fields
         if exclude:
             if isinstance(exclude, set):
                 exclude = list(exclude)
@@ -1595,17 +1608,26 @@ class Task(RedBase):
                 data.pop(field, None)
         
         # Special handling for parameters to match pydantic format
-        if 'parameters' in data and hasattr(data['parameters'], '__dict__'):
+        if 'parameters' in data and hasattr(data['parameters'], '_params'):
             # Convert Parameters object to dict like pydantic did
             params = data['parameters']
-            if hasattr(params, '_data'):
-                data['parameters'] = params._data
-            elif hasattr(params, '__dict__'):
-                param_dict = {}
-                for k, v in params.__dict__.items():
-                    if not k.startswith('_'):
-                        param_dict[k] = str(v)
-                data['parameters'] = param_dict
+            param_dict = {}
+            for k, v in params._params.items():
+                try:
+                    # Use repr() for arguments to match pydantic format
+                    param_dict[k] = repr(v)
+                except Exception:
+                    # If we can't repr the value, use str
+                    param_dict[k] = str(v)
+            data['parameters'] = param_dict
+        elif 'parameters' in data and hasattr(data['parameters'], '__dict__'):
+            # Fallback for other parameter-like objects
+            params = data['parameters']
+            param_dict = {}
+            for k, v in params.__dict__.items():
+                if not k.startswith('_'):
+                    param_dict[k] = str(v)
+            data['parameters'] = param_dict
         
         return data
     
