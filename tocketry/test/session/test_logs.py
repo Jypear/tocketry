@@ -2,7 +2,7 @@ from itertools import chain
 import datetime
 import logging
 from typing import Optional
-from pydantic import field_validator, model_validator
+from dataclasses import dataclass
 
 import pytest
 
@@ -33,29 +33,59 @@ def do_fail():
     raise RuntimeError("Oops")
 
 
+@dataclass
 class CustomRecord(MinimalRecord):
     timestamp: Optional[datetime.datetime] = None
     start: Optional[datetime.datetime] = None
     end: Optional[datetime.datetime] = None
     runtime: Optional[datetime.timedelta] = None
-    message: str
+    message: str = ""
 
-    @field_validator("start", mode="before")
-    @classmethod
-    def parse_start(cls, value):
-        if value is not None:
-            return datetime.datetime.fromtimestamp(value)
-
-    @field_validator("end", mode="before")
-    @classmethod
-    def parse_end(cls, value):
-        if value is not None:
-            return datetime.datetime.fromtimestamp(value)
-
-    @model_validator(mode="before")
-    def validate_timestamp(cls, values):
-        values["timestamp"] = datetime.datetime.fromtimestamp(values["created"])
-        return values
+    def __init__(self, task_name="", action="", created=0.0, timestamp=None, 
+                 start=None, end=None, runtime=None, message="", msg="", **kwargs):
+        # Call parent constructor
+        super().__init__(task_name, action, created, **kwargs)
+        
+        # Set timestamp from created if not provided
+        if timestamp is None:
+            self.timestamp = datetime.datetime.fromtimestamp(created)
+        else:
+            self.timestamp = timestamp
+            
+        # Parse start time from the extra fields
+        if start is not None:
+            if isinstance(start, (int, float)):
+                self.start = datetime.datetime.fromtimestamp(start)
+            else:
+                self.start = start
+        else:
+            self.start = None
+            
+        # Parse end time from the extra fields
+        if end is not None:
+            if isinstance(end, (int, float)):
+                self.end = datetime.datetime.fromtimestamp(end)
+            else:
+                self.end = end
+        else:
+            self.end = None
+            
+        # Convert runtime from seconds (float) to timedelta
+        if runtime is not None:
+            if isinstance(runtime, (int, float)):
+                self.runtime = datetime.timedelta(seconds=runtime)
+            else:
+                self.runtime = runtime
+        else:
+            self.runtime = None
+        
+        # Use msg field if message is empty (msg contains the actual log message)
+        if message:
+            self.message = message
+        elif msg:
+            self.message = msg
+        else:
+            self.message = ""
 
 
 @pytest.mark.parametrize("execution", ["main", "thread", "process"])
