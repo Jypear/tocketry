@@ -23,7 +23,7 @@ def get_module(path, pkg_path=None):
     else:
         name = Path(path).name
 
-    spec = importlib.util.spec_from_file_location(name, path.absolute())
+    spec = importlib.util.spec_from_file_location(name, Path(path).absolute())
     task_module = importlib.util.module_from_spec(spec)
 
     try:
