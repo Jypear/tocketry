@@ -157,13 +157,6 @@ class FuncTask(Task):
         # Validate path
         if self.path is not None and not self.path.is_file():
             warnings.warn(f"Path {self.path} does not exists. Task '{self.name}' may fail.")
-        
-        # Validate func for process execution
-        if self.execution == "process" and getattr(self.func, "__name__", None) == "<lambda>":
-            raise AttributeError(
-                f"Cannot pickle lambda function '{self.func}'. "
-                "The function must be pickleable if task's execution is 'process'. "
-            )
 
     def __init__(self, func=None, **kwargs):
         only_func_set = func is not None and not kwargs
@@ -206,8 +199,8 @@ class FuncTask(Task):
             # as it's obvious it would not work.
             kwargs["execution"] = "thread"
 
-        # Call parent initialization
-        super().__init__(**kwargs)
+        # Call parent initialization (keep func in kwargs for name generation)
+        super().__init__(func=func, **kwargs)
         
         # Set our dataclass fields manually
         self.func = func
@@ -218,6 +211,13 @@ class FuncTask(Task):
         self._is_delayed = False
         self._delayed_kwargs = {}
         self._name_template = "{module_name}:{func_name}"
+        
+        # Validate func for process execution
+        if self.execution == "process" and getattr(self.func, "__name__", None) == "<lambda>":
+            raise AttributeError(
+                f"Cannot pickle lambda function '{self.func}'. "
+                "The function must be pickleable if task's execution is 'process'. "
+            )
         
         self._set_descr(is_delayed=func is None)
 
@@ -330,7 +330,8 @@ class FuncTask(Task):
                 # For delayed tasks, use a unique temporary name
                 if hasattr(self, '_delayed_kwargs') and self._delayed_kwargs:
                     return f"delayed_task_{id(self)}"
-                return "unnamed_task"
+                # Make unnamed tasks unique to avoid naming conflicts
+                return f"unnamed_task_{id(self)}"
             file = Path(path)
             module_name = ".".join(file.parts).replace(".py", "")
         else:
