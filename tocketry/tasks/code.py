@@ -59,8 +59,17 @@ class CodeTask(Task):
 
     def __init__(self, **kwargs):
         """Initialize CodeTask by calling parent Task.__init__"""
-        # Call the parent Task's __init__ method with all kwargs
+        
+        # Extract our specific fields before calling super().__init__
+        code = kwargs.pop('code', '')
+        output_variable = kwargs.pop('output_variable', 'return_value')
+        
+        # Call the parent Task's __init__ method with remaining kwargs
         super().__init__(**kwargs)
+        
+        # Set our specific attributes after parent initialization
+        self.code = code
+        self.output_variable = output_variable
 
     def get_default_name(self, **kwargs):
         raise ValueError("CodeTask must have name defined")
