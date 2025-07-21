@@ -242,7 +242,7 @@ class Task(RedBase):
     execution: Optional[Literal["main", "async", "thread", "process"]] = None
     priority: int = 0
     disabled: bool = False
-    force_run: bool = False
+    _force_run: bool = field(default=False, init=False)
     force_termination: bool = False
     status: Optional[Literal["run", "fail", "success", "terminate", "inaction", "crash"]] = None  # Latest status of the task
     timeout: Optional[datetime.timedelta] = None
@@ -348,6 +348,23 @@ class Task(RedBase):
     def logger(self):
         logger = logging.getLogger(self.logger_name)
         return TaskAdapter(logger, task=self)
+    
+    @property
+    def force_run(self):
+        """Get force_run value"""
+        return self._force_run
+    
+    @force_run.setter
+    def force_run(self, value):
+        """Set force_run value with deprecation warning"""
+        if value and not self._force_run:  # Only warn when setting to True from False
+            warnings.warn(
+                "Attribute 'force_run' is deprecated. Please use method set_running() instead",
+                DeprecationWarning,
+                stacklevel=2
+            )
+            self.batches.append(Parameters())
+        self._force_run = value
 
     def __init__(self, **kwargs):
         """Initialize Task with validation and setup"""
@@ -416,7 +433,7 @@ class Task(RedBase):
         self.execution = execution
         self.priority = priority
         self.disabled = disabled
-        self.force_run = force_run
+        self._force_run = force_run
         self.force_termination = force_termination
         self.status = status
         self.timeout = timeout
