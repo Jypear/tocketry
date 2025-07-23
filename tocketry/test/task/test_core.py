@@ -3,7 +3,6 @@ import logging
 import pickle
 from textwrap import dedent
 from typing import ClassVar, Generic, Any
-from pydantic import Field, BaseModel
 import pytest
 from tocketry.args.builtin import Return
 from tocketry.core import Task as BaseTask
