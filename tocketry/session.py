@@ -343,6 +343,7 @@ class Session(RedBase):
                 if attr
                 not in (
                     "status",
+                    "_status",
                     "last_run",
                     "last_success",
                     "last_fail",

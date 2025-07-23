@@ -14,9 +14,7 @@ from tocketry.pybox.pkg import find_package_root
 def get_module(path, pkg_path=None):
     if pkg_path:
         name = ".".join(
-            path.with_suffix(
-                ""
-            ).parts[  # path/to/file/myfile.py --> path.to.file.myfile
+            path.with_suffix("").parts[  # path/to/file/myfile.py --> path.to.file.myfile
                 len(pkg_path.parts) :
             ]  # root/myproject/pkg/myfile.py --> myproject.pkg.myfile
         )
@@ -139,7 +137,7 @@ class FuncTask(Task):
     func_name: str = "main"
     cache: bool = False
     sys_paths: List[Path] = field(default_factory=list)
-    
+
     # Private attributes (equivalent to PrivateAttr)
     _is_delayed: bool = field(default=False, init=False)
     _delayed_kwargs: dict = field(default_factory=dict, init=False)
@@ -153,21 +151,17 @@ class FuncTask(Task):
         """Validate fields after initialization"""
         # Call parent's __post_init__ first
         super().__post_init__()
-        
-        # Validate path
-        if self.path is not None and not self.path.is_file():
-            warnings.warn(f"Path {self.path} does not exists. Task '{self.name}' may fail.")
 
     def __init__(self, func=None, **kwargs):
         only_func_set = func is not None and not kwargs
         no_func_set = func is None and kwargs.get("path") is None
-        
+
         # Extract FuncTask specific arguments before calling parent
-        path = kwargs.pop('path', None)
-        func_name = kwargs.pop('func_name', 'main')
-        cache = kwargs.pop('cache', False)
-        sys_paths = kwargs.pop('sys_paths', [])
-        
+        path = kwargs.pop("path", None)
+        func_name = kwargs.pop("func_name", "main")
+        cache = kwargs.pop("cache", False)
+        sys_paths = kwargs.pop("sys_paths", [])
+
         if no_func_set:
             # FuncTask was probably called like:
             # @FuncTask(...)
@@ -176,19 +170,21 @@ class FuncTask(Task):
             # We initiate the class lazily by creating
             # almost empty shell class that is populated
             # in next __call__ (which should occur immediately)
-            self._delayed_kwargs = dict(func=func, path=path, func_name=func_name, cache=cache, sys_paths=sys_paths, **kwargs)
+            self._delayed_kwargs = dict(
+                func=func, path=path, func_name=func_name, cache=cache, sys_paths=sys_paths, **kwargs
+            )
             # Call parent with empty kwargs for delayed init
             super().__init__(**kwargs)
             # Set our specific fields
             self.func = None
             self.path = None
-            self.func_name = 'main'
+            self.func_name = "main"
             self.cache = False
             self.sys_paths = []
             self._is_delayed = True
             self._name_template = "{module_name}:{func_name}"
             return
-            
+
         if only_func_set:
             # Most likely called as:
             # @FuncTask
@@ -201,68 +197,69 @@ class FuncTask(Task):
 
         # Call parent initialization (keep func in kwargs for name generation)
         super().__init__(func=func, **kwargs)
-        
+
         # Set our dataclass fields manually
         self.func = func
-        self.path = path
+        self.path = Path(path) if path is not None else None
         self.func_name = func_name
         self.cache = cache
         self.sys_paths = sys_paths
         self._is_delayed = False
         self._delayed_kwargs = {}
         self._name_template = "{module_name}:{func_name}"
-        
+
+        # Validate path if provided
+        if self.path is not None and not self.path.is_file():
+            warnings.warn(f"Path {self.path} does not exists. Task '{self.name}' may fail.")
+
         # Validate func for process execution
         if self.execution == "process" and getattr(self.func, "__name__", None) == "<lambda>":
             raise AttributeError(
                 f"Cannot pickle lambda function '{self.func}'. "
                 "The function must be pickleable if task's execution is 'process'. "
             )
-        
+
         self._set_descr(is_delayed=func is None)
 
     def __call__(self, *args, **kwargs):
         if self.func is None and self._delayed_kwargs:
             func = args[0]
-            
+
             # Extract FuncTask specific kwargs from delayed_kwargs
             delayed = self._delayed_kwargs
             self.func = func
-            self.path = delayed.get('path')
-            self.func_name = delayed.get('func_name', 'main') 
-            self.cache = delayed.get('cache', False)
-            self.sys_paths = delayed.get('sys_paths', [])
-            
+            self.path = delayed.get("path")
+            self.func_name = delayed.get("func_name", "main")
+            self.cache = delayed.get("cache", False)
+            self.sys_paths = delayed.get("sys_paths", [])
+
             # Update the task name with the actual function name only if no explicit name was provided
             old_name = self.name
-            explicit_name = delayed.get('name')  # Check if explicit name was provided
-            
+            explicit_name = delayed.get("name")  # Check if explicit name was provided
+
             # Only update name if no explicit name was provided and using a temporary name
-            if explicit_name is None and old_name.startswith('delayed_task_'):
-                _name_template = delayed.get('_name_template', "{module_name}:{func_name}")
-                if 'name_include_module' in delayed and not delayed['name_include_module']:
+            if explicit_name is None and old_name.startswith("delayed_task_"):
+                _name_template = delayed.get("_name_template", "{module_name}:{func_name}")
+                if "name_include_module" in delayed and not delayed["name_include_module"]:
                     # Just use function name without module
                     new_name = func.__name__
                 else:
                     # Use the standard naming pattern
-                    new_name = self.get_default_name(
-                        func=func, 
-                        _name_template=_name_template
-                    )
-                
+                    new_name = self.get_default_name(func=func, _name_template=_name_template)
+
                 # Update name and re-register if needed
                 if new_name != old_name:
                     # Remove old registration
-                    if hasattr(self.session, 'tasks') and self in self.session.tasks:
+                    if hasattr(self.session, "tasks") and self in self.session.tasks:
                         self.session.tasks.remove(self)
-                    
-                    # Update name 
+
+                    # Update name
                     self.name = new_name
-                    
+
                     # Re-register with new name
-                    if hasattr(self.session, 'tasks'):
+                    if hasattr(self.session, "tasks"):
                         self.session.tasks.add(self)
-            
+
             self._set_descr(is_delayed=False)
             self._delayed_kwargs = {}
 
@@ -306,11 +303,7 @@ class FuncTask(Task):
         if self.func is None:
             # Add dir of self.path to sys.path so importing from that dir works
             pkg_path = find_package_root(self.path)
-            root = (
-                str(Path(self.path).parent.absolute())
-                if not pkg_path
-                else str(pkg_path)
-            )
+            root = str(Path(self.path).parent.absolute()) if not pkg_path else str(pkg_path)
 
             # _task_func is cached to faster performance
             with TempSysPath([root] + self.sys_paths):
@@ -322,13 +315,11 @@ class FuncTask(Task):
             return task_func
         return self.func
 
-    def get_default_name(
-        self, func=None, path=None, func_name=None, _name_template=None, name=None, **kwargs
-    ):
+    def get_default_name(self, func=None, path=None, func_name=None, _name_template=None, name=None, **kwargs):
         if func is None:
             if path is None:
                 # For delayed tasks, use a unique temporary name
-                if hasattr(self, '_delayed_kwargs') and self._delayed_kwargs:
+                if hasattr(self, "_delayed_kwargs") and self._delayed_kwargs:
                     return f"delayed_task_{id(self)}"
                 # Make unnamed tasks unique to avoid naming conflicts
                 return f"unnamed_task_{id(self)}"
@@ -361,9 +352,7 @@ class FuncTask(Task):
             # Get params from the typehints
             cache = self.path is None
             func = self.get_func(cache=cache)
-            func_params = Parameters._from_signature(
-                func, task=self, session=self.session
-            )
+            func_params = Parameters._from_signature(func, task=self, session=self.session)
             params = func_params | task_params
         else:
             params = task_params
