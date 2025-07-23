@@ -9,5 +9,5 @@ from setuptools import setup
 
 setup(
     name="tocketry",
-    install_requires=["python-dateutil", "pydantic"],
+    install_requires=["python-dateutil"],
 )

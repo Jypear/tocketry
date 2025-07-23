@@ -1,3 +1,2 @@
 # Minimum requirements
-pydantic
 python-dateutil
