@@ -1,5 +1,4 @@
 <h1 align="center"><a href="https://tocketry.readthedocs.io">Tocketry</a></h1>
-<h2 align="center">This code is currently a work in progress and not stable</h2>
 <p align="center">
     <em>The fork of the engine to power your Python apps</em>
 </p>
@@ -166,4 +165,3 @@ Read more from _Work in Progress_.
 - **Author and Maintainer:** Josh Pearson ([Jypear](https://github.com/Jypear))
 - **Original Creator:** Mikael Koli ([Miksus](https://github.com/Miksus)) - koli.mikael@gmail.com
 - **License:** MIT
-
