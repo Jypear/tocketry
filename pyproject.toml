@@ -9,14 +9,14 @@ packages = ["tocketry"]
 name = "tocketry"
 description = "Advanced scheduling framework"
 readme = "README.md"
-license = {file="LICENSE"}
+license = "MIT"
+license-files = ["LICENSE*"]
 authors = [
     {name = "Mikael Koli", email = "koli.mikael@gmail.com"},
     {name = "Josh Pearson", email = "pearson.josh@outlook.com"},
 ]
 requires-python = ">=3.7"
 classifiers = [
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
