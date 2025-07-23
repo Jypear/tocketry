@@ -1599,20 +1599,49 @@ class Task(RedBase):
     def model_dump(self, exclude=None, **kwargs):
         """Compatibility method to replace pydantic's model_dump"""
         from dataclasses import fields
+        from collections import OrderedDict
+
+        # Define the expected field order to match the original pydantic output
+        expected_order = [
+            "permanent", "fmt_log_message", "daemon", "batches", "name", "description", 
+            "logger_name", "execution", "priority", "disabled", "force_run", 
+            "force_termination", "status", "timeout", "parameters", "start_cond", 
+            "end_cond", "multilaunch", "on_startup", "on_shutdown", "func_run_id"
+        ]
 
         # Get data from dataclass fields that exist as attributes
-        data = {}
+        field_data = {}
         for field in fields(self):
             if not field.name.startswith("_"):  # Exclude private fields
                 # Check if the attribute was explicitly deleted by checking __dict__
                 if field.name in self.__dict__:
                     value = getattr(self, field.name)
-                    data[field.name] = value
+                    field_data[field.name] = value
                 elif hasattr(self, field.name):
                     # Include fields with default values that weren't explicitly set
                     value = getattr(self, field.name)
                     if value is not None or field.default is not None:
-                        data[field.name] = value
+                        field_data[field.name] = value
+
+        # Add special fields that aren't dataclass fields but should be in JSON
+        # These were moved out of dataclass fields but need to appear in serialization
+        if hasattr(self, 'name'):
+            field_data['name'] = self.name
+        if hasattr(self, '_force_run'):
+            field_data['force_run'] = self._force_run
+        if hasattr(self, '_status'):
+            field_data['status'] = self._status
+
+        # Create ordered dict based on expected order
+        data = OrderedDict()
+        for field_name in expected_order:
+            if field_name in field_data:
+                data[field_name] = field_data[field_name]
+        
+        # Add any remaining fields that weren't in the expected order (shouldn't happen normally)
+        for field_name, value in field_data.items():
+            if field_name not in data:
+                data[field_name] = value
 
         # Remove excluded fields
         if exclude:
@@ -1643,7 +1672,8 @@ class Task(RedBase):
                     param_dict[k] = str(v)
             data["parameters"] = param_dict
 
-        return data
+        # Convert back to regular dict for JSON serialization
+        return dict(data)
 
     def model_dump_json(self, exclude=None, indent=None, **kwargs):
         """Compatibility method to replace pydantic's model_dump_json"""
