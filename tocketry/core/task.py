@@ -217,9 +217,6 @@ class Task(RedBase):
 
     """
 
-    session: "Session" = None
-
-    # Class
     permanent: bool = False  # Whether the task is not meant to finish (Ie. RestAPI)
     _actions: ClassVar[Tuple] = (
         "run",
@@ -233,10 +230,12 @@ class Task(RedBase):
     fmt_log_message: str = r"Task '{task}' status: '{action}'"
 
     daemon: Optional[bool] = None
-    batches: List[Parameters] = field(default_factory=list)  # Run batches (parameters). If not empty, run is triggered regardless of starting condition
+    batches: List[Parameters] = field(
+        default_factory=list
+    )  # Run batches (parameters). If not empty, run is triggered regardless of starting condition
 
     # Instance
-    name: Optional[str] = None  # Name of the task. Must be unique
+    # name: Optional[str] - not defined as dataclass field, set manually in __init__
     description: Optional[str] = None  # Description of the task for documentation
     logger_name: Optional[str] = "tocketry.task"  # Logger name to be used in logging the task records
     execution: Optional[Literal["main", "async", "thread", "process"]] = None
@@ -244,12 +243,16 @@ class Task(RedBase):
     disabled: bool = False
     _force_run: bool = field(default=False, init=False)
     force_termination: bool = False
-    status: Optional[Literal["run", "fail", "success", "terminate", "inaction", "crash"]] = None  # Latest status of the task
+    _status: Optional[Literal["run", "fail", "success", "terminate", "inaction", "crash"]] = field(
+        default=None, init=False
+    )  # Latest status of the task
     timeout: Optional[datetime.timedelta] = None
 
     parameters: Parameters = field(default_factory=Parameters)
 
-    start_cond: Optional[BaseCondition] = field(default_factory=AlwaysFalse)  #! TODO: Create get_start_cond so that this could also be as string (lazily parsed)
+    start_cond: Optional[BaseCondition] = field(
+        default_factory=AlwaysFalse
+    )  #! TODO: Create get_start_cond so that this could also be as string (lazily parsed)
     end_cond: Optional[BaseCondition] = field(default_factory=AlwaysFalse)
 
     multilaunch: Optional[bool] = None
@@ -275,6 +278,7 @@ class Task(RedBase):
         # Validate start_cond
         if isinstance(self.start_cond, str):
             from tocketry.parse.condition import parse_condition
+
             self.start_cond = parse_condition(self.start_cond, session=self.session)
         elif self.start_cond is None:
             self.start_cond = AlwaysFalse()
@@ -284,6 +288,7 @@ class Task(RedBase):
         # Validate end_cond
         if isinstance(self.end_cond, str):
             from tocketry.parse.condition import parse_condition
+
             self.end_cond = parse_condition(self.end_cond, session=self.session)
         elif self.end_cond is None:
             self.end_cond = AlwaysFalse()
@@ -301,25 +306,28 @@ class Task(RedBase):
             if self.session:
                 basename = self.session.config.task_logger_basename
                 if not self.logger_name.startswith(basename):
-                    raise ValueError(
-                        f"Logger name must start with '{basename}' as session finds loggers with names"
-                    )
+                    raise ValueError(f"Logger name must start with '{basename}' as session finds loggers with names")
 
         # Validate timeout
         if self.timeout == "never":
             from tocketry.pybox.time import to_timedelta
+
             self.timeout = datetime.timedelta.max
         elif isinstance(self.timeout, (float, int)):
             from tocketry.pybox.time import to_timedelta
+
             self.timeout = to_timedelta(self.timeout, unit="s")
         elif self.timeout is not None and not isinstance(self.timeout, datetime.timedelta):
             from tocketry.pybox.time import to_timedelta
+
             self.timeout = to_timedelta(self.timeout)
 
         # Validate execution
         valid_executions = {"main", "async", "thread", "process", None}
         if self.execution not in valid_executions:
-            raise ValueError(f"Invalid execution '{self.execution}'. Must be one of {sorted([e for e in valid_executions if e is not None])}")
+            raise ValueError(
+                f"Invalid execution '{self.execution}'. Must be one of {sorted([e for e in valid_executions if e is not None])}"
+            )
 
         # Validate parameters
         if not isinstance(self.parameters, Parameters):
@@ -337,10 +345,10 @@ class Task(RedBase):
     def _serialize_for_json(self):
         """Custom serialization for JSON compatibility"""
         return {
-            'parameters': self.parameters.to_json() if hasattr(self.parameters, 'to_json') else str(self.parameters),
-            'start_cond': str(self.start_cond),
-            'end_cond': str(self.end_cond),
-            'session': id(self.session) if self.session else None,
+            "parameters": self.parameters.to_json() if hasattr(self.parameters, "to_json") else str(self.parameters),
+            "start_cond": str(self.start_cond),
+            "end_cond": str(self.end_cond),
+            "session": id(self.session) if self.session else None,
             # Add other fields as needed
         }
 
@@ -348,12 +356,36 @@ class Task(RedBase):
     def logger(self):
         logger = logging.getLogger(self.logger_name)
         return TaskAdapter(logger, task=self)
-    
+
+    def __setattr__(self, name, value):
+        """Override setattr to validate name changes"""
+        if (name == "name" and hasattr(self, 'session') and value is not None and 
+            self.session is not None and hasattr(self.session, "tasks") and
+            hasattr(self.session, "config") and self.session.config.task_pre_exist == "raise"):
+            # Only check for conflicts if task_pre_exist is "raise"
+            # For "ignore" and "rename", let the session handle it in add_task()
+            for task in self.session.tasks:
+                if task is not self and hasattr(task, "name") and getattr(task, "name", None) == value:
+                    raise ValueError(f"Task name '{value}' already exists.")
+        super().__setattr__(name, value)
+
+    @property
+    def status(self):
+        """Get task status"""
+        return self._status
+
+    @status.setter
+    def status(self, value):
+        """Set task status with validation"""
+        if value is not None and value not in self._actions:
+            raise ValueError(f"Invalid status '{value}'. Must be one of {self._actions}")
+        self._status = value
+
     @property
     def force_run(self):
         """Get force_run value"""
         return self._force_run
-    
+
     @force_run.setter
     def force_run(self, value):
         """Set force_run value with deprecation warning"""
@@ -361,42 +393,42 @@ class Task(RedBase):
             warnings.warn(
                 "Attribute 'force_run' is deprecated. Please use method set_running() instead",
                 DeprecationWarning,
-                stacklevel=2
+                stacklevel=2,
             )
             self.batches.append(Parameters())
         self._force_run = value
 
     def __init__(self, **kwargs):
         """Initialize Task with validation and setup"""
-        
+
         # Extract values from kwargs
-        session = kwargs.get('session')
-        name = kwargs.get('name')
-        description = kwargs.get('description')
-        logger_name = kwargs.get('logger_name', "tocketry.task")
-        execution = kwargs.get('execution')
-        priority = kwargs.get('priority', 0)
-        disabled = kwargs.get('disabled', False)
-        force_run = kwargs.get('force_run', False)
-        force_termination = kwargs.get('force_termination', False)
-        status = kwargs.get('status')
-        timeout = kwargs.get('timeout')
-        parameters = kwargs.get('parameters')
-        start_cond = kwargs.get('start_cond')
-        end_cond = kwargs.get('end_cond')
-        multilaunch = kwargs.get('multilaunch')
-        on_startup = kwargs.get('on_startup', False)
-        on_shutdown = kwargs.get('on_shutdown', False)
-        func_run_id = kwargs.get('func_run_id')
-        daemon = kwargs.get('daemon')
-        batches = kwargs.get('batches')
-        permanent = kwargs.get('permanent', False)
-        
+        session = kwargs.get("session")
+        name = kwargs.get("name")
+        description = kwargs.get("description")
+        logger_name = kwargs.get("logger_name", "tocketry.task")
+        execution = kwargs.get("execution")
+        priority = kwargs.get("priority", 0)
+        disabled = kwargs.get("disabled", False)
+        force_run = kwargs.get("force_run", False)
+        force_termination = kwargs.get("force_termination", False)
+        status = kwargs.get("status")
+        timeout = kwargs.get("timeout")
+        parameters = kwargs.get("parameters")
+        start_cond = kwargs.get("start_cond")
+        end_cond = kwargs.get("end_cond")
+        multilaunch = kwargs.get("multilaunch")
+        on_startup = kwargs.get("on_startup", False)
+        on_shutdown = kwargs.get("on_shutdown", False)
+        func_run_id = kwargs.get("func_run_id")
+        daemon = kwargs.get("daemon")
+        batches = kwargs.get("batches")
+        permanent = kwargs.get("permanent", False)
+
         # Handle session creation
         if session is None:
             warnings.warn("Task's session not defined. Creating new.", UserWarning)
             session = _create_session()
-        
+
         # Handle name generation
         if name is None:
             use_instance_naming = session.config.use_instance_naming if session else False
@@ -404,9 +436,9 @@ class Task(RedBase):
                 name = str(id(self))
             else:
                 # Remove 'name' from kwargs to avoid conflict in get_default_name
-                kwargs_copy = {k: v for k, v in kwargs.items() if k != 'name'}
+                kwargs_copy = {k: v for k, v in kwargs.items() if k != "name"}
                 name = self.get_default_name(name=name, **kwargs_copy)
-        
+
         # Handle deprecated arguments
         if "permanent_task" in kwargs:
             warnings.warn(
@@ -414,7 +446,7 @@ class Task(RedBase):
                 DeprecationWarning,
             )
             permanent = kwargs.pop("permanent_task")
-        
+
         # Set up defaults
         if parameters is None:
             parameters = Parameters()
@@ -424,10 +456,11 @@ class Task(RedBase):
             end_cond = AlwaysFalse()
         if batches is None:
             batches = []
-        
+
         # Initialize the dataclass fields
+        # Set session as instance attribute (overrides class attribute for this instance)
         self.session = session
-        self.name = name
+        # Note: _name is set later after hooks to avoid premature hasattr(task, "name") = True
         self.description = description
         self.logger_name = logger_name
         self.execution = execution
@@ -435,7 +468,7 @@ class Task(RedBase):
         self.disabled = disabled
         self._force_run = force_run
         self.force_termination = force_termination
-        self.status = status
+        self._status = status
         self.timeout = timeout
         self.parameters = parameters
         self.start_cond = start_cond
@@ -447,7 +480,11 @@ class Task(RedBase):
         self.daemon = daemon
         self.batches = batches
         self.permanent = permanent
-        
+
+        # Update name after generation (the local name variable may have been updated)
+        # Note: this was moved later to avoid premature hasattr(task, "name") = True during hooks
+        # self._name = name  # Will be set after hooks
+
         # Initialize private attributes
         self._last_run = None
         self._last_success = None
@@ -458,17 +495,20 @@ class Task(RedBase):
         self._run_stack = []
         self._lock = None
         self._main_alive = False
-        
+
         # Set up hooks
         hooker = _Hooker(self.session.hooks.task_init)
         hooker.prerun(task=self)
-        
+
+        # Set name after hooks to avoid premature hasattr(task, "name") = True
+        self.name = name
+
         # Run field validation
         self.__post_init__()
-        
+
         # Validate name in session context
         self._validate_name_in_session()
-        
+
         # Set default readable logger if missing
         self.session._check_readable_logger()
 
@@ -788,23 +828,15 @@ class Task(RedBase):
             self.process_finish(status=status)
             hooker.postrun(*exc_info)
 
-    def run_as_thread(
-        self, params: Parameters, direct_params, task_run: TaskRun, **kwargs
-    ):
+    def run_as_thread(self, params: Parameters, direct_params, task_run: TaskRun, **kwargs):
         """Create a new thread and run the task on that."""
 
         terminate_event = params.get("_thread_terminate_", threading.Event())
 
-        params = params.pre_materialize(
-            task=self, session=self.session, terminate_event=terminate_event
-        )
-        direct_params = direct_params.pre_materialize(
-            task=self, session=self.session, terminate_event=terminate_event
-        )
+        params = params.pre_materialize(task=self, session=self.session, terminate_event=terminate_event)
+        direct_params = direct_params.pre_materialize(task=self, session=self.session, terminate_event=terminate_event)
 
-        thread = threading.Thread(
-            target=self._run_as_thread, args=(params, direct_params, task_run)
-        )
+        thread = threading.Thread(target=self._run_as_thread, args=(params, direct_params, task_run))
         task_run.task = thread
         task_run.event_terminate = terminate_event
         task_run.event_running = threading.Event()
@@ -815,9 +847,7 @@ class Task(RedBase):
         thread.start()
         task_run.event_running.wait()  # Wait until the task is confirmed to run
 
-    def _run_as_thread(
-        self, params: Parameters, direct_params: Parameters, task_run: TaskRun = None
-    ):
+    def _run_as_thread(self, params: Parameters, direct_params: Parameters, task_run: TaskRun = None):
         """Running the task in a new thread. This method should only
         be run by the new thread."""
         try:
@@ -870,9 +900,7 @@ class Task(RedBase):
         # Daemon resolution: task.daemon >> scheduler.tasks_as_daemon
         log_queue = session.scheduler._log_queue if log_queue is None else log_queue
 
-        daemon = (
-            self.daemon if self.daemon is not None else session.config.tasks_as_daemon
-        )
+        daemon = self.daemon if self.daemon is not None else session.config.tasks_as_daemon
         process = multiprocessing.Process(
             target=self._run_as_process,
             kwargs=dict(
@@ -956,9 +984,7 @@ class Task(RedBase):
             # to :(
             pass
 
-    def get_extra_params(
-        self, params: Parameters, execution: str, **kwargs
-    ) -> Parameters:
+    def get_extra_params(self, params: Parameters, execution: str, **kwargs) -> Parameters:
         """Get additional parameters
 
         Returns
@@ -972,9 +998,7 @@ class Task(RedBase):
         if execution == "thread":
             extra_params["_thread_terminate_"] = threading.Event()
 
-        params = Parameters(
-            self.prefilter_params(session_params | passed_params | extra_params)
-        )
+        params = Parameters(self.prefilter_params(session_params | passed_params | extra_params))
 
         return params
 
@@ -1039,9 +1063,7 @@ class Task(RedBase):
         """
         raise NotImplementedError(f"Method 'execute' not implemented to {type(self)}.")
 
-    def process_failure(
-        self, exc_type: Type[Exception], exc_val: Exception, exc_tb: TracebackType
-    ):
+    def process_failure(self, exc_type: Type[Exception], exc_val: Exception, exc_tb: TracebackType):
         """This method is executed after a failure of the task.
         Override if needed.
 
@@ -1099,16 +1121,10 @@ class Task(RedBase):
         logger = self.logger
 
         self._last_run = self._get_last_action("run", from_logs=True, logger=logger)
-        self._last_success = self._get_last_action(
-            "success", from_logs=True, logger=logger
-        )
+        self._last_success = self._get_last_action("success", from_logs=True, logger=logger)
         self._last_fail = self._get_last_action("fail", from_logs=True, logger=logger)
-        self._last_terminate = self._get_last_action(
-            "terminate", from_logs=True, logger=logger
-        )
-        self._last_inaction = self._get_last_action(
-            "inaction", from_logs=True, logger=logger
-        )
+        self._last_terminate = self._get_last_action("terminate", from_logs=True, logger=logger)
+        self._last_inaction = self._get_last_action("inaction", from_logs=True, logger=logger)
         self._last_crash = self._get_last_action("crash", from_logs=True, logger=logger)
 
         times = {
@@ -1127,9 +1143,7 @@ class Task(RedBase):
     def get_default_name(self, **kwargs):
         """Create a name for the task when name was not passed to initiation of
         the task. Override this method."""
-        raise NotImplementedError(
-            f"Method 'get_default_name' not implemented to {type(self)}"
-        )
+        raise NotImplementedError(f"Method 'get_default_name' not implemented to {type(self)}")
 
     def get_run_id(self, run, params=None):
         if self.func_run_id is not None:
@@ -1184,11 +1198,7 @@ class Task(RedBase):
         if self.session.config.silence_task_logging:
             self._run_stack = [run for run in self._run_stack if run.is_alive()]
         else:
-            self._run_stack = [
-                run
-                for run in self._run_stack
-                if run.is_alive() or run.exception is not None
-            ]
+            self._run_stack = [run for run in self._run_stack if run.is_alive() or run.exception is not None]
 
     def _check_exceptions(self):
         for run in self._run_stack.copy():
@@ -1220,9 +1230,7 @@ class Task(RedBase):
     def _lock_to_run_log(self, log_queue):
         "Handle next run log to make sure the task started running before continuing (otherwise may cause accidential multiple launches)"
         action = None
-        timeout = (
-            10  # Seconds allowed the setup to take before declaring setup to crash
-        )
+        timeout = 10  # Seconds allowed the setup to take before declaring setup to crash
 
         # NOTE: The queue may return others task logs as well
         # but the next run log should be only from this task
@@ -1236,9 +1244,7 @@ class Task(RedBase):
             except Empty:
                 if not self.is_alive():
                     # There will be no "run" log record thus ending the task gracefully
-                    self.logger.critical(
-                        f"Task '{self.name}' crashed in setup", extra={"action": "fail"}
-                    )
+                    self.logger.critical(f"Task '{self.name}' crashed in setup", extra={"action": "fail"})
                     raise TaskSetupError(f"Task '{self.name}' process crashed silently")
             else:
                 # self.logger.debug(f"Inserting record for '{record.task_name}' ({record.action})")
@@ -1306,7 +1312,10 @@ class Task(RedBase):
                 # function itself succeeded, the task failed
                 setattr(self, "_last_fail", record_time)
                 self.status = "fail"
-            raise TaskLoggingError(f"Logging for task '{self.name}' failed.") from exc
+            
+            # Only raise the exception if not silencing task logging
+            if not self.session.config.silence_task_logging:
+                raise TaskLoggingError(f"Logging for task '{self.name}' failed.") from exc
         else:
             setattr(self, cache_attr, record_time)
             self.status = record.action
@@ -1320,9 +1329,7 @@ class Task(RedBase):
                 record = self.logger.get_latest()
             except AttributeError:
                 if is_main_subprocess():
-                    warnings.warn(
-                        f"Task '{self.name}' logger is not readable. Status unknown."
-                    )
+                    warnings.warn(f"Task '{self.name}' logger is not readable. Status unknown.")
                 record = None
             if not record:
                 # No previous status
@@ -1333,9 +1340,7 @@ class Task(RedBase):
         # This is way faster
         return self.status
 
-    def _set_status(
-        self, action, task_run: TaskRun = None, message=None, return_value=None
-    ):
+    def _set_status(self, action, task_run: TaskRun = None, message=None, return_value=None):
         if message is None:
             message = self.fmt_log_message.format(action=action, task=self.name)
 
@@ -1381,7 +1386,10 @@ class Task(RedBase):
             else:
                 setattr(self, "_last_fail", time_now)
                 self.status = "fail"
-            raise TaskLoggingError(f"Logging for task '{self.name}' failed.") from exc
+            
+            # Only raise the exception if not silencing task logging
+            if not self.session.config.silence_task_logging:
+                raise TaskLoggingError(f"Logging for task '{self.name}' failed.") from exc
         else:
             setattr(self, cache_attr, time_now)
             self.status = action
@@ -1457,16 +1465,12 @@ class Task(RedBase):
             record = logger.get_latest(action=action)
         except AttributeError:
             if is_main_subprocess():
-                warnings.warn(
-                    f"Task '{self.name}' logger is not readable. Latest {action} unknown."
-                )
+                warnings.warn(f"Task '{self.name}' logger is not readable. Latest {action} unknown.")
             return None
         else:
             if not record:
                 return None
-            timestamp = (
-                record["created"] if isinstance(record, dict) else record.created
-            )
+            timestamp = record["created"] if isinstance(record, dict) else record.created
             return timestamp
 
     def __getstate__(self):
@@ -1510,17 +1514,13 @@ class Task(RedBase):
                 #   - If FuncTask func is non-picklable
                 #       - There is another func with same name in the file
                 #       - The function is lambda or decorated func
-                unpicklable = {
-                    key: val for key, val in state.items() if not is_pickleable(val)
-                }
+                unpicklable = {key: val for key, val in state.items() if not is_pickleable(val)}
                 self.log_running()
                 self.logger.critical(
                     f"Task '{self.name}' crashed in pickling. Cannot pickle: {unpicklable}",
                     extra={"action": "fail", "task_name": self.name},
                 )
-                raise PicklingError(
-                    f"Task {self.name} could not be pickled. Cannot pickle: {unpicklable}"
-                )
+                raise PicklingError(f"Task {self.name} could not be pickled. Cannot pickle: {unpicklable}")
             # Is pickled by something else than task execution
             return state
 
@@ -1555,10 +1555,7 @@ class Task(RedBase):
         elif isinstance(cond, All):
             task_periods = []
             for sub_stmt in cond:
-                if (
-                    isinstance(sub_stmt, (TaskFinished, TaskFinished))
-                    and session[sub_stmt.kwargs["task"]] is self
-                ):
+                if isinstance(sub_stmt, (TaskFinished, TaskFinished)) and session[sub_stmt.kwargs["task"]] is self:
                     task_periods.append(sub_stmt.period)
             if task_periods:
                 return AllTime(*task_periods)
@@ -1602,11 +1599,11 @@ class Task(RedBase):
     def model_dump(self, exclude=None, **kwargs):
         """Compatibility method to replace pydantic's model_dump"""
         from dataclasses import fields
-        
+
         # Get data from dataclass fields that exist as attributes
         data = {}
         for field in fields(self):
-            if not field.name.startswith('_'):  # Exclude private fields
+            if not field.name.startswith("_"):  # Exclude private fields
                 # Check if the attribute was explicitly deleted by checking __dict__
                 if field.name in self.__dict__:
                     value = getattr(self, field.name)
@@ -1616,18 +1613,18 @@ class Task(RedBase):
                     value = getattr(self, field.name)
                     if value is not None or field.default is not None:
                         data[field.name] = value
-        
+
         # Remove excluded fields
         if exclude:
             if isinstance(exclude, set):
                 exclude = list(exclude)
             for field in exclude:
                 data.pop(field, None)
-        
+
         # Special handling for parameters to match pydantic format
-        if 'parameters' in data and hasattr(data['parameters'], '_params'):
+        if "parameters" in data and hasattr(data["parameters"], "_params"):
             # Convert Parameters object to dict like pydantic did
-            params = data['parameters']
+            params = data["parameters"]
             param_dict = {}
             for k, v in params._params.items():
                 try:
@@ -1636,38 +1633,40 @@ class Task(RedBase):
                 except Exception:
                     # If we can't repr the value, use str
                     param_dict[k] = str(v)
-            data['parameters'] = param_dict
-        elif 'parameters' in data and hasattr(data['parameters'], '__dict__'):
+            data["parameters"] = param_dict
+        elif "parameters" in data and hasattr(data["parameters"], "__dict__"):
             # Fallback for other parameter-like objects
-            params = data['parameters']
+            params = data["parameters"]
             param_dict = {}
             for k, v in params.__dict__.items():
-                if not k.startswith('_'):
+                if not k.startswith("_"):
                     param_dict[k] = str(v)
-            data['parameters'] = param_dict
-        
+            data["parameters"] = param_dict
+
         return data
-    
+
     def model_dump_json(self, exclude=None, indent=None, **kwargs):
         """Compatibility method to replace pydantic's model_dump_json"""
         import json
+
         data = self.model_dump(exclude=exclude, **kwargs)
+
         # Convert non-serializable objects to strings
         def serialize_obj(obj):
-            if hasattr(obj, '__dict__'):
+            if hasattr(obj, "__dict__"):
                 return str(obj)
-            elif hasattr(obj, '__name__'):
+            elif hasattr(obj, "__name__"):
                 return obj.__name__
             else:
                 return str(obj)
-        
+
         # Handle complex objects that can't be JSON serialized
         def clean_for_json(data):
             if isinstance(data, dict):
                 return {k: clean_for_json(v) for k, v in data.items()}
             elif isinstance(data, list):
                 return [clean_for_json(v) for v in data]
-            elif hasattr(data, '__dict__') or callable(data):
+            elif hasattr(data, "__dict__") or callable(data):
                 return serialize_obj(data)
             else:
                 try:
@@ -1675,7 +1674,7 @@ class Task(RedBase):
                     return data
                 except (TypeError, ValueError):
                     return serialize_obj(data)
-        
+
         clean_data = clean_for_json(data)
         return json.dumps(clean_data, indent=indent, default=str)
 

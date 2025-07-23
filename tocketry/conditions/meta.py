@@ -12,7 +12,7 @@ from tocketry.tasks.func import FuncTask
 class _FuncTaskCondWrapper(FuncTask):
     # For some reason, the order of cls attrs broke here so we need to reorder then:
     session: _Session
-    name: Optional[str] = None  # Name of the task. Must be unique
+    # Note: name property is inherited from Task base class
 
     def _handle_return(self, value):
         # Handle the return value of the function
@@ -134,9 +134,7 @@ class TaskCond(BaseCondition):
     def _set_parsing(self):
         from tocketry.parse import CondParser
 
-        self.session._cond_parsers[self.syntax] = CondParser(
-            func=self._set_task, session=self.session, cached=True
-        )
+        self.session._cond_parsers[self.syntax] = CondParser(func=self._set_task, session=self.session, cached=True)
 
     def _get_func_name(self, func):
         func_module = func.__module__

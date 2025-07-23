@@ -7,5 +7,4 @@ if TYPE_CHECKING:
 class RedBase:
     """Baseclass for all Tocketry classes"""
 
-    # Commented this out for now as it was causing issues with the new pydantic implementation
-    session: "Session"
+    session: ClassVar["Session"] = None
